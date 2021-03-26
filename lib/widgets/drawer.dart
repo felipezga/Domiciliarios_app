@@ -1,0 +1,108 @@
+import 'package:domiciliarios_app/Paginas/Mapa.dart';
+import 'package:domiciliarios_app/Servicios/SharedPreferencesServicio.dart';
+import 'package:flutter/material.dart';
+//import 'package:restaurantes_tipoventas_app/Paginas/Mapa.dart';
+//import 'package:restaurantes_tipoventas_app/Paginas/Restaurante.dart';
+//import 'package:restaurantes_tipoventas_app/Paginas/prueba.dart';
+
+
+//import '../Paginas/prueba.dart';
+
+Drawer buildDrawer(BuildContext context, String currentRoute) {
+  return Drawer(
+    child: Column(
+        mainAxisAlignment: MainAxisAlignment
+            .spaceBetween, // place the logout at the end of the drawer
+        children: <Widget>[
+    Flexible(
+      child: ListView(
+          //shrinkWrap: true,
+          children: <Widget>[
+            /*DrawerHeader(
+          child: Center(
+            child: const Text('Felipe Rios'),
+          ),
+          decoration: BoxDecoration(
+            color: Colors.blue,
+          ),
+        ),*/
+            _createHeader(),
+
+            ListTile(
+              leading: Icon(Icons.map),
+              title: const Text('Mapa'),
+              //selected: currentRoute == Mapa.route,
+              onTap: () {
+                Navigator.popAndPushNamed(context, Mapa.route);
+                //  Navigator.pushReplacementNamed(context, Mapa.route);
+              },
+            ),
+            //Divider(),
+            /*ListTile(
+              leading: Icon(Icons.restaurant_menu_rounded),
+              title: const Text('Restaurantes'),
+              //selected: currentRoute == Restaurante.route,
+              onTap: () {
+                //Navigator.pushReplacementNamed(context, Restaurante.route);
+                Navigator.popAndPushNamed(context, Restaurante.route);
+              },
+            ),*/
+            Divider(),
+
+          ]
+      )
+      ),
+
+          ListTile(
+            leading: Icon(Icons.outbond_outlined),
+            title: const Text('Salir'),
+            trailing: Text(
+              "Version 0.0.1",
+              style:
+              TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+            ),
+            dense: true,
+            //selected: currentRoute == Restaurante.route,
+            onTap: () {
+              UserPreferences().removeUser();
+              Navigator.pushReplacementNamed(context, '/login');
+              //Navigator.pushReplacementNamed(context, Restaurante.route);
+              //Navigator.pushNamed(context, Restaurante.route);
+
+
+            },
+          ),
+
+          ]
+
+    ),
+  );
+}
+
+
+Widget _createHeader() {
+  return DrawerHeader(
+      margin: EdgeInsets.zero,
+      padding: EdgeInsets.zero,
+      decoration: BoxDecoration(
+          /*image: DecorationImage(
+              fit: BoxFit.fitWidth,
+              image:  AssetImage('images/icono_frisby.png')),*/
+        color: Colors.blue,
+      ),
+      child: Stack(children: <Widget>[
+        Positioned(
+            bottom: 8.0,
+            left: 12.0,
+            child:
+            Text(
+                "Felipe Rios",
+                style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 22.0,
+                    fontWeight: FontWeight.w500,
+                ))),
+
+         Image.asset('images/icono_frisby.png'),
+      ]));
+}
