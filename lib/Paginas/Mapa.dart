@@ -16,45 +16,22 @@ class Mapa extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      appBar: AppBar(title: new Text("MAPA"),),
+      //appBar: AppBar(title: new Text("MAPA"),),
+      backgroundColor: Colors.grey[200],
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+      ),
       drawer: buildDrawer(context, Mapa.route),
-      body:
-      mapaState(),
-      /*FlutterMap(
-    options: MapOptions(
-    center: LatLng(4.8087, -75.6906),
-    zoom: 13.0,
-    ),
-    layers: [
-    TileLayerOptions(
-    urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-    subdomains: ['a', 'b', 'c']
-    ),
-    MarkerLayerOptions(
-    markers: [
-    Marker(
-    width: 80.0,
-    height: 80.0,
-    point: LatLng(4.8087, -75.6906),
-    builder: (ctx) =>
-    Container(
-    child: Icon(Icons.add_location_outlined),
-    ),
-    ),
-    ],
-    ),
-    ],
-    ),
-      */
+      body: mapaState(),
     );
   }
 }
 
 class mapaState extends StatefulWidget{
   mapaState() : super();
-
   _AppState createState() => _AppState();
-
 }
 
 
@@ -316,168 +293,162 @@ class _AppState extends State<mapaState> with TickerProviderStateMixin {
 
   }
 
-  getIcons() async {
-    var BitmapDescriptor;
-    var icon = await BitmapDescriptor.fromAssetImage(
-        ImageConfiguration(devicePixelRatio: 3.0),
-        "assets/images/domiciliario.png");
-    setState(() {
-      //this.icon = icon;
-    });
+
+  Widget CustomInnerContent() {
+    return Column(
+      children: <Widget>[
+        SizedBox(height: 12),
+        CustomDraggingHandle(),
+        SizedBox(height: 16),
+        CustomExplore(),
+        SizedBox(height: 24),
+        CustomRecentPhotosText(),
+        SizedBox(height: 16),
+      ],
+    );
   }
 
 
+  Widget CustomRecentPhotosText() {
+    return
+        Padding(
+          padding: EdgeInsets.only(top: 0.0, bottom: 2.0),
+          child: Column(
+          children: [
+          Row(
+            children: [
+            Column(
+              children:[
+              Countdown(
+              animation: StepTween(
+              begin: 0, // THIS IS A USER ENTERED NUMBER
+              end: levelClock,
+              ).animate(_controller),
+              ),
+              Botones(mens_boton, Colors.green, Icons.motorcycle_rounded, "Finalizar"),
+              ( mens_boton == "Finalizar")
+              ? Botones("Novedad", Colors.yellow, Icons.event_note_rounded, "Finalizar")
+                  : Text("")   //: Container()
+              ]
+            ),
+            //Padding(
+            // padding: EdgeInsets.only(top: 28.0, bottom: 8.0, left: 8.0),
+            Flexible(
+              //child:
+              child:
+              _esta_domi.length > 0
+              ?
+              Card(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              margin: EdgeInsets.all(15),
+              elevation: 5,
+              child: Column(
+              children: <Widget>[
+              ListView.builder(
+              scrollDirection: Axis.vertical,
+              shrinkWrap: true,
+              itemCount: _esta_domi.length,
+              itemBuilder: (BuildContext context, int index) {
+              print(_esta_domi[index].estado);
+              var lat = _esta_domi[index].lat;
+              var long = _esta_domi[index].long;
+              return
 
-  // This widget is the root of your application.
+              ListTile(
+              //contentPadding: EdgeInsets.fromLTRB(15, 10, 25, 0),
+              title: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [Text(_esta_domi[index].estado, style: TextStyle(
+              fontSize: 18,
+              //color: Theme.of(context).primaryColor,
+              color: Colors.blue,
+              fontWeight: FontWeight.bold
+
+              )),
+              Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [ Icon(Icons.watch_later_outlined),Text( _esta_domi[index].hora)],)
+              ,]),
+
+              subtitle: Text( 'Lat:$lat  Long:$long'),
+              //leading: Icon(Icons.motorcycle_rounded),
+              );
+              })
+              ],
+              ),
+              )
+                  :
+              Card(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              // Con esta propiedad agregamos margen a nuestro Card
+              // El margen es la separación entre widgets o entre los bordes del widget padre e hijo
+              margin: EdgeInsets.all(15),
+
+              // Con esta propiedad agregamos elevación a nuestro card
+              // La sombra que tiene el Card aumentará
+              elevation: 10,
+              // La propiedad child anida un widget en su interior
+              // Usamos columna para ordenar un ListTile y una fila con botones
+              child: Column(
+              children: <Widget>[
+              // Usamos ListTile para ordenar la información del card como titulo, subtitulo e icono
+              ListTile(
+              //contentPadding: EdgeInsets.fromLTRB(15, 10, 25, 0),
+              title: Text(""),
+              subtitle: Text(
+              ''),
+              leading: Icon(Icons.home),
+              ),
+
+              // Usamos una fila para ordenar los botones del card
+              /*Row(
+                                          mainAxisAlignment: MainAxisAlignment.end,
+                                          children: <Widget>[
+                                          FlatButton(onPressed: () => {}, child: Text('Aceptar')),
+                                          FlatButton(onPressed: () => {}, child: Text('Cancelar'))
+                                          ],
+                                          )*/
+              ],
+              ),
+              ),
+
+
+
+
+
+            ),
+            ],
+          ),
+
+
+
+            //Text( 'Direccion de desino : $_currentAddress  $latlng'),
+
+
+          ])
+
+          );
+  }
+
+
   @override
   Widget build(BuildContext context) {
-    //return MaterialApp(
-       // title: 'Flutter Demo',
-    /*var markers = tappedPoints.map((latlng) {
-      return Marker(
-        width: 80.0,
-        height: 80.0,
-        point: latlng,
-        builder: (ctx) => Container(
-          child: FlutterLogo(),
-        ),
-      );
-    }).toList();*/
 
-
-        return
-          Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Column(
-                children: [
-
-
-            Padding(
-            padding: EdgeInsets.only(top: 0.0, bottom: 2.0),
-            child: Column(
-                children: [
-                  Row(
-                    children: [
-                      Column(
-                        children:[
-                          Countdown(
-                            animation: StepTween(
-                              begin: 0, // THIS IS A USER ENTERED NUMBER
-                              end: levelClock,
-                            ).animate(_controller),
-                          ),
-                          Botones(mens_boton, Colors.green, Icons.motorcycle_rounded, "Finalizar"),
-                          ( mens_boton == "Finalizar")
-                              ? Botones("Novedad", Colors.yellow, Icons.event_note_rounded, "Finalizar")
-                              : Text("")   //: Container()
-                        ]
-                      ),
-                      //Padding(
-                       // padding: EdgeInsets.only(top: 28.0, bottom: 8.0, left: 8.0),
-                      Expanded(
-                      //child:
-                        child:
-                        _esta_domi.length > 0
-                            ?
-                          Card(
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                          margin: EdgeInsets.all(15),
-                          elevation: 5,
-                      child: Column(
-                      children: <Widget>[
-                        ListView.builder(
-                            scrollDirection: Axis.vertical,
-                            shrinkWrap: true,
-                          itemCount: _esta_domi.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              print(_esta_domi[index].estado);
-                              var lat = _esta_domi[index].lat;
-                              var long = _esta_domi[index].long;
-                              return
-
-                                    ListTile(
-                                      //contentPadding: EdgeInsets.fromLTRB(15, 10, 25, 0),
-                                      title: Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                  children: [Text(_esta_domi[index].estado, style: TextStyle(
-                                    fontSize: 18,
-                                    //color: Theme.of(context).primaryColor,
-                                    color: Colors.blue,
-                                      fontWeight: FontWeight.bold
-
-                                  )),
-                                              Row(
-                                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                                children: [ Icon(Icons.watch_later_outlined),Text( _esta_domi[index].hora)],)
-                                    ,]),
-
-                                      subtitle: Text( 'Lat:$lat  Long:$long'),
-                                      //leading: Icon(Icons.motorcycle_rounded),
-                                    );
-                            })
-                            ],
-                            ),
-                          )
-                        :
-                        Card(
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                          // Con esta propiedad agregamos margen a nuestro Card
-                          // El margen es la separación entre widgets o entre los bordes del widget padre e hijo
-                          margin: EdgeInsets.all(15),
-
-                          // Con esta propiedad agregamos elevación a nuestro card
-                          // La sombra que tiene el Card aumentará
-                          elevation: 10,
-                          // La propiedad child anida un widget en su interior
-                          // Usamos columna para ordenar un ListTile y una fila con botones
-                          child: Column(
-                            children: <Widget>[
-                              // Usamos ListTile para ordenar la información del card como titulo, subtitulo e icono
-                              ListTile(
-                                //contentPadding: EdgeInsets.fromLTRB(15, 10, 25, 0),
-                                title: Text(""),
-                                subtitle: Text(
-                                    ''),
-                                leading: Icon(Icons.home),
-                              ),
-
-                              // Usamos una fila para ordenar los botones del card
-                              /*Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: <Widget>[
-                              FlatButton(onPressed: () => {}, child: Text('Aceptar')),
-                              FlatButton(onPressed: () => {}, child: Text('Cancelar'))
-                              ],
-                              )*/
-                            ],
-                          ),
-                        ),
-
-
-
-
-
-                      ),
-                    ],
-                  )
-
-
-                ])
-
-          ),
-    Flexible(
-    child:
-          _isGettingLocation ?
-                    Center(
-                        child : CircularProgressIndicator()
-                    ) :
-        Scaffold(
-            key: _scaffoldKey,
-            body:
-                    FlutterMap(
+    return
+      Padding(
+          padding: EdgeInsets.all(1.0),
+          child: Stack(
+              children: [
+                _isGettingLocation ?
+                Center(
+                    child : CircularProgressIndicator()
+                ) :
+                Scaffold(
+                    key: _scaffoldKey,
+                    body: FlutterMap(
                       options: MapOptions(
-                        center: LatLng(_latitude, _longitude),
-                          zoom: 12.0,
+                          center: LatLng(_latitude, _longitude),
+                          zoom: 16.0,
                           maxZoom: 18.0,
                           minZoom: 2.0,
                           onTap: _handleTap
@@ -486,7 +457,7 @@ class _AppState extends State<mapaState> with TickerProviderStateMixin {
                         TileLayerOptions(
                             urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
                             subdomains: ['a', 'b', 'c']
-                    ),
+                        ),
                         PolylineLayerOptions(
                           polylines: [
                             Polyline(
@@ -495,41 +466,78 @@ class _AppState extends State<mapaState> with TickerProviderStateMixin {
                                 color: Colors.purple),
                           ],
                         ),
-                    MarkerLayerOptions(
-                      markers: [
-                        Marker(
-                          width: 80.0,
-                          height: 80.0,
-                          point: LatLng(_latitude, _longitude),
-                          builder: (ctx) =>
-                              Container(
-                                child: Icon(Icons.motorcycle_rounded),
+                        MarkerLayerOptions(
+                          markers: [
+                            Marker(
+                              width: 60.0,
+                              height: 60.0,
+                              point: LatLng(_latitude, _longitude),
+                              builder: (ctx) =>
+                                  Container(
+                                      child: Image(
+                                        image: new AssetImage("images/frisby.png"),
+                                        width: 20,
+                                        height: 20,
+                                        color: null,
+                                        fit: BoxFit.scaleDown,
+                                        alignment: Alignment.center,
+                                      )
+                                      /*ImageIcon(
+                                          AssetImage('images/frisby.png'),
+                                            color:Colors.red,
+                                            size: 20
+                                        )*/
+                                      //Icon(Icons.motorcycle_rounded),
+                                  ),
+                            ),
+                            Marker(
+                              width: 80.0,
+                              height: 80.0,
+                              point: casa,
+                              builder: (ctx) => Container(
+                                child: Icon(Icons.home),
                               ),
+                            )
+                          ],
                         ),
-                        Marker(
-                          width: 80.0,
-                          height: 80.0,
-                          point: casa,
-                          builder: (ctx) => Container(
-                            child: Icon(Icons.home),
-                          ),
-                        )
                       ],
-                    ),
-                  ],
-                )
-
-        )
-    )
-    ]
                     )
-          );
+                ),
+                DraggableScrollableSheet(
+                  initialChildSize: 0.10,
+                  minChildSize: 0.05,
+                  maxChildSize: 0.6,
+                  builder: (BuildContext context, ScrollController scrollController) {
+                    return SingleChildScrollView(
+                      controller: scrollController,
+                      child: Card(
+                        elevation: 12.0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(18.0),
+                            topRight: Radius.circular(18.0)
+                          ),
+                        ),
+                        margin: const EdgeInsets.all(0),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(24),
+                          ),
+                          child: CustomInnerContent(),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ]
+          )
+      );
 
-    //);
   }
 
 
   void _handleTap(LatLng latlng) {
+
     setState(() {
       //tappedPoints.add(latlng);
       casa = latlng;
@@ -538,6 +546,9 @@ class _AppState extends State<mapaState> with TickerProviderStateMixin {
         content: Text( 'Direccion de desino : $_currentAddress  $latlng'),
       ));
     });
+
+
+
   }
 
   save() {
@@ -611,3 +622,45 @@ class Countdown extends AnimatedWidget {
    /* ;*/
   }
 }
+
+
+
+class CustomDraggingHandle extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 5,
+      width: 30,
+      decoration: BoxDecoration(color: Colors.grey[200], borderRadius: BorderRadius.circular(16)),
+    );
+  }
+}
+
+class CustomExplore extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Text("Seguimiento", style: TextStyle(fontSize: 22, color: Colors.black45)),
+        SizedBox(width: 8),
+        Container(
+          height: 24,
+          width: 24,
+          child: Icon(Icons.arrow_forward_ios, size: 12, color: Colors.green),
+          decoration: BoxDecoration(color: Colors.grey[200], borderRadius: BorderRadius.circular(16)),
+        ),
+      ],
+    );
+  }
+}
+
+
+
+
+
+
+
+
+
+

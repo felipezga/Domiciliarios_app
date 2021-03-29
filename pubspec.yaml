@@ -59,6 +59,7 @@ flutter:
      - images/icono_frisby.png
      - images/frisby_homepage.png
      - images/domiciliario.png
+     - images/frisby.png
 
 
 flutter_icons:

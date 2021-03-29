@@ -36,6 +36,7 @@ class _MyAppState extends State<App>{
         primarySwatch: Colors.red,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
+      //theme: ThemeData.dark(),
       // home: paginas[_paginaActual],
       home: FutureBuilder(
           future: getUserData(),
