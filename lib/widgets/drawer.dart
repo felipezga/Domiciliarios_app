@@ -1,4 +1,5 @@
 import 'package:domiciliarios_app/Paginas/Mapa.dart';
+import 'package:domiciliarios_app/Paginas/Configuraciones.dart';
 import 'package:domiciliarios_app/Servicios/SharedPreferencesServicio.dart';
 import 'package:flutter/material.dart';
 //import 'package:restaurantes_tipoventas_app/Paginas/Mapa.dart';
@@ -37,17 +38,17 @@ Drawer buildDrawer(BuildContext context, String currentRoute) {
                 //  Navigator.pushReplacementNamed(context, Mapa.route);
               },
             ),
-            //Divider(),
-            /*ListTile(
-              leading: Icon(Icons.restaurant_menu_rounded),
-              title: const Text('Restaurantes'),
+            Divider(),
+            ListTile(
+              leading: Icon(Icons.settings),
+              title: const Text('Configuraciones'),
               //selected: currentRoute == Restaurante.route,
               onTap: () {
                 //Navigator.pushReplacementNamed(context, Restaurante.route);
-                Navigator.popAndPushNamed(context, Restaurante.route);
+                Navigator.popAndPushNamed(context, Configuraciones.route);
               },
-            ),*/
-            Divider(),
+            ),
+            //Divider(),
 
           ]
       )

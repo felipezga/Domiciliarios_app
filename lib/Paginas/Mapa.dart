@@ -1,6 +1,7 @@
 import 'dart:async';
 //import 'dart:ffi';
 
+import 'package:domiciliarios_app/Servicios/NotificacionPushFirebase.dart';
 import 'package:domiciliarios_app/widgets/drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -59,6 +60,9 @@ class _AppState extends State<mapaState> with TickerProviderStateMixin {
   List<LatLng> tappedPoints = [];
   LatLng casa;
 
+  static const darkLink = 'https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}@2x.png';
+  static const lightLink = 'http://tile.stamen.com/toner-lite/{z}/{x}/{y}@2x.png';
+  //https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png
 
 
   final _formKey = GlobalKey<FormState>();
@@ -87,13 +91,13 @@ class _AppState extends State<mapaState> with TickerProviderStateMixin {
     _isGettingLocation = true;
     _obtenerLocationEstado(mens_boton, "", "Finalizar");
     contador = 0;
-/*
+
     _timer = Timer.periodic(Duration(seconds: 5), (_) {
       setState(() {
         _getCurrentLocation();
       });
     });
-    */
+
 
 
     _controller = AnimationController(
@@ -103,6 +107,8 @@ class _AppState extends State<mapaState> with TickerProviderStateMixin {
             levelClock) // gameData.levelClock is a user entered number elsewhere in the applciation
     );
 
+    final NotificacionServicio = new NotificacionesPush();
+    NotificacionServicio.initNotification();
 
   }
 
@@ -154,7 +160,7 @@ class _AppState extends State<mapaState> with TickerProviderStateMixin {
           }else{
             mens_boton = next_estado;
 
-            //points.add(LatLng(_latitude, _longitude));
+            points.add(LatLng(_latitude, _longitude));
 
             _controller.forward();
 
@@ -455,7 +461,11 @@ class _AppState extends State<mapaState> with TickerProviderStateMixin {
                       ),
                       layers: [
                         TileLayerOptions(
-                            urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                            //isDarkMode
+                          urlTemplate: 2 > 1
+                                ? darkLink
+                                : lightLink,
+                            //urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
                             subdomains: ['a', 'b', 'c']
                         ),
                         PolylineLayerOptions(
@@ -463,14 +473,14 @@ class _AppState extends State<mapaState> with TickerProviderStateMixin {
                             Polyline(
                                 points: points,
                                 strokeWidth: 4.0,
-                                color: Colors.purple),
+                                color: Colors.red),
                           ],
                         ),
                         MarkerLayerOptions(
                           markers: [
                             Marker(
-                              width: 60.0,
-                              height: 60.0,
+                              width: 40.0,
+                              height: 40.0,
                               point: LatLng(_latitude, _longitude),
                               builder: (ctx) =>
                                   Container(

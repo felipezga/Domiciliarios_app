@@ -1,4 +1,8 @@
+import 'package:domiciliarios_app/Bloc/ThemeBloc.dart';
+import 'package:domiciliarios_app/Paginas/Configuraciones.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'Modelo/LoginModel.dart';
 import 'Paginas/Login.dart';
 import 'Paginas/Mapa.dart';
@@ -7,7 +11,10 @@ import 'Paginas/prueba.dart';
 import 'Servicios/SharedPreferencesServicio.dart';
 
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  HydratedBloc.storage = await HydratedStorage.build();
+
   runApp(App());
 }
 
@@ -18,6 +25,14 @@ class App extends StatefulWidget {
 
 class _MyAppState extends State<App>{
   int _paginaActual = 0;
+
+  final _pageOptions = [
+
+    BlocProvider(
+      create: (context) => ThemeBloc(),
+      child: Configuraciones(),
+    ),
+  ];
 
   List<Widget> paginas = [
     //Login(),
@@ -30,13 +45,13 @@ class _MyAppState extends State<App>{
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    /*return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
+      /*theme: ThemeData(
         primarySwatch: Colors.red,
         visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      //theme: ThemeData.dark(),
+      ),*/
+      theme: ThemeData.dark(),
       // home: paginas[_paginaActual],
       home: FutureBuilder(
           future: getUserData(),
@@ -60,12 +75,21 @@ class _MyAppState extends State<App>{
        // "/restaurante" : ( context) => Restaurante(opcion: 1),
        // Restaurante.route: ( context) =>  Restaurante(opcion: 2),
         Mapa.route : ( context) => Mapa(),
-        //"/contacto" : ( context) => Contacto(),
+        Configuraciones.route : ( context) => Configuraciones(pageOptions: _pageOptions),
         "/contacto" : ( context) => PluginScaleBar(),
         '/login': (context) => LoginPage(),
       },
+    );*/
+
+    return BlocProvider(
+        create: (_) => ThemeBloc(),
+        child: BlocBuilder<ThemeBloc, ThemeState>(builder: (_, theme) {
+
+          return  AndroidMaterialApp( theme: theme.getTheme, pageOptions: _pageOptions);
+        })
     );
   }
 }
 
 
+//https://morioh.com/p/67c610cc30f7
