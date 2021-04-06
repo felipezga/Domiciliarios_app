@@ -1,8 +1,11 @@
 import 'dart:async';
 //import 'dart:ffi';
 
+import 'package:domiciliarios_app/Bloc/ThemeBloc.dart';
+import 'package:domiciliarios_app/Servicios/NotificacionPushFirebase.dart';
 import 'package:domiciliarios_app/widgets/drawer.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong/latlong.dart';
 import 'package:geolocator/geolocator.dart';
@@ -59,6 +62,9 @@ class _AppState extends State<mapaState> with TickerProviderStateMixin {
   List<LatLng> tappedPoints = [];
   LatLng casa;
 
+  static const darkLink = 'https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}@2x.png';
+  static const lightLink = 'https://{s}.basemaps.cartocdn.com/rastertiles/light_all/{z}/{x}/{y}.png';
+  //https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png
 
 
   final _formKey = GlobalKey<FormState>();
@@ -87,13 +93,13 @@ class _AppState extends State<mapaState> with TickerProviderStateMixin {
     _isGettingLocation = true;
     _obtenerLocationEstado(mens_boton, "", "Finalizar");
     contador = 0;
-/*
-    _timer = Timer.periodic(Duration(seconds: 5), (_) {
+
+    /*/_timer = Timer.periodic(Duration(seconds: 5), (_) {
       setState(() {
         _getCurrentLocation();
       });
-    });
-    */
+    });*/
+
 
 
     _controller = AnimationController(
@@ -103,6 +109,8 @@ class _AppState extends State<mapaState> with TickerProviderStateMixin {
             levelClock) // gameData.levelClock is a user entered number elsewhere in the applciation
     );
 
+    final NotificacionServicio = new NotificacionesPush();
+    NotificacionServicio.initNotification();
 
   }
 
@@ -154,7 +162,7 @@ class _AppState extends State<mapaState> with TickerProviderStateMixin {
           }else{
             mens_boton = next_estado;
 
-            //points.add(LatLng(_latitude, _longitude));
+            points.add(LatLng(_latitude, _longitude));
 
             _controller.forward();
 
@@ -434,104 +442,113 @@ class _AppState extends State<mapaState> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
 
-    return
-      Padding(
-          padding: EdgeInsets.all(1.0),
-          child: Stack(
-              children: [
-                _isGettingLocation ?
-                Center(
-                    child : CircularProgressIndicator()
-                ) :
-                Scaffold(
-                    key: _scaffoldKey,
-                    body: FlutterMap(
-                      options: MapOptions(
-                          center: LatLng(_latitude, _longitude),
-                          zoom: 16.0,
-                          maxZoom: 18.0,
-                          minZoom: 2.0,
-                          onTap: _handleTap
-                      ),
-                      layers: [
-                        TileLayerOptions(
-                            urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                            subdomains: ['a', 'b', 'c']
-                        ),
-                        PolylineLayerOptions(
-                          polylines: [
-                            Polyline(
-                                points: points,
-                                strokeWidth: 4.0,
-                                color: Colors.purple),
-                          ],
-                        ),
-                        MarkerLayerOptions(
-                          markers: [
-                            Marker(
-                              width: 60.0,
-                              height: 60.0,
-                              point: LatLng(_latitude, _longitude),
-                              builder: (ctx) =>
-                                  Container(
-                                      child: Image(
-                                        image: new AssetImage("images/frisby.png"),
-                                        width: 20,
-                                        height: 20,
-                                        color: null,
-                                        fit: BoxFit.scaleDown,
-                                        alignment: Alignment.center,
-                                      )
-                                      /*ImageIcon(
+    return BlocBuilder<ThemeBloc, ThemeState>(
+        builder: (context, theme) {
+          var isDarkMode = theme.getThemeState;
+          return
+            Padding(
+                padding: EdgeInsets.all(1.0),
+                child: Stack(
+                    children: [
+                      _isGettingLocation ?
+                      Center(
+                          child : CircularProgressIndicator()
+                      ) :
+                      Scaffold(
+                          key: _scaffoldKey,
+                          body: FlutterMap(
+                            options: MapOptions(
+                                center: LatLng(_latitude, _longitude),
+                                zoom: 16.0,
+                                maxZoom: 18.0,
+                                minZoom: 2.0,
+                                onTap: _handleTap
+                            ),
+                            layers: [
+                              TileLayerOptions(
+                                  urlTemplate: isDarkMode
+                                      ? darkLink
+                                      : lightLink,
+                                  //urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                                  subdomains: ['a', 'b', 'c']
+                              ),
+                              PolylineLayerOptions(
+                                polylines: [
+                                  Polyline(
+                                      points: points,
+                                      strokeWidth: 4.0,
+                                      color: Colors.red),
+                                ],
+                              ),
+                              MarkerLayerOptions(
+                                markers: [
+                                  Marker(
+                                    width: 40.0,
+                                    height: 40.0,
+                                    point: LatLng(_latitude, _longitude),
+                                    builder: (ctx) =>
+                                        Container(
+                                            child: Image(
+                                              image: new AssetImage("images/frisby.png"),
+                                              width: 20,
+                                              height: 20,
+                                              color: null,
+                                              fit: BoxFit.scaleDown,
+                                              alignment: Alignment.center,
+                                            )
+                                          /*ImageIcon(
                                           AssetImage('images/frisby.png'),
                                             color:Colors.red,
                                             size: 20
                                         )*/
-                                      //Icon(Icons.motorcycle_rounded),
+                                          //Icon(Icons.motorcycle_rounded),
+                                        ),
                                   ),
-                            ),
-                            Marker(
-                              width: 80.0,
-                              height: 80.0,
-                              point: casa,
-                              builder: (ctx) => Container(
-                                child: Icon(Icons.home),
+                                  Marker(
+                                    width: 80.0,
+                                    height: 80.0,
+                                    point: casa,
+                                    builder: (ctx) => Container(
+                                      child: Icon(Icons.home),
+                                    ),
+                                  )
+                                ],
                               ),
-                            )
-                          ],
-                        ),
-                      ],
-                    )
-                ),
-                DraggableScrollableSheet(
-                  initialChildSize: 0.10,
-                  minChildSize: 0.05,
-                  maxChildSize: 0.6,
-                  builder: (BuildContext context, ScrollController scrollController) {
-                    return SingleChildScrollView(
-                      controller: scrollController,
-                      child: Card(
-                        elevation: 12.0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(18.0),
-                            topRight: Radius.circular(18.0)
-                          ),
-                        ),
-                        margin: const EdgeInsets.all(0),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(24),
-                          ),
-                          child: CustomInnerContent(),
-                        ),
+                            ],
+                          )
                       ),
-                    );
-                  },
-                ),
-              ]
-          )
-      );
+                      DraggableScrollableSheet(
+                        initialChildSize: 0.10,
+                        minChildSize: 0.05,
+                        maxChildSize: 0.6,
+                        builder: (BuildContext context, ScrollController scrollController) {
+                          return SingleChildScrollView(
+                            controller: scrollController,
+                            child: Card(
+                              elevation: 12.0,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(18.0),
+                                    topRight: Radius.circular(18.0)
+                                ),
+                              ),
+                              margin: const EdgeInsets.all(0),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(24),
+                                ),
+                                child: CustomInnerContent(),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ]
+                )
+            );
+        }
+    );
+
 
   }
 
