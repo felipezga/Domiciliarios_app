@@ -8,75 +8,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 //import 'widgets/android_settings.dart';
 
 
-
-
-
-class AndroidMaterialApp extends StatefulWidget {
-  final ThemeData theme;
-
-  final List<Widget> pageOptions;
-
-  AndroidMaterialApp({this.theme, this.pageOptions});
-
-  @override
-  _AndroidMaterialAppState createState() => _AndroidMaterialAppState();
-}
-
-class _AndroidMaterialAppState extends State<AndroidMaterialApp> {
-  int _selectedTab = 0;
-  final _items = [
-    BottomNavigationBarItem(
-      icon: Icon(Icons.near_me),
-      label: 'Map',
-    ),
-    BottomNavigationBarItem(
-      icon: Icon(Icons.event_note_rounded),
-      label: 'Routes',
-    ),
-    BottomNavigationBarItem(
-      icon: Icon(Icons.settings),
-      label: 'Settings',
-    )
-  ];
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: widget.theme,
-      home: SafeArea(
-        bottom: false,
-        child: Scaffold(
-          bottomNavigationBar: BottomNavigationBar(
-            backgroundColor: widget.theme.appBarTheme.color,
-            type: BottomNavigationBarType.fixed,
-            selectedItemColor: Colors.red,
-            unselectedItemColor: Colors.grey,
-            currentIndex: _selectedTab,
-            onTap: (index) {
-              setState(() {
-                _selectedTab = index;
-              });
-            },
-            items: _items,
-          ),
-          body: IndexedStack(
-            index: _selectedTab,
-            children: widget.pageOptions,
-          ),
-        ),
-      ),
-    );
-  }
-
-}
-
-
-
-
-
-
-
-
 /// Class: SettingsPage
 /// Function: Widget representing the Settings Page
 class Configuraciones extends StatefulWidget {
@@ -96,16 +27,26 @@ class _ConfiguracionesState extends State<Configuraciones> {
     return BlocBuilder<ThemeBloc, ThemeState>(builder: (context, theme) {
       return Scaffold(
         appBar: AppBar(
-          automaticallyImplyLeading: false,
+          //backgroundColor: Colors.purple[200],
+          /*leading: Builder(
+              builder: (context) {
+                return IconButton(
+                  icon: Icon(Icons.drag_handle_sharp),
+                  onPressed: () => Scaffold.of(context).openDrawer(),
+                );
+              }
+          ),*/
+          //automaticallyImplyLeading: false,
           title: Text(
-            'Settings',
+            'CONFIGURACIONES',
             style: TextStyle(
-              //color: theme.getTheme.hoverColor,
+              color: theme.getTheme.hoverColor,
               fontWeight: FontWeight.bold,
-              fontSize: 30,
+              //fontSize: 30,
             ),
           ),
         ),
+        drawer: buildDrawer(context, Configuraciones.route),
         body: Center(
           //child: Text("vamos carajo"),
           child: NotificationListener<OverscrollIndicatorNotification>(
@@ -143,7 +84,6 @@ class _AndroidSettingsState extends State<AndroidSettings> {
     return ListView(
       children: <Widget>[
         GeneralSettings(theme: widget.theme),
-        FeedbackSettings(theme: widget.theme),
         AboutSettings(theme: widget.theme)
       ],
     );
@@ -178,10 +118,12 @@ class GeneralSettings extends StatelessWidget {
         title: Text('Dark Mode',
             style: TextStyle(color: theme.getTheme.hoverColor, fontSize: 16)),
         trailing: Switch(
+          activeTrackColor: Colors.red,
           value: isSwitched,
           onChanged: (value) {
             isSwitched = value;
             themeBloc.add(ThemeEvent.toggle);
+            //BlocProvider.of<ThemeBloc>(context).dispatch(ThemeChanged(theme: itemAppTheme));
           },
           activeColor: Colors.white,
           //material: (context, _) => MaterialSwitchData(activeTrackColor: Colors.green),
@@ -192,84 +134,6 @@ class GeneralSettings extends StatelessWidget {
   }
 }
 
-
-/// Class: FeedbackSettings
-/// Function: Represents the Feedback section of the Settings Page
-class FeedbackSettings extends StatelessWidget {
-  final ThemeState theme;
-  FeedbackSettings({this.theme});
-
-  /// Standard build function for the FeedbackSettings widget
-  Widget build(BuildContext context) {
-    var feedbackSettingsList = <Widget>[
-      ListTile(
-        leading: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'Send Feedback',
-              style: TextStyle(color: theme.getTheme.hoverColor, fontSize: 16),
-            ),
-            Text(
-              'Any comments? Send them here!',
-              style: TextStyle(color: Colors.grey, fontSize: 14),
-            ),
-          ],
-        ),
-      ),
-      ListTile(
-        dense: true,
-        leading: Text(
-          'Rate this app',
-          style: TextStyle(color: theme.getTheme.hoverColor, fontSize: 16),
-        ),
-      ),
-    ];
-    return Column(
-      children: <Widget>[
-        ListTile(
-          dense: true,
-          leading: Text(
-            'Feedback',
-            style: TextStyle(color: Colors.red, fontWeight: FontWeight.w600),
-          ),
-        ),
-        NotificationListener<OverscrollIndicatorNotification>(
-          onNotification: (overscroll) {
-            overscroll.disallowGlow();
-            return null;
-          },
-          child: ListView.separated(
-            physics: const NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
-            itemCount: feedbackSettingsList.length,
-            itemBuilder: (context, index) => feedbackSettingsList[index],
-            separatorBuilder: (context, index) {
-              return Divider(
-                color: Colors.grey[600],
-                height: 4,
-                indent: 15.0,
-              );
-            },
-          ),
-        )
-      ],
-    );
-  }
-}
-
-
-
-//import 'package:flutter/material.dart';
-//import 'package:url_launcher/url_launcher.dart';
-
-//import 'package:flutter/foundation.dart';
-
-//import '../../../blocs/theme_bloc/theme_bloc.dart';
-//import 'faq_detail.dart';
-//import 'privacy_detail.dart';
-//import 'sockets_test.dart';
 
 /// Class: AboutSettings
 /// Function: Represents the About section of the Settings Page
@@ -290,60 +154,11 @@ class _AboutSettingsState extends State<AboutSettings> {
   @override
   Widget build(BuildContext context) {
     var aboutSettingsList = <Widget>[
-      ListTile(
-        leading: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'FAQ',
-              style: TextStyle(
-                  color: widget.theme.getTheme.hoverColor, fontSize: 16),
-            ),
-            Text(
-              'View frequently asked questions',
-              style: TextStyle(color: Colors.grey, fontSize: 14),
-            ),
-          ],
-        ),
-        onTap: () {
-         /* Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => FaqPage(
-                    theme: widget.theme,
-                  )));*/
-        },
-      ),
-      ListTile(
-        leading: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'GitHub Repo',
-              style: TextStyle(
-                  color: widget.theme.getTheme.hoverColor, fontSize: 16),
-            ),
-            Text(
-              'Interested in contributing?',
-              style: TextStyle(color: Colors.grey, fontSize: 14),
-            ),
-          ],
-        ),
-        onTap: () async {/*
-          var url = 'https://github.com/wtg/Flutter_ShuttleTracker';
-          if (await canLaunch(url)) {
-            await launch(url);
-          } else {
-            throw 'Could not launch $url';
-          }*/
-        },
-      ),
+
       ListTile(
         dense: true,
         leading: Text(
-          'Privacy Policy',
+          'Politica de privacidad',
           style:
           TextStyle(color: widget.theme.getTheme.hoverColor, fontSize: 16),
         ),
@@ -367,7 +182,7 @@ class _AboutSettingsState extends State<AboutSettings> {
                   color: widget.theme.getTheme.hoverColor, fontSize: 16),
             ),
             Text(
-              '1.0.0',
+              '0.0.1',
               style: TextStyle(color: Colors.grey, fontSize: 14),
             ),
           ],
@@ -404,7 +219,7 @@ class _AboutSettingsState extends State<AboutSettings> {
         ListTile(
           dense: true,
           leading: Text(
-            'About',
+            'Informacion',
             style: TextStyle(color: Colors.red, fontWeight: FontWeight.w600),
           ),
         ),
@@ -482,11 +297,10 @@ class PrivacyPolicyPage extends StatelessWidget {
           ),
         ),
         title: Text(
-          'Privacy Policy',
+          'POLITICA DE PRIVACIDAD',
           style: TextStyle(
             color: theme.getTheme.hoverColor,
             fontWeight: FontWeight.bold,
-            fontSize: 30,
           ),
         ),
         backgroundColor: theme.getTheme.appBarTheme.color,
@@ -498,18 +312,10 @@ class PrivacyPolicyPage extends StatelessWidget {
             RichText(
               text: TextSpan(children: [
                 TextSpan(
-                    text: 'Shuttle Tracker is operated by the ',
+                    text: 'MANUAL DE POLITICAS Y PROCEDIMIENTOS DE DATOS PERSONALES FRISBY S.A. EN CUMPLIMIENTO '
+                    'DE LA LEY ESTATUTARIA 1581 DE 2012 REGLAMENTADA PARCIALMENTE POR EL DECRETO 1377DE 2013',
                     style: _subHeader),
-                buildHyperlink(
-                    'https://webtech.union.rpi.edu', 'Web Technolgies Group'),
-                TextSpan(
-                    text: ' (WebTech), a committee of the Rensselaer Union '
-                        'Student Senate. WebTech uses Google Analytics to'
-                        ' gather anonymous metrics about the users of its '
-                        'services. This information cannot and will not be '
-                        'used to identify you or any specific user'
-                        ' of the service.',
-                    style: _subHeader),
+                //buildHyperlink('https://webtech.union.rpi.edu', 'Web Technolgies Group'),
               ]),
             ),
             SizedBox(
@@ -518,22 +324,8 @@ class PrivacyPolicyPage extends StatelessWidget {
             RichText(
               text: TextSpan(children: [
                 TextSpan(
-                    text: 'If you grant permission for Shuttle Tracker to '
-                        'access your location, this information is used '
-                        'for two purposes. The first is to indicate your '
-                        'location on the map. The second is to enhance the '
-                        'accuracy of vehicle tracking. The information '
-                        'Shuttle Tracker gathers is limited to your '
-                        "device's latitude, longitude, speed, and heading. "
-                        'These data are associated with a random identifier'
-                        ' that is generated whenever you open Shuttle '
-                        'Tracker. In order to protect your privacy, no '
-                        'two visits to Shuttle Tracker are associated. '
-                        'This identifier is not used to identify any '
-                        'specific user of the service. All data gathered'
-                        ' are only analyzed in aggregate in order to '
-                        'improve the quality of vehicle tracking for all'
-                        ' users.',
+                    text: 'Aviso de Privacidad y Autorizacion para el tratamiento de datos personales '
+                        ,
                     style: _subHeader),
               ]),
             ),
@@ -541,11 +333,10 @@ class PrivacyPolicyPage extends StatelessWidget {
             RichText(
               text: TextSpan(children: [
                 TextSpan(
-                    text: 'Any questions about this privacy policy should be '
-                        'directed to ',
+                    text: 'Para mas informacion dirigase a: ',
                     style: _subHeader),
-                buildHyperlink('mailto:webtech@union.lists.rpi.edu',
-                    'webtech@union.lists.rpi.edu'),
+                buildHyperlink('www.frisby.com.co',
+                    'Frisby'),
                 TextSpan(text: '.', style: _subHeader),
               ]),
             ),

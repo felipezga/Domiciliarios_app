@@ -55,14 +55,14 @@ Drawer buildDrawer(BuildContext context, String currentRoute) {
       ),
 
           ListTile(
-            leading: Icon(Icons.outbond_outlined),
+            leading: Icon(Icons.arrow_back_outlined),
             title: const Text('Salir'),
-            trailing: Text(
+            /*trailing: Text(
               "Version 0.0.1",
               style:
               TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-            ),
-            dense: true,
+            ),*/
+            //dense: true,
             //selected: currentRoute == Restaurante.route,
             onTap: () {
               UserPreferences().removeUser();
