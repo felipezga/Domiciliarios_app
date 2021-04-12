@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "921747443804",
+    "project_id": "domiciliarios-7190b",
+    "storage_bucket": "domiciliarios-7190b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:921747443804:android:d8730851015645c2345699",
+        "android_client_info": {
+          "package_name": "com.example.domiciliarios_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "921747443804-uu2feerpj4lvkhaca24ithund503a36m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDvmZzOPz1n6UKBTv7WGKEXwG-fxoCU_Sk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "921747443804-uu2feerpj4lvkhaca24ithund503a36m.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
