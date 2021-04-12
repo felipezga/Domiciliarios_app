@@ -28,14 +28,14 @@ class _ConfiguracionesState extends State<Configuraciones> {
       return Scaffold(
         appBar: AppBar(
           //backgroundColor: Colors.purple[200],
-          /*leading: Builder(
+          leading: Builder(
               builder: (context) {
                 return IconButton(
-                  icon: Icon(Icons.drag_handle_sharp),
+                  icon: Icon(Icons.menu, color: Colors.red,),
                   onPressed: () => Scaffold.of(context).openDrawer(),
                 );
               }
-          ),*/
+          ),
           //automaticallyImplyLeading: false,
           title: Text(
             'CONFIGURACIONES',

@@ -1,11 +1,12 @@
+import 'package:domiciliarios_app/Paginas/Domicilios.dart';
 import 'package:domiciliarios_app/Paginas/Mapa.dart';
 import 'package:domiciliarios_app/Paginas/Configuraciones.dart';
+import 'package:domiciliarios_app/Paginas/PerfilUsuario.dart';
 import 'package:domiciliarios_app/Servicios/SharedPreferencesServicio.dart';
 import 'package:flutter/material.dart';
 //import 'package:restaurantes_tipoventas_app/Paginas/Mapa.dart';
 //import 'package:restaurantes_tipoventas_app/Paginas/Restaurante.dart';
 //import 'package:restaurantes_tipoventas_app/Paginas/prueba.dart';
-
 
 //import '../Paginas/prueba.dart';
 
@@ -15,11 +16,11 @@ Drawer buildDrawer(BuildContext context, String currentRoute) {
         mainAxisAlignment: MainAxisAlignment
             .spaceBetween, // place the logout at the end of the drawer
         children: <Widget>[
-    Flexible(
-      child: ListView(
-          //shrinkWrap: true,
-          children: <Widget>[
-            /*DrawerHeader(
+          Flexible(
+              child: ListView(
+                  //shrinkWrap: true,
+                  children: <Widget>[
+                /*DrawerHeader(
           child: Center(
             child: const Text('Felipe Rios'),
           ),
@@ -27,33 +28,51 @@ Drawer buildDrawer(BuildContext context, String currentRoute) {
             color: Colors.blue,
           ),
         ),*/
-            _createHeader(),
+                _createHeader(),
 
-            ListTile(
-              leading: Icon(Icons.map),
-              title: const Text('Mapa'),
-              //selected: currentRoute == Mapa.route,
-              onTap: () {
-                Navigator.popAndPushNamed(context, Mapa.route);
-                //  Navigator.pushReplacementNamed(context, Mapa.route);
-              },
-            ),
-            Divider(),
-            ListTile(
-              leading: Icon(Icons.settings),
-              title: const Text('Configuraciones'),
-              //selected: currentRoute == Restaurante.route,
-              onTap: () {
-                //Navigator.pushReplacementNamed(context, Restaurante.route);
-                Navigator.popAndPushNamed(context, Configuraciones.route);
-              },
-            ),
-            //Divider(),
+                ListTile(
+                  leading: Icon(Icons.perm_identity),
+                  title: const Text('Perfil '),
+                  //selected: currentRoute == Mapa.route,
+                  onTap: () {
+                    Navigator.popAndPushNamed(context, PerfilUsuario.route);
+                    //  Navigator.pushReplacementNamed(context, Mapa.route);
+                  },
+                ),
 
-          ]
-      )
-      ),
+                Divider(),
 
+                ListTile(
+                  leading: Icon(Icons.map),
+                  title: const Text('Mapa'),
+                  //selected: currentRoute == Mapa.route,
+                  onTap: () {
+                    Navigator.popAndPushNamed(context, Mapa.route);
+                    //  Navigator.pushReplacementNamed(context, Mapa.route);
+                  },
+                ),
+                Divider(),
+                ListTile(
+                  leading: Icon(Icons.motorcycle),
+                  title: const Text('Domicilios '),
+                  //selected: currentRoute == Mapa.route,
+                  onTap: () {
+                    Navigator.popAndPushNamed(context, Domicilios.route);
+                    //  Navigator.pushReplacementNamed(context, Mapa.route);
+                  },
+                ),
+                Divider(),
+                ListTile(
+                  leading: Icon(Icons.settings),
+                  title: const Text('Configuraciones'),
+                  //selected: currentRoute == Restaurante.route,
+                  onTap: () {
+                    //Navigator.pushReplacementNamed(context, Restaurante.route);
+                    Navigator.popAndPushNamed(context, Configuraciones.route);
+                  },
+                ),
+                //Divider(),
+              ])),
           ListTile(
             leading: Icon(Icons.arrow_back_outlined),
             title: const Text('Salir'),
@@ -69,41 +88,32 @@ Drawer buildDrawer(BuildContext context, String currentRoute) {
               Navigator.pushReplacementNamed(context, '/login');
               //Navigator.pushReplacementNamed(context, Restaurante.route);
               //Navigator.pushNamed(context, Restaurante.route);
-
-
             },
           ),
-
-          ]
-
-    ),
+        ]),
   );
 }
-
 
 Widget _createHeader() {
   return DrawerHeader(
       margin: EdgeInsets.zero,
       padding: EdgeInsets.zero,
       decoration: BoxDecoration(
-          /*image: DecorationImage(
+        /*image: DecorationImage(
               fit: BoxFit.fitWidth,
               image:  AssetImage('images/icono_frisby.png')),*/
-        color: Colors.blue,
+        color: Colors.red,
       ),
       child: Stack(children: <Widget>[
         Positioned(
             bottom: 8.0,
             left: 12.0,
-            child:
-            Text(
-                "Felipe Rios",
+            child: Text("Felipe Rios",
                 style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 22.0,
-                    fontWeight: FontWeight.w500,
+                  color: Colors.black,
+                  fontSize: 22.0,
+                  fontWeight: FontWeight.w500,
                 ))),
-
-         Image.asset('images/icono_frisby.png'),
+        Image.asset('images/icono_frisby.png'),
       ]));
 }

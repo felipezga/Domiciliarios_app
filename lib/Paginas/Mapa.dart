@@ -25,8 +25,17 @@ class Mapa extends StatelessWidget{
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
+          leading: Builder(
+              builder: (context) {
+                return IconButton(
+                  icon: Icon(Icons.menu, color: Colors.red,),
+                  onPressed: () => Scaffold.of(context).openDrawer(),
+                );
+              }
+          )
       ),
       drawer: buildDrawer(context, Mapa.route),
+
       body: mapaState(),
     );
   }
