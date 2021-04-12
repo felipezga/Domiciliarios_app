@@ -1,4 +1,3 @@
-
 class LoginResponseModel {
   final String token;
   final String error;
@@ -39,7 +38,13 @@ class User {
   String token;
   final String error;
 
-  User({this.userId, this.name, this.email, this.token, this.error,});
+  User({
+    this.userId,
+    this.name,
+    this.email,
+    this.token,
+    this.error,
+  });
 
   factory User.fromJson(Map<String, dynamic> responseData) {
     return User(
@@ -47,7 +52,6 @@ class User {
         //name: responseData["name"] != "Felipe" ? responseData["name"] : "",
         //email: responseData["email"] != null ? responseData["email"] : "",
         token: responseData["token"] != null ? responseData["token"] : "",
-        error: responseData["error"] != null ? responseData["error"] : ""
-    );
+        error: responseData["error"] != null ? responseData["error"] : "");
   }
 }

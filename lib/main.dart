@@ -1,5 +1,7 @@
 import 'package:domiciliarios_app/Bloc/ThemeBloc.dart';
 import 'package:domiciliarios_app/Paginas/Configuraciones.dart';
+import 'package:domiciliarios_app/Paginas/Domicilios.dart';
+import 'package:domiciliarios_app/Paginas/PerfilUsuario.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -10,7 +12,6 @@ import 'Paginas/Home.dart';
 import 'Paginas/prueba.dart';
 import 'Servicios/SharedPreferencesServicio.dart';
 
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   HydratedBloc.storage = await HydratedStorage.build();
@@ -20,10 +21,10 @@ void main() async {
 
 class App extends StatefulWidget {
   @override
-  _MyAppState createState()=>_MyAppState();
+  _MyAppState createState() => _MyAppState();
 }
 
-class _MyAppState extends State<App>{
+class _MyAppState extends State<App> {
   int _paginaActual = 0;
 
   /*final _pageOptions = [
@@ -128,9 +129,11 @@ class _MyAppState extends State<App>{
       routes: <String, WidgetBuilder>{
         // "/restaurante" : ( context) => Restaurante(opcion: 1),
         // Restaurante.route: ( context) =>  Restaurante(opcion: 2),
-        Mapa.route : ( context) => Mapa(),
-        Configuraciones.route : ( context) => Configuraciones(),
-        "/contacto" : ( context) => PluginScaleBar(),
+        Mapa.route: (context) => Mapa(),
+        Configuraciones.route: (context) => Configuraciones(),
+        Domicilios.route: (context) => Domicilios(),
+        "/contacto": (context) => PluginScaleBar(),
+        PerfilUsuario.route: (context) => PerfilUsuario(),
         '/login': (context) => LoginPage(),
       },
     );
@@ -141,9 +144,6 @@ class _MyAppState extends State<App>{
       theme: state.getTheme,
     );*/
   }
-
-
 }
-
 
 //https://morioh.com/p/67c610cc30f7
