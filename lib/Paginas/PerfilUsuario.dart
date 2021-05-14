@@ -152,16 +152,18 @@ class _EditProfilePageState extends State<ProfilePage> {
                       ),
                     ),
                     SizedBox(
-                      height: 35,
+                      height: 55,
                     ),
-                    buildTextField("Full Name", state.profile.name, false),
-                    buildTextField("E-mail", "alexd@gmail.com", false),
-                    buildTextField("Password", "********", true),
-                    buildTextField("Location", "TLV, Israel", false),
+
+                    buildTextField("Nombre", state.profile.name, false),
+                    buildTextField("Numero Documento", "10886592", false),
+                    buildTextField("Correo", "alexd@gmail.com", false),
+                    //buildTextField("Password", "********", true),
+                    buildTextField("Telefono", "3145875258", false),
                     SizedBox(
                       height: 35,
                     ),
-                    Row(
+                    /*Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         OutlineButton(
@@ -191,7 +193,7 @@ class _EditProfilePageState extends State<ProfilePage> {
                           ),
                         )
                       ],
-                    )
+                    )*/
                   ],
                 ),
               ),
@@ -210,7 +212,7 @@ class _EditProfilePageState extends State<ProfilePage> {
   Widget buildTextField(
       String labelText, String placeholder, bool isPasswordTextField) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 35.0),
+      padding: const EdgeInsets.only(bottom: 35, left: 30, right: 30),
       child: TextField(
         obscureText: isPasswordTextField ? showPassword : false,
         decoration: InputDecoration(
@@ -232,9 +234,9 @@ class _EditProfilePageState extends State<ProfilePage> {
             floatingLabelBehavior: FloatingLabelBehavior.always,
             hintText: placeholder,
             hintStyle: TextStyle(
-              fontSize: 16,
+              fontSize: 14,
               fontWeight: FontWeight.bold,
-              color: Colors.black,
+              //color: Colors.black,
             )),
       ),
     );
