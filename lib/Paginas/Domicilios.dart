@@ -6,6 +6,8 @@ import 'package:domiciliarios_app/Bloc/DomicilioBloc.dart';
 import 'package:domiciliarios_app/Bloc/ThemeBloc.dart';
 import 'package:domiciliarios_app/Modelo/DomicilioModel.dart';
 import 'package:domiciliarios_app/Servicios/DomicilioServicio.dart';
+import 'package:domiciliarios_app/widgets/ErrorText.dart';
+import 'package:domiciliarios_app/widgets/Loading.dart';
 import 'package:domiciliarios_app/widgets/drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -131,33 +133,7 @@ class _DomicilioState extends State<DomiciliosScreen> {
 }
 
 
-class ErrorTxt extends StatelessWidget {
-  //
-  final String message;
-  final Function onTap;
-  ErrorTxt({this.message, this.onTap});
 
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Center(
-        child: InkWell(
-          onTap: onTap,
-          child: Container(
-            child: Text(
-              message,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 20,
-                color: Colors.red,
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
 
 
 class ListRow extends StatelessWidget {
@@ -176,17 +152,6 @@ class ListRow extends StatelessWidget {
           Text( domicilio.nombre.toString()),
           Divider(),
         ],
-      ),
-    );
-  }
-}
-
-class Loading extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Center(
-        child: CircularProgressIndicator(),
       ),
     );
   }
