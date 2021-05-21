@@ -3,6 +3,7 @@ import 'dart:async';
 
 import 'package:domiciliarios_app/Bloc/BotonesTrackingBloc.dart';
 import 'package:domiciliarios_app/Bloc/PedidoBloc.dart';
+import 'package:domiciliarios_app/Bloc/SeleccionBloc.dart';
 import 'package:domiciliarios_app/Bloc/ThemeBloc.dart';
 import 'package:domiciliarios_app/Bloc/TrackingBloc.dart';
 import 'package:domiciliarios_app/Bloc/UserLocationBloc.dart';
@@ -47,6 +48,11 @@ class Mapa extends StatelessWidget{
           BlocProvider<BotonesBloc>(
               create: (context) {
                 return BotonesBloc();
+              })
+          ,
+          BlocProvider<SeleccionBloc>(
+              create: (context) {
+                return SeleccionBloc();
               })
 
         ],
@@ -108,7 +114,8 @@ class _AppState extends State<mapaState> {
   String _currentAddress;
 
   // Default Drop Down Item.
-  String dropdownValue = '3333333';
+  String dropdownValue = '-';
+  List<Pedido> pedidosAsignados = [];
 
   // To show Selected Item in Text.
   String holder = '' ;
@@ -301,12 +308,15 @@ print("Vamos tio");
                                   );
                                 }
                                 if (state is PedidoLoaded) {
-                                  Pedido pedido = state.pedido;
+                                  List<Pedido> pedidosAsignados = state.pedido;
+                                  dropdownValue = state.pedido[0].name;
                                   //_obtenerLocationEstado( "Iniciar" , "PEDIDO PREPARADO", "Finalizar");
                                   //_obtenerLocationEstado(mens_boton, "", "Finalizar");
 
+                                  context.read<SeleccionBloc>().add(SeleccionarEvent( dropdownValue));
+
                                   BlocProvider.of<TrackingBloc>(context).add(AddEstadoDomiciliario(  estadoTracking:  "PREPARADO", descripcionTracking: "PRODUCTO PREPARADO", listaTracking: _esta_domi));
-                                  return _trackingPedido(pedido);
+                                  return _trackingPedido();
                                 }
                                 return Loading();
                                 //return Text("fdf");
@@ -390,7 +400,8 @@ print("Vamos tio");
 
   _loadPedidoUsuario() async {
 
-    context.read<PedidoBloc>().add(GetPedidoUser("mojombo"));
+    //context.read<PedidoBloc>().add(GetPedidoUser("mojombo"));
+    context.read<PedidoBloc>().add(GetPedidoUser("herbivora"));
     print("Pedido Cargado");
   }
 
@@ -759,28 +770,48 @@ print("Vamos tio");
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
 
-            DropdownButton<String>(
-              value: dropdownValue,
-              icon: Icon(Icons.arrow_drop_down),
-              iconSize: 24,
-              elevation: 16,
-              style: TextStyle(color: Colors.red, fontSize: 18),
-              underline: Container(
-                height: 2,
-                color: Colors.deepPurpleAccent,
-              ),
-              onChanged: (String data) {
-                /*setState(() {
+
+                BlocBuilder<SeleccionBloc, SeleccionState>(
+                    builder: (BuildContext context, SeleccionState state) {
+
+                      if (state is Selected) {
+                        print("estado seeeee");
+                        print(state.pedido);
+                        //List<Pedido> pedidosAsignados = state.pedido;
+                        //dropdownValue = state.pedidoSelected;
+                        return DropdownButton<String>(
+                          value: state.pedido,
+                          icon: Icon(Icons.arrow_drop_down),
+                          iconSize: 24,
+                          elevation: 16,
+                          style: TextStyle(color: Colors.red, fontSize: 18),
+                          underline: Container(
+                            height: 2,
+                            color: Colors.deepPurpleAccent,
+                          ),
+                          onChanged: (String data) {
+                            context.read<SeleccionBloc>().add(SeleccionarEvent( data));
+                            /*setState(() {
                   dropdownValue = data;
                 });*/
-              },
-              items: actorsName.map<DropdownMenuItem<String>>((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-            ),
+                          },
+                          //items: actorsName.map<DropdownMenuItem<String>>((String value) {
+                          items: pedidosAsignados.map<DropdownMenuItem<String>>((Pedido value) {
+
+                            return DropdownMenuItem<String>(
+                              value: value.name,
+                              child: Text(value.name),
+                            );
+                          }).toList(),
+                        );
+
+                    }
+                      /*if(state is PedidoSelected){
+                        dropdownValue = state.pedido;
+                      }*/
+                      return Loading();
+                      //return Text("fdf");
+                    }),
 
             RaisedButton(
               child: Text('Confirmar entrega'),
@@ -853,7 +884,7 @@ print("Vamos tio");
 
 
 
-  Widget _trackingPedido(Pedido ped) {
+  Widget _trackingPedido() {
     return DraggableScrollableSheet(
       initialChildSize: 0.13,
       minChildSize: 0.07,

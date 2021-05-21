@@ -47,7 +47,7 @@ class PedidoLoading extends PedidoState {
 }
 
 class PedidoLoaded extends PedidoState {
-  final Pedido pedido;
+  final List<Pedido> pedido;
   const PedidoLoaded(this.pedido);
 }
 
