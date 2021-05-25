@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'Modelo/LoginModel.dart';
+import 'Paginas/EscanerFactura.dart';
 import 'Paginas/Login.dart';
 import 'Paginas/Mapa.dart';
 import 'Paginas/Home.dart';
@@ -135,6 +136,7 @@ class _MyAppState extends State<App> {
         "/contacto": (context) => PluginScaleBar(),
         PerfilUsuario.route: (context) => PerfilUsuario(),
         '/login': (context) => LoginPage(),
+        '/escaner': (context) => EscanearFactura(),
       },
     );
 

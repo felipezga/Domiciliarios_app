@@ -316,7 +316,7 @@ print("Vamos tio");
                                   context.read<SeleccionBloc>().add(SeleccionarEvent( dropdownValue));
 
                                   BlocProvider.of<TrackingBloc>(context).add(AddEstadoDomiciliario(  estadoTracking:  "PREPARADO", descripcionTracking: "PRODUCTO PREPARADO", listaTracking: _esta_domi));
-                                  return _trackingPedido();
+                                  return _trackingPedido( pedidosAsignados );
                                 }
                                 return Loading();
                                 //return Text("fdf");
@@ -629,7 +629,7 @@ print("Vamos tio");
   }
 
 
-  Widget CustomInnerContent( listaraking ) {
+  Widget CustomInnerContent( listaraking, pedidosAsignados ) {
     return
       Column(
       children: <Widget>[
@@ -642,7 +642,7 @@ print("Vamos tio");
             //SizedBox(height: 16),
             //CustomExplore(),
             //SizedBox(height: 24),
-            CustomRecentPhotosText( listaraking),
+            CustomRecentPhotosText( listaraking, pedidosAsignados),
             //SizedBox(height: 16),
       ],
 
@@ -650,7 +650,7 @@ print("Vamos tio");
   }
 
 
-  Widget CustomRecentPhotosText( listaraking ) {
+  Widget CustomRecentPhotosText( listaraking, pedidosAsignados ) {
     return
         Padding(
           padding: EdgeInsets.all(20.0),
@@ -777,6 +777,8 @@ print("Vamos tio");
                       if (state is Selected) {
                         print("estado seeeee");
                         print(state.pedido);
+
+                        print(pedidosAsignados);
                         //List<Pedido> pedidosAsignados = state.pedido;
                         //dropdownValue = state.pedidoSelected;
                         return DropdownButton<String>(
@@ -787,7 +789,7 @@ print("Vamos tio");
                           style: TextStyle(color: Colors.red, fontSize: 18),
                           underline: Container(
                             height: 2,
-                            color: Colors.deepPurpleAccent,
+                            color: Colors.red,
                           ),
                           onChanged: (String data) {
                             context.read<SeleccionBloc>().add(SeleccionarEvent( data));
@@ -797,7 +799,6 @@ print("Vamos tio");
                           },
                           //items: actorsName.map<DropdownMenuItem<String>>((String value) {
                           items: pedidosAsignados.map<DropdownMenuItem<String>>((Pedido value) {
-
                             return DropdownMenuItem<String>(
                               value: value.name,
                               child: Text(value.name),
@@ -884,7 +885,7 @@ print("Vamos tio");
 
 
 
-  Widget _trackingPedido() {
+  Widget _trackingPedido( List<Pedido> pedidosAsignados) {
     return DraggableScrollableSheet(
       initialChildSize: 0.13,
       minChildSize: 0.07,
@@ -915,7 +916,7 @@ print("Vamos tio");
                       print(state.esta_domi.length);
                       print(state.esta_domi[0].descripcion);
                       _esta_domi = state.esta_domi;
-                      return CustomInnerContent(_esta_domi);
+                      return CustomInnerContent(_esta_domi, pedidosAsignados);
 
                     }
                     return Loading();

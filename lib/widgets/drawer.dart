@@ -53,6 +53,16 @@ Drawer buildDrawer(BuildContext context, String currentRoute) {
                 ),
                 Divider(),
                 ListTile(
+                  leading: Icon(Icons.qr_code_scanner),
+                  title: const Text('Escanear'),
+                  //selected: currentRoute == Restaurante.route,
+                  onTap: () {
+                    //Navigator.pushReplacementNamed(context, Restaurante.route);
+                    Navigator.popAndPushNamed(context, '/escaner');
+                  },
+                ),
+                Divider(),
+                ListTile(
                   leading: Icon(Icons.motorcycle),
                   title: const Text('Domicilios '),
                   //selected: currentRoute == Mapa.route,
