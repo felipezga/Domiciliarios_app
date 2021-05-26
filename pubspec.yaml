@@ -36,6 +36,8 @@ dependencies:
   flutter_bloc: ^6.1.3
   equatable: ^1.2.6
   hydrated_bloc: ^6.1.0
+  timeline_tile: ^2.0.0
+  qr_code_scanner: ^0.4.0
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -63,6 +65,8 @@ flutter:
      - images/frisby_homepage.png
      - images/domiciliario.png
      - images/frisby.png
+     - images/entregado.png
+     - images/preparado.png
 
 
 flutter_icons:

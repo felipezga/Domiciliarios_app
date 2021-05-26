@@ -1,18 +1,15 @@
-//import 'package:flutter/widgets.dart';
-//
-//import 'package:flutter/cupertino.dart';
-
 import 'package:domiciliarios_app/Bloc/DomicilioBloc.dart';
 import 'package:domiciliarios_app/Bloc/ThemeBloc.dart';
 import 'package:domiciliarios_app/Modelo/DomicilioModel.dart';
 import 'package:domiciliarios_app/Servicios/DomicilioServicio.dart';
 import 'package:domiciliarios_app/widgets/ErrorText.dart';
 import 'package:domiciliarios_app/widgets/Loading.dart';
+import 'package:domiciliarios_app/widgets/Scanner.dart';
 import 'package:domiciliarios_app/widgets/drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class Domicilios extends StatelessWidget {
+class EscanearFactura extends StatelessWidget {
   @override
 
   static const String route = '/domicilios';
@@ -57,12 +54,6 @@ class _DomicilioState extends State<DomiciliosScreen> {
     print("loadeee");
   }
 
-  /*_setTheme(bool darkTheme) async {
-    AppTheme selectedTheme =
-    darkTheme ? AppTheme.lightTheme : AppTheme.darkTheme;
-    context.bloc<ThemeBloc>().add(ThemeEvent(appTheme: selectedTheme));
-    Preferences.saveTheme(selectedTheme);
-  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -80,7 +71,7 @@ class _DomicilioState extends State<DomiciliosScreen> {
           ),
           //automaticallyImplyLeading: false,
           title: Text(
-            'DOMICILIOS',
+            'ESCANER',
             style: TextStyle(
               color: theme.getTheme.hoverColor,
               fontWeight: FontWeight.bold,
@@ -88,74 +79,28 @@ class _DomicilioState extends State<DomiciliosScreen> {
             ),
           ),
         ),
-        drawer: buildDrawer(context, Domicilios.route),
+        drawer: buildDrawer(context, '/escaner'),
         body: Container(
-          child: _body(),
+          child: Center(
+            child: Scanner()
+            /*ElevatedButton(
+                child: Text('Scan'),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => Scanner()),
+                  );
+                }),*/
+          ),
         ),
       );
     });
   }
 
-  _body() {
-    return Column(
-      children: [
-        BlocBuilder<DomicilioBloc, DomicilioState>(
-            builder: (BuildContext context, DomicilioState state) {
-              if (state is DomicilioListError) {
-                final error = state.error;
-                String message = '${error.message}\nTap to Retry.';
-                return ErrorTxt(
-                  message: message,
-                  onTap: _loadDomicilios(),
-                );
-              }
-              if (state is DomicilioLoaded) {
-                List<Domicilio> albums = state.domicilios;
-                return _list(albums);
-              }
-              return Loading();
-            }),
-      ],
-    );
-  }
 
-  Widget _list(List<Domicilio> domis) {
-    return Expanded(
-      child: ListView.builder(
-        itemCount: domis.length,
-        itemBuilder: (_, index) {
-          Domicilio d = domis[index];
-          return ListRow(domicilio: d);
-        },
-      ),
-    );
-  }
+
 }
 
-
-
-
-
-class ListRow extends StatelessWidget {
-  //
-  final Domicilio domicilio;
-  ListRow({this.domicilio});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(20.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text( domicilio.nombre.toString()),
-          Divider(),
-        ],
-      ),
-    );
-  }
-}
 
 
 
