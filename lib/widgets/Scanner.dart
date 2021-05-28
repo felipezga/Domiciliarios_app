@@ -136,7 +136,7 @@ class _ScannerState extends State<ScannerScreen> {
     controller.scannedDataStream.listen((scanData) async {
 
       //context.read<EscaneoBloc>().add(EscaneandoEvent());
-      BlocProvider.of<EscaneoBloc>(context).add(EscaneandoEvent());
+      BlocProvider.of<EscaneoBloc>(context).add(EscaneandoEvent(scanData.code));
       controller.pauseCamera();
 
 
