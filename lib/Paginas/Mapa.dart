@@ -401,7 +401,8 @@ print("Vamos tio");
   _loadPedidoUsuario() async {
 
     //context.read<PedidoBloc>().add(GetPedidoUser("mojombo"));
-    context.read<PedidoBloc>().add(GetPedidoUser("herbivora"));
+    //context.read<PedidoBloc>().add(GetPedidoUser("herbivora"));
+    context.read<PedidoBloc>().add(GetPedidoUser("1"));
     print("Pedido Cargado");
   }
 

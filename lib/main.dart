@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:domiciliarios_app/Bloc/ThemeBloc.dart';
 import 'package:domiciliarios_app/Paginas/Configuraciones.dart';
 import 'package:domiciliarios_app/Paginas/Domicilios.dart';
@@ -17,6 +19,8 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   HydratedBloc.storage = await HydratedStorage.build();
 
+  //se agrego para evitar error http
+  HttpOverrides.global = new MyHttpOverrides();
   runApp(App());
 }
 
@@ -145,6 +149,19 @@ class _MyAppState extends State<App> {
       home: HomePage(),
       theme: state.getTheme,
     );*/
+  }
+}
+
+//se agrego para evitar error http
+/*
+* Handshake error in client (OS Error: CERTIFICATE_VERIFY_FAILED: unable to get local issuer certificate(handshake.cc:354))
+*/
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
   }
 }
 
