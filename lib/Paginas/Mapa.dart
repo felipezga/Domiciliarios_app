@@ -3,6 +3,7 @@ import 'dart:async';
 
 import 'package:domiciliarios_app/Bloc/BotonesTrackingBloc.dart';
 import 'package:domiciliarios_app/Bloc/PedidoBloc.dart';
+import 'package:domiciliarios_app/Bloc/SeleccionBloc.dart';
 import 'package:domiciliarios_app/Bloc/ThemeBloc.dart';
 import 'package:domiciliarios_app/Bloc/TrackingBloc.dart';
 import 'package:domiciliarios_app/Bloc/UserLocationBloc.dart';
@@ -47,6 +48,11 @@ class Mapa extends StatelessWidget{
           BlocProvider<BotonesBloc>(
               create: (context) {
                 return BotonesBloc();
+              })
+          ,
+          BlocProvider<SeleccionBloc>(
+              create: (context) {
+                return SeleccionBloc();
               })
 
         ],
@@ -106,6 +112,29 @@ class _AppState extends State<mapaState> {
   String _locationMessage = "";
   Future<Position> UserPosition;
   String _currentAddress;
+
+  // Default Drop Down Item.
+  String dropdownValue = '-';
+  List<Pedido> pedidosAsignados = [];
+
+  // To show Selected Item in Text.
+  String holder = '' ;
+
+  List <String> actorsName = [
+    '11111111',
+    '2222222',
+    '3333333',
+    '44444444',
+    '555555'
+  ] ;
+
+  void getDropDownItem(){
+print("Vamos tio");
+/*
+    setState(() {
+      holder = dropdownValue ;
+    });*/
+  }
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -279,12 +308,15 @@ class _AppState extends State<mapaState> {
                                   );
                                 }
                                 if (state is PedidoLoaded) {
-                                  Pedido pedido = state.pedido;
+                                  List<Pedido> pedidosAsignados = state.pedido;
+                                  dropdownValue = state.pedido[0].name;
                                   //_obtenerLocationEstado( "Iniciar" , "PEDIDO PREPARADO", "Finalizar");
                                   //_obtenerLocationEstado(mens_boton, "", "Finalizar");
 
+                                  context.read<SeleccionBloc>().add(SeleccionarEvent( dropdownValue));
+
                                   BlocProvider.of<TrackingBloc>(context).add(AddEstadoDomiciliario(  estadoTracking:  "PREPARADO", descripcionTracking: "PRODUCTO PREPARADO", listaTracking: _esta_domi));
-                                  return _trackingPedido(pedido);
+                                  return _trackingPedido( pedidosAsignados );
                                 }
                                 return Loading();
                                 //return Text("fdf");
@@ -368,7 +400,9 @@ class _AppState extends State<mapaState> {
 
   _loadPedidoUsuario() async {
 
-    context.read<PedidoBloc>().add(GetPedidoUser("mojombo"));
+    //context.read<PedidoBloc>().add(GetPedidoUser("mojombo"));
+    //context.read<PedidoBloc>().add(GetPedidoUser("herbivora"));
+    context.read<PedidoBloc>().add(GetPedidoUser("1"));
     print("Pedido Cargado");
   }
 
@@ -573,7 +607,6 @@ class _AppState extends State<mapaState> {
         }
 
         },
-      child: Flexible(
         //width: 90,
         //height: 40,
         child: Center(
@@ -591,13 +624,13 @@ class _AppState extends State<mapaState> {
             ],
           ),
         ),
-      ),
+
     );
 
   }
 
 
-  Widget CustomInnerContent( listaraking ) {
+  Widget CustomInnerContent( listaraking, pedidosAsignados ) {
     return
       Column(
       children: <Widget>[
@@ -610,7 +643,7 @@ class _AppState extends State<mapaState> {
             //SizedBox(height: 16),
             //CustomExplore(),
             //SizedBox(height: 24),
-            CustomRecentPhotosText( listaraking),
+            CustomRecentPhotosText( listaraking, pedidosAsignados),
             //SizedBox(height: 16),
       ],
 
@@ -618,7 +651,7 @@ class _AppState extends State<mapaState> {
   }
 
 
-  Widget CustomRecentPhotosText( listaraking ) {
+  Widget CustomRecentPhotosText( listaraking, pedidosAsignados ) {
     return
         Padding(
           padding: EdgeInsets.all(20.0),
@@ -681,13 +714,44 @@ class _AppState extends State<mapaState> {
 
               else if (state is FinStateBotones) {
                 print("FIN DE TRACKING");
+                DateTime  hora_iniciar;
+                DateTime  hora_finalizar;
+                String tiempo_domicilio = "";
+
+                String ini;
+                String fin;
+
+                if(listaraking.length > 0) {
+                  EstadoDomiciliario a;
+                  for (a in listaraking) {
+                    print("aaaaa");
+                    print(a.estado);
+
+                    if (a.estado == "INICIAR") {
+                      hora_iniciar = DateFormat("HH:mm:ss").parse(a.hora+":00");
+                     // ini = a.hora;
+                     // var newDateTimeObj2 = DateFormat("HH:mm:ss").parse("10/02/2000 15:13:09")
+                    }
+                    if (a.estado == "FINALIZAR") {
+                      hora_finalizar = DateFormat("HH:mm:ss").parse(a.hora+":00");
+
+                      //fin = a.hora;
+                    }
+                  }
+                }
+
+                Duration _tiempo = hora_finalizar.difference(hora_iniciar);
+                fin = _tiempo.toString();
+
+                var parts = fin.split('.');
+                tiempo_domicilio = parts[0].trim();
+                print(tiempo_domicilio);
+
                 return
-
-
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text("Tiempo: 23:34")
+                      Text("Tiempo: "+ tiempo_domicilio)
                     ],
                   );
 
@@ -701,6 +765,67 @@ class _AppState extends State<mapaState> {
               }
               }
               ),
+
+
+          Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+
+
+                BlocBuilder<SeleccionBloc, SeleccionState>(
+                    builder: (BuildContext context, SeleccionState state) {
+
+                      if (state is Selected) {
+                        print("estado seeeee");
+                        print(state.pedido);
+
+                        print(pedidosAsignados);
+                        //List<Pedido> pedidosAsignados = state.pedido;
+                        //dropdownValue = state.pedidoSelected;
+                        return DropdownButton<String>(
+                          value: state.pedido,
+                          icon: Icon(Icons.arrow_drop_down),
+                          iconSize: 24,
+                          elevation: 16,
+                          style: TextStyle(color: Colors.red, fontSize: 18),
+                          underline: Container(
+                            height: 2,
+                            color: Colors.red,
+                          ),
+                          onChanged: (String data) {
+                            context.read<SeleccionBloc>().add(SeleccionarEvent( data));
+                            /*setState(() {
+                  dropdownValue = data;
+                });*/
+                          },
+                          //items: actorsName.map<DropdownMenuItem<String>>((String value) {
+                          items: pedidosAsignados.map<DropdownMenuItem<String>>((Pedido value) {
+                            return DropdownMenuItem<String>(
+                              value: value.name,
+                              child: Text(value.name),
+                            );
+                          }).toList(),
+                        );
+
+                    }
+                      /*if(state is PedidoSelected){
+                        dropdownValue = state.pedido;
+                      }*/
+                      return Loading();
+                      //return Text("fdf");
+                    }),
+
+            RaisedButton(
+              child: Text('Confirmar entrega'),
+              onPressed: getDropDownItem,
+              color: Colors.green,
+              textColor: Colors.white,
+              padding: EdgeInsets.fromLTRB(12, 12, 12, 12),
+            ),
+
+          ]),
+
+
 
 
 
@@ -761,7 +886,7 @@ class _AppState extends State<mapaState> {
 
 
 
-  Widget _trackingPedido(Pedido ped) {
+  Widget _trackingPedido( List<Pedido> pedidosAsignados) {
     return DraggableScrollableSheet(
       initialChildSize: 0.13,
       minChildSize: 0.07,
@@ -770,6 +895,7 @@ class _AppState extends State<mapaState> {
         return SingleChildScrollView(
           controller: scrollController,
           child: Card(
+            //color: Colors.blueAccent,
             elevation: 12.0,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
@@ -791,7 +917,7 @@ class _AppState extends State<mapaState> {
                       print(state.esta_domi.length);
                       print(state.esta_domi[0].descripcion);
                       _esta_domi = state.esta_domi;
-                      return CustomInnerContent(_esta_domi);
+                      return CustomInnerContent(_esta_domi, pedidosAsignados);
 
                     }
                     return Loading();
@@ -1265,7 +1391,7 @@ class _RightChild extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(8.0),
       child: Row(
         children: <Widget>[
           Opacity(
@@ -1283,7 +1409,7 @@ class _RightChild extends StatelessWidget {
                   color: disabled ?  const Color(0xFFBABABA)
                       :  Theme.of(context).textTheme.bodyText1.color,
                   fontWeight: FontWeight.w700,
-                  fontSize: 14,
+                  fontSize: 13,
                 ),
                 /*style: GoogleFonts.yantramanav(
                   color: disabled

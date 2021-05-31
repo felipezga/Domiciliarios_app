@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:domiciliarios_app/Bloc/ThemeBloc.dart';
 import 'package:domiciliarios_app/Paginas/Configuraciones.dart';
 import 'package:domiciliarios_app/Paginas/Domicilios.dart';
@@ -6,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'Modelo/LoginModel.dart';
+import 'Paginas/EscanerFactura.dart';
 import 'Paginas/Login.dart';
 import 'Paginas/Mapa.dart';
 import 'Paginas/Home.dart';
@@ -16,6 +19,8 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   HydratedBloc.storage = await HydratedStorage.build();
 
+  //se agrego para evitar error http
+  HttpOverrides.global = new MyHttpOverrides();
   runApp(App());
 }
 
@@ -135,6 +140,7 @@ class _MyAppState extends State<App> {
         "/contacto": (context) => PluginScaleBar(),
         PerfilUsuario.route: (context) => PerfilUsuario(),
         '/login': (context) => LoginPage(),
+        '/escaner': (context) => EscanearFactura(),
       },
     );
 
@@ -143,6 +149,19 @@ class _MyAppState extends State<App> {
       home: HomePage(),
       theme: state.getTheme,
     );*/
+  }
+}
+
+//se agrego para evitar error http
+/*
+* Handshake error in client (OS Error: CERTIFICATE_VERIFY_FAILED: unable to get local issuer certificate(handshake.cc:354))
+*/
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
   }
 }
 
