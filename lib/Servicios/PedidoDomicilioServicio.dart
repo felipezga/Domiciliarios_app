@@ -64,12 +64,22 @@ class PedidoDomiclioRepository {
 
 
   //Future<LoginResponseModel> login(LoginRequestModel requestModel) async {
-  Future<bool> asignarPedido(List<asignarOrden> requestModel) async {
-    String url = "https://reqres.in/api/login";
-    bool resul = false;
+  Future<int> asignarPedido(List<asignarOrden> requestModel) async {
+    String url = "https://10.0.2.2:5001/api/DomiApp/AsignarOrden";
+    int resul = 1;
     print('responsa');
-    final response = await http.post(url, body: requestModel);
-    print('1234');
+
+    String jsonString = json.encode(requestModel);
+    //String jsonString ='[{"id":2,"prefijo":"G471","numero":598240,"usuaId":1}]' ;
+
+    print(jsonString);
+
+    //print(requestModel[0].prefijo);
+    final response = await http.post(url,  headers: {
+      "Accept": "text/plain",
+      "Content-Type": "application/json"
+    }, body: jsonString);
+    print('Responde respuesta');
     print(response.statusCode);
     print(response.body);
     if (response.statusCode == 200 || response.statusCode == 400) {
@@ -78,7 +88,7 @@ class PedidoDomiclioRepository {
     print("bbb");
 
     final responseData = json.decode(response.body);
-    resul = responseData.codi;
+    resul = responseData['codi'];
 
     return resul;
 
@@ -86,6 +96,7 @@ class PedidoDomiclioRepository {
 
       print('problem');
       print(response.body);
+      //return resul;
     throw Exception('Failed to load data!');
     }
   }

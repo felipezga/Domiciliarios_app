@@ -1,3 +1,4 @@
+import 'package:domiciliarios_app/Modelo/AsignarOrdenModel.dart';
 import 'package:domiciliarios_app/Modelo/EstadoPedidoDomiciliario.dart';
 import 'package:domiciliarios_app/Modelo/Pedido.dart';
 import 'package:domiciliarios_app/Servicios/PedidoDomicilioServicio.dart';
@@ -15,6 +16,8 @@ class GetPedidoUser extends PedidoEvent {
    final PedidoDomiclioRepository pedidoRepo;
    PedidoBloc({this.pedidoRepo}) : super(PedidoInitial());
 
+   List<asignarOrden> Ordenes = [];
+
    @override
    Stream<PedidoState> mapEventToState(PedidoEvent event) async* {
      // TODO: implement mapEventToState
@@ -22,6 +25,18 @@ class GetPedidoUser extends PedidoEvent {
        if (event is GetPedidoUser) {
          print("entroooo");
          yield (PedidoLoading());
+         asignarOrden ao = new asignarOrden(id: 0, prefijo: "PRUEBA", numero: 1088, usuaId: 1);
+          print(ao);
+          print("ao");
+         Ordenes.add(ao);
+
+
+         PedidoDomiclioRepository APIpedido = new PedidoDomiclioRepository();
+         print("eres");
+         print(Ordenes[0]);
+         final int respuesta = await APIpedido.asignarPedido( Ordenes );
+         print(respuesta);
+         print("Salida");
          final profile = await pedidoRepo.fetchPedidoUser(event.userName);
          print(profile);
          yield (PedidoLoaded(profile));

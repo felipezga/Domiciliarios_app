@@ -48,14 +48,20 @@ class EscaneoBloc extends Bloc<EscaneoEvent, EscaneoState>{
 
         PedidoDomiclioRepository APIpedido = new PedidoDomiclioRepository();
 
-        Ordenes.add(asignarOrden(id: 2, prefijo: fact[0], numero: int.parse(fact[1]), usuaId: 1));
+        Ordenes.add(asignarOrden(id: 0, prefijo: fact[0], numero: int.parse(fact[1]), usuaId: 1));
 
         print(Ordenes[0].numero);
         print(Ordenes[0].prefijo);
 
-        final bool respuesta = await APIpedido.asignarPedido( Ordenes);
+        final int respuesta = await APIpedido.asignarPedido( Ordenes);
 
-        yield EscaneoCompletado(event.data);
+        if(respuesta ==1){
+          yield EscaneoCompletado(event.data);
+        }else{
+          yield EscaneoError(error: UnknownException('Priblemas al asignar el pedido') );
+        }
+
+        //yield EscaneoCompletado(event.data);
 
 
       } catch (e) {
