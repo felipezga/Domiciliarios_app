@@ -36,7 +36,7 @@ class Pedido {
       return Pedido(
           id: responseData['id'] != null ? responseData['id'] : "",
           numero: num != 0 ? num : 0,
-          name: responseData['factura'] != "Felipe" ? responseData['factura'] : "",
+          name: responseData['factura'] != "" ? responseData['factura'] : "",
           usuario: responseData['usuaId'] != null ? responseData['usuaId'] : 0,
           restaurante: rest != null ? rest : "",
           fecha: "" != null ? "" : "");

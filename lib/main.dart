@@ -140,7 +140,7 @@ class _MyAppState extends State<App> {
         "/contacto": (context) => PluginScaleBar(),
         PerfilUsuario.route: (context) => PerfilUsuario(),
         '/login': (context) => LoginPage(),
-        '/escaner': (context) => EscanearFactura(),
+        EscanearFactura.route: (context) =>  EscanearFactura(ModalRoute.of(context).settings.arguments),
       },
     );
 

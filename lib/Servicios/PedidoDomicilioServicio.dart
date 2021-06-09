@@ -4,13 +4,18 @@ import 'package:domiciliarios_app/Modelo/AsignarOrdenModel.dart';
 import 'package:domiciliarios_app/Modelo/EstadoPedidoDomiciliario.dart';
 import 'package:domiciliarios_app/Modelo/Pedido.dart';
 import 'package:domiciliarios_app/Modelo/PerfilUsuarioModel.dart';
+import 'package:domiciliarios_app/Modelo/SalidaModel.dart';
 import 'package:http/http.dart';
 
 import 'package:http/http.dart' as http;
+import '../Configuraciones.dart';
 
 class PedidoDomiclioRepository {
 
-  static const _baseUrl = "https://10.0.2.2:5001/api/DomiApp/Listar/";
+  //static const _baseUrl = "https://10.0.2.2:5001/api/DomiApp/Listar/";
+  static const listar_pedidos = "/api/DomiApp/Listar/";
+  static const asignar_pedido = "/api/DomiApp/AsignarOrden";
+  static const entregar_pedido = "/api/DomiApp/Actualizar";
 
   Future<List<Pedido>> fetchPedidoUser(String userName) async {
     //String api = 'https://api.github.com/users/${userName}';
@@ -18,7 +23,7 @@ class PedidoDomiclioRepository {
 
 
     //String api = 'http://bengkelrobot.net:8001/${userName}';
-    String api = _baseUrl+userName;
+    String api = url_api_domiciliario+listar_pedidos+userName;
     print(api);
     print("appaa");
     var data = await http.get(api);
@@ -62,31 +67,80 @@ class PedidoDomiclioRepository {
 
 
 
+  Future<Salida> asignarPedido(List<asignarOrden> requestModel) async {
+    //String url = "https://10.0.2.2:5001/api/DomiApp/AsignarOrden";
+    String url = url_api_domiciliario+asignar_pedido;
+    Salida salida;
 
-  //Future<LoginResponseModel> login(LoginRequestModel requestModel) async {
-  Future<bool> asignarPedido(List<asignarOrden> requestModel) async {
-    String url = "https://reqres.in/api/login";
-    bool resul = false;
-    print('responsa');
-    final response = await http.post(url, body: requestModel);
-    print('1234');
+    print('Asignacion');
+
+    String jsonString = json.encode(requestModel);
+    //String jsonString ='[{"id":2,"prefijo":"G471","numero":598240,"usuaId":1}]' ;
+
+    print(jsonString);
+
+    final response = await http.post( url,
+                                      headers: {"Accept": "text/plain", "Content-Type": "application/json"},
+                                      body: jsonString );
+
+    print('Responde respuesta');
     print(response.statusCode);
     print(response.body);
     if (response.statusCode == 200 || response.statusCode == 400) {
 
-    print(response.body);
-    print("bbb");
-
     final responseData = json.decode(response.body);
-    resul = responseData.codi;
 
-    return resul;
+    salida = Salida(responseData['codi'], responseData['mens']);
+    return salida;
 
     } else {
 
       print('problem');
       print(response.body);
-    throw Exception('Failed to load data!');
+      throw Exception('Failed to load data!');
+    }
+  }
+
+  Future<Salida> entregarPedido(List<asignarOrden> requestModel) async {
+    //String url = "https://10.0.2.2:5001/api/DomiApp/Actulizar";
+    String url = url_api_domiciliario+entregar_pedido;
+    Salida salida;
+
+
+    print(url);
+    int resul = 1;
+    print('responsa');
+
+    String jsonString = json.encode(requestModel);
+    //String jsonString ='[{"id":2,"prefijo":"G471","numero":598240,"usuaId":1}]' ;
+
+    print(jsonString);
+
+    //print(requestModel[0].prefijo);
+    final response = await http.post(url,  headers: {
+      "Accept": "text/plain",
+      "Content-Type": "application/json"
+    }, body: jsonString);
+    print('Responde respuesta');
+    print(response.statusCode);
+    print(response.body);
+    if (response.statusCode == 200 || response.statusCode == 400) {
+
+      print(response.body);
+      print("bbb");
+
+      final responseData = json.decode(response.body);
+      resul = responseData['codi'];
+
+      salida = Salida(responseData['codi'], responseData['mens']);
+      return salida;
+
+    } else {
+
+      print('problem');
+      print(response.body);
+      //return resul;
+      throw Exception('Failed to load data!');
     }
   }
 

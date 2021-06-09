@@ -1,4 +1,5 @@
 import 'package:domiciliarios_app/Paginas/Domicilios.dart';
+import 'package:domiciliarios_app/Paginas/EscanerFactura.dart';
 import 'package:domiciliarios_app/Paginas/Mapa.dart';
 import 'package:domiciliarios_app/Paginas/Configuraciones.dart';
 import 'package:domiciliarios_app/Paginas/PerfilUsuario.dart';
@@ -58,7 +59,22 @@ Drawer buildDrawer(BuildContext context, String currentRoute) {
                   //selected: currentRoute == Restaurante.route,
                   onTap: () {
                     //Navigator.pushReplacementNamed(context, Restaurante.route);
-                    Navigator.popAndPushNamed(context, '/escaner');
+                    //Navigator.popAndPushNamed(context, '/escaner');
+                    /*Navigator.popAndPushNamed(context, EscanearFactura.route, arguments: EscanearFactura(
+                       "liperi",
+                    ));*/
+
+                    Navigator.popAndPushNamed(
+                      context,
+                      EscanearFactura.route,
+                      //ExtractArgumentsScreen.routeName,
+                      arguments:  "asignar"
+                      //'Extract Arguments Screen',
+                      //'This message is extracted in the build method.',
+                      ,
+                    );
+
+
                   },
                 ),
                 Divider(),

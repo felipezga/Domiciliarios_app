@@ -7,7 +7,7 @@ abstract class SeleccionEvent {}
 
 
 class SeleccionarEvent extends SeleccionEvent {
-  final String pedido;
+  final Pedido pedido;
   SeleccionarEvent(this.pedido);
 }
 
@@ -45,7 +45,7 @@ abstract class SeleccionState {
 
 
   class Selected extends SeleccionState {
-  final String pedido;
+  final Pedido pedido;
   const Selected(this.pedido);
 }
 

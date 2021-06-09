@@ -10,48 +10,48 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class EscanearFactura extends StatelessWidget {
-  @override
 
-  static const String route = '/domicilios';
+  EscanearFactura( this.arguments );
+
+  static const String route = '/escaneo';
+
+  final String arguments;
+
+  @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    print("esere");
-    return BlocProvider(
-      create: (context) => DomicilioBloc(domicilioRepo: DomicilioServices()),
-      child: DomiciliosScreen(),
-    );
+    print("ESCANEAR " + arguments);
+
+    return EscanearScreen(opcion : arguments);
+
     throw UnimplementedError();
   }
 }
 
-class DomiciliosScreen extends StatefulWidget {
+class EscanearScreen extends StatefulWidget {
+
+  EscanearScreen({Key key, this.opcion}) : super(key: key);
+
+  final String opcion;
+
   @override
-  _DomicilioState createState() => _DomicilioState();
+  _EscanearState createState() => _EscanearState();
 }
 
-class _DomicilioState extends State<DomiciliosScreen> {
+class _EscanearState extends State<EscanearScreen> {
   //
+
+  String opc;
 
   @override
   void initState() {
     print("ini");
     super.initState();
-    //_loadTheme();
-    _loadDomicilios();
 
-    /*Future.delayed(Duration.zero, () {
-      this._loadDomicilios();
-    });*/
-  }
+    opc = widget.opcion;
+    print('Este es: ');
+    print(opc);
 
-  /*_loadTheme() async {
-    context.bloc<ThemeBloc>().add(ThemeEvent(appTheme: Preferences.getTheme()));
-  }*/
-
-  _loadDomicilios() async {
-    print("load");
-    context.read<DomicilioBloc>().add(DomicilioEvents.fetchDomicilios);
-    print("loadeee");
   }
 
 
@@ -82,7 +82,7 @@ class _DomicilioState extends State<DomiciliosScreen> {
         drawer: buildDrawer(context, '/escaner'),
         body: Container(
           child: Center(
-            child: Scanner()
+            child: Scanner(opcion: opc,)
             /*ElevatedButton(
                 child: Text('Scan'),
                 onPressed: () {
