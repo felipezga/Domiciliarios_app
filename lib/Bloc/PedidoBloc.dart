@@ -1,6 +1,9 @@
 import 'package:domiciliarios_app/Modelo/AsignarOrdenModel.dart';
 import 'package:domiciliarios_app/Modelo/EstadoPedidoDomiciliario.dart';
 import 'package:domiciliarios_app/Modelo/Pedido.dart';
+import 'package:domiciliarios_app/Modelo/SalidaModel.dart';
+import 'package:domiciliarios_app/Modelo/UserLocation.dart';
+import 'package:domiciliarios_app/Servicios/FuncionesServicio.dart';
 import 'package:domiciliarios_app/Servicios/PedidoDomicilioServicio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 abstract class PedidoEvent {}
@@ -9,6 +12,12 @@ class GetPedidoUser extends PedidoEvent {
   final String userName;
   GetPedidoUser(this.userName);
 }
+
+class entregarPedido extends PedidoEvent {
+  final Pedido pedido;
+  entregarPedido(this.pedido);
+}
+
 
 
  class PedidoBloc extends Bloc<PedidoEvent, PedidoState> {
@@ -23,9 +32,11 @@ class GetPedidoUser extends PedidoEvent {
      // TODO: implement mapEventToState
      try {
        if (event is GetPedidoUser) {
-         print("entroooo");
+         print("Obtener Pedidos");
          yield (PedidoLoading());
-         asignarOrden ao = new asignarOrden(id: 0, prefijo: "PRUEBA", numero: 1088, usuaId: 1);
+
+         /*Ordenes.clear();
+         asignarOrden ao = new asignarOrden(id: 0, prefijo: "F01", numero: 8888, latitud: 3.1, longitud: 4.7, usuaId: 1);
           print(ao);
           print("ao");
          Ordenes.add(ao);
@@ -37,10 +48,40 @@ class GetPedidoUser extends PedidoEvent {
          final int respuesta = await APIpedido.asignarPedido( Ordenes );
          print(respuesta);
          print("Salida");
+         */
          final profile = await pedidoRepo.fetchPedidoUser(event.userName);
          print(profile);
          yield (PedidoLoaded(profile));
        }
+
+       if (event is entregarPedido) {
+         print("Entregar Pedido");
+         yield (PedidoLoading());
+
+         Ordenes.clear();
+
+         Funciones funciones = Funciones();
+         UserLocation ubicaion = UserLocation();
+
+         ubicaion = await funciones.ubicacionLatLong();
+
+         asignarOrden ao = new asignarOrden(id: event.pedido.id, prefijo: event.pedido.restaurante, numero: event.pedido.numero, latitud: ubicaion.latitude, longitud: ubicaion.longitude, usuaId: event.pedido.usuario);
+         print(ao);
+         print("ao");
+         Ordenes.add(ao);
+
+
+         PedidoDomiclioRepository APIpedido = new PedidoDomiclioRepository();
+         print("eres");
+         print(Ordenes[0]);
+         final Salida respuesta = await APIpedido.entregarPedido( Ordenes );
+         print(respuesta);
+         print("Salida");
+         final profile = await pedidoRepo.fetchPedidoUser(event.pedido.usuario.toString());
+         print(profile);
+         yield (PedidoLoaded(profile));
+       }
+
      } on UserNotFoundException {
        yield (PedidoError('This User was Not Found!'));
      }

@@ -2,12 +2,16 @@ class asignarOrden{
   int id;
   String prefijo;
   int numero;
+  double latitud;
+  double longitud;
   int usuaId;
 
   asignarOrden({
     this.id,
     this.prefijo,
     this.numero,
+    this.latitud,
+    this.longitud,
     this.usuaId
   });
 
@@ -15,6 +19,8 @@ class asignarOrden{
     id: json["userId"],
     prefijo: json["id"],
     numero: json["title"],
+    latitud : json["title"],
+    longitud : json["title"],
     usuaId: json["title"],
   );
 
@@ -22,6 +28,8 @@ class asignarOrden{
     "id": id,
     "prefijo": prefijo,
     "numero": numero,
+    "latitud" : latitud,
+    "longitud" : longitud,
     "usuaId": usuaId,
   };
 }

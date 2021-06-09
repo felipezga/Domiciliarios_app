@@ -10,10 +10,13 @@ import 'package:domiciliarios_app/Bloc/UserLocationBloc.dart';
 import 'package:domiciliarios_app/Modelo/EstadoPedidoDomiciliario.dart';
 import 'package:domiciliarios_app/Modelo/Pedido.dart';
 import 'package:domiciliarios_app/Modelo/UserLocation.dart';
+import 'package:domiciliarios_app/Paginas/EscanerFactura.dart';
 import 'package:domiciliarios_app/Servicios/NotificacionPushFirebase.dart';
 import 'package:domiciliarios_app/Servicios/PedidoDomicilioServicio.dart';
+import 'package:domiciliarios_app/widgets/AlertConfirmacion.dart';
 import 'package:domiciliarios_app/widgets/ErrorText.dart';
 import 'package:domiciliarios_app/widgets/Loading.dart';
+import 'package:domiciliarios_app/widgets/Scanner.dart';
 import 'package:domiciliarios_app/widgets/drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -23,7 +26,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:intl/intl.dart';
 import 'package:timeline_tile/timeline_tile.dart';
-import 'package:domiciliarios_app/widgets/TimeLine.dart';
 //import 'package:restaurantes_tipoventas_app/widgets/drawer.dart';
 import 'package:geocoding/geocoding.dart';
 
@@ -128,8 +130,8 @@ class _AppState extends State<mapaState> {
     '555555'
   ] ;
 
-  void getDropDownItem(){
-print("Vamos tio");
+  void getDropDownItem( pedido){
+context.read<PedidoBloc>().add(entregarPedido( pedido));
 /*
     setState(() {
       holder = dropdownValue ;
@@ -143,6 +145,8 @@ print("Vamos tio");
   bool _isGettingLocation;
   String mens_boton = "Iniciar";
   int contador;
+
+  Pedido pedidoSeleccionado;
 
   //int _counter = 0;
   //AnimationController _controller;
@@ -309,17 +313,25 @@ print("Vamos tio");
                                 }
                                 if (state is PedidoLoaded) {
                                   List<Pedido> pedidosAsignados = state.pedido;
-                                  dropdownValue = state.pedido[0].name;
-                                  //_obtenerLocationEstado( "Iniciar" , "PEDIDO PREPARADO", "Finalizar");
-                                  //_obtenerLocationEstado(mens_boton, "", "Finalizar");
+                                  if(pedidosAsignados.length > 0){
+                                    //dropdownValue = state.pedido[0];
+                                    //_obtenerLocationEstado( "Iniciar" , "PEDIDO PREPARADO", "Finalizar");
+                                    //_obtenerLocationEstado(mens_boton, "", "Finalizar");
 
-                                  context.read<SeleccionBloc>().add(SeleccionarEvent( dropdownValue));
+                                    //context.read<SeleccionBloc>().add(SeleccionarEvent( dropdownValue));
+                                    context.read<SeleccionBloc>().add(SeleccionarEvent( state.pedido[0]));
 
-                                  BlocProvider.of<TrackingBloc>(context).add(AddEstadoDomiciliario(  estadoTracking:  "PREPARADO", descripcionTracking: "PRODUCTO PREPARADO", listaTracking: _esta_domi));
-                                  return _trackingPedido( pedidosAsignados );
+                                    BlocProvider.of<TrackingBloc>(context).add(AddEstadoDomiciliario(  estadoTracking:  "PREPARADO", descripcionTracking: "PRODUCTO PREPARADO", listaTracking: _esta_domi));
+                                    return _trackingPedido( pedidosAsignados );
+
                                 }
-                                return Loading();
-                                //return Text("fdf");
+
+                                }
+                                if (state is PedidoLoading ){
+                                  return Loading();
+                                }
+
+                                return Text("Pedido");
                               }),
 
 
@@ -779,21 +791,29 @@ print("Vamos tio");
                         print("estado seeeee");
                         print(state.pedido);
 
+                        pedidoSeleccionado = state.pedido;
+
                         print(pedidosAsignados);
                         //List<Pedido> pedidosAsignados = state.pedido;
                         //dropdownValue = state.pedidoSelected;
                         return DropdownButton<String>(
-                          value: state.pedido,
+                          value: state.pedido.name,
                           icon: Icon(Icons.arrow_drop_down),
                           iconSize: 24,
                           elevation: 16,
                           style: TextStyle(color: Colors.red, fontSize: 18),
                           underline: Container(
                             height: 2,
-                            color: Colors.red,
+                            color: Colors.blue,
                           ),
                           onChanged: (String data) {
-                            context.read<SeleccionBloc>().add(SeleccionarEvent( data));
+
+                            List<Pedido> cambioPedido = pedidosAsignados.where((i) => i.name == data ).toList();
+
+                            print("cambioz");
+                            print(cambioPedido[0].id);
+                            print(cambioPedido[0].name);
+                            context.read<SeleccionBloc>().add(SeleccionarEvent(  cambioPedido[0] ));
                             /*setState(() {
                   dropdownValue = data;
                 });*/
@@ -815,13 +835,125 @@ print("Vamos tio");
                       //return Text("fdf");
                     }),
 
-            RaisedButton(
-              child: Text('Confirmar entrega'),
-              onPressed: getDropDownItem,
-              color: Colors.green,
-              textColor: Colors.white,
-              padding: EdgeInsets.fromLTRB(12, 12, 12, 12),
-            ),
+                ElevatedButton(
+                  //onPressed: () => { getDropDownItem(pedidoSeleccionado) },
+                    onPressed: ()  {
+                      print("confirm45454acion");
+                      showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: Text('Entregar producto'),
+                              content: Text("Estas seguro de aceptar esta accion?"),
+                              actions: <Widget>[
+
+                                /*ElevatedButton.icon(
+                  label: Text(" Cancelar"),
+                  icon: Icon(Icons.cancel_outlined),
+                  onPressed: () => { Navigator.pop(context)},
+                  style: ElevatedButton.styleFrom(
+                    //shape: CircleBorder(),
+                    primary: Colors.red,
+                  ),
+                ),*/
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    ElevatedButton(
+                                      onPressed: () => {
+                                        //Navigator.pop(context)
+                                        Navigator.of(context).pop(),
+                                      },
+                                      child: Icon(Icons.cancel_outlined, color: Colors.white),
+                                      style: ElevatedButton.styleFrom(
+                                        shape: CircleBorder(),
+                                        padding: EdgeInsets.all(10),
+                                        primary: Colors.red, // <-- Button color
+                                        onPrimary: Colors.black, // <-- Splash color
+                                      ),
+                                    ),
+
+                                    ElevatedButton(
+                                      onPressed: () => {
+                                        //context.read<PedidoBloc>().add(entregarPedido( pedidoSeleccionado))
+                                        getDropDownItem(pedidoSeleccionado),
+                                        Navigator.of(context).pop(),
+                                      },
+                                      child: Icon(Icons.check_circle_outline_outlined, color: Colors.white),
+                                      style: ElevatedButton.styleFrom(
+                                        shape: CircleBorder(),
+                                        padding: EdgeInsets.all(10),
+                                        primary: Colors.green, // <-- Button color
+                                        onPrimary: Colors.black, // <-- Splash color
+                                      ),
+                                    ),
+                                  ],
+                                )
+
+
+
+                              ],
+                            );
+                          }
+                      );
+                       //Confirmacion(pedidoSeleccionado);
+                    },
+
+                  child: Icon(Icons.send_outlined, color: Colors.white),
+                  style: ElevatedButton.styleFrom(
+                    shape: CircleBorder(),
+                    padding: EdgeInsets.all(10),
+                    //primary: Colors.blue, // <-- Button color
+                    onPrimary: Colors.red, // <-- Splash color
+                  ),
+                ),
+                /*ElevatedButton.icon(
+                  label: Text("Ent"),
+                  icon: Icon(Icons.send_and_archive),
+
+                  onPressed:  () => { getDropDownItem(pedidoSeleccionado) } ,
+                  style: ElevatedButton.styleFrom(
+                    shape: CircleBorder(),
+                    primary: Colors.blue,
+                  ),
+                ),*/
+
+                ElevatedButton(
+                  onPressed: (){
+                      //Navigator.popAndPushNamed(context, '/escaner');
+                    print("aquiii");
+                     //Navigator.of(context).push(MaterialPageRoute(builder: (context) => Scanner(opcion: "entregar")));
+                    /*Navigator.popAndPushNamed(context, EscanearFactura.route, arguments: EscanearFactura(
+                      opcion: "entregar",
+                    ));*/
+
+
+                    Navigator.pushNamed(
+                      context,
+                      EscanearFactura.route,
+                      //ExtractArgumentsScreen.routeName,
+                      arguments:  "entregar"
+                        //'Extract Arguments Screen',
+                        //'This message is extracted in the build method.',
+                      ,
+                    );
+
+                      /*return MaterialPageRoute(
+                        builder: (context) {
+                          return Scanner(
+                            opcion: "entregar"
+                          );
+                        },
+                      );*/
+                      },
+                  child: Icon(Icons.qr_code_scanner_sharp, color: Colors.white),
+                  style: ElevatedButton.styleFrom(
+                    shape: CircleBorder(),
+                    padding: EdgeInsets.all(10),
+                    //primary: Colors.blue, // <-- Button color
+                    onPrimary: Colors.red, // <-- Splash color
+                  ),
+                )
 
           ]),
 
@@ -888,14 +1020,14 @@ print("Vamos tio");
 
   Widget _trackingPedido( List<Pedido> pedidosAsignados) {
     return DraggableScrollableSheet(
-      initialChildSize: 0.13,
-      minChildSize: 0.07,
-      maxChildSize: 0.65,
+      initialChildSize: 0.10,
+      minChildSize: 0.05,
+      maxChildSize: 0.75,
       builder: (BuildContext context, ScrollController scrollController) {
         return SingleChildScrollView(
           controller: scrollController,
           child: Card(
-            //color: Colors.blueAccent,
+            //color: Colors.grey,
             elevation: 12.0,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
@@ -903,7 +1035,7 @@ print("Vamos tio");
                   topRight: Radius.circular(18.0)
               ),
             ),
-            margin: const EdgeInsets.all(20),
+            //margin: const EdgeInsets.all(20),
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(24),
@@ -1059,21 +1191,30 @@ class _Header extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
-        color: Colors.grey,
+        //color: Colors.yellow,
         border: Border(
           bottom: BorderSide(
             color: Colors.red,
-            width: 3,
+            width: 2,
           ),
         ),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(4),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
+            //Icon(Icons.reorder),
+            Text('PEDIDOS A ENTREGAR ', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700,) ),
+
+
+          ],
+        ),
+        /*child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: <Widget>[
             Icon(Icons.shopping_cart_outlined),
-            Text('NUMERO PEDIDO ', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700,) ),
+            Text('PEDIDOS A ENTREGAR ', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700,) ),
             Text(
               '#2482011',
                 style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800,)
@@ -1084,7 +1225,7 @@ class _Header extends StatelessWidget {
             ),
 
           ],
-        ),
+        ),*/
       ),
     );
   }
