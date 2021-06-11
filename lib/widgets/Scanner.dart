@@ -1,4 +1,5 @@
 import 'package:domiciliarios_app/Bloc/EscaneoBloc.dart';
+import 'package:domiciliarios_app/Paginas/EscanerFactura.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
@@ -147,7 +148,8 @@ class _ScannerState extends State<ScannerScreen> {
                                       elevation: 5// foreground
                                   ),
                                   onPressed: (){
-                                    Navigator.popAndPushNamed(context, '/escaner');
+                                    //Navigator.popAndPushNamed(context, '/escaner');
+                                    Navigator.popAndPushNamed(context, EscanearFactura.route, arguments:  "asignar",);
                                   },
                                   //width: 90,
                                   //height: 40,
@@ -257,13 +259,14 @@ class _ScannerState extends State<ScannerScreen> {
                                   Icon( Icons.error , size: 20,
                                     //color: Colors.red,
                                   ),
-                                  Text(message + "\n Por favor volver a escaneo el codigo o comunicarse con su jefe",
+                              Text(message),
+                                  /*Text(message + "\n Por favor volver a escaneo el codigo o comunicarse con su jefe",
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                       //color: Colors.red,
                                         fontWeight: FontWeight.w700
                                     ),
-                                  ),
+                                  ),*/
 
                                 ],
                               ),
