@@ -16,6 +16,7 @@ class PedidoDomiclioRepository {
   static const listar_pedidos = "/api/DomiApp/Listar/";
   static const asignar_pedido = "/api/DomiApp/AsignarOrden";
   static const entregar_pedido = "/api/DomiApp/Actualizar";
+  static const reasignar_pedido = "/api/DomiApp/Reasignar";
 
   Future<List<Pedido>> fetchPedidoUser(String userName) async {
     //String api = 'https://api.github.com/users/${userName}';
@@ -104,6 +105,49 @@ class PedidoDomiclioRepository {
   Future<Salida> entregarPedido(List<asignarOrden> requestModel) async {
     //String url = "https://10.0.2.2:5001/api/DomiApp/Actulizar";
     String url = url_api_domiciliario+entregar_pedido;
+    Salida salida;
+
+
+    print(url);
+    int resul = 1;
+    print('responsa');
+
+    String jsonString = json.encode(requestModel);
+    //String jsonString ='[{"id":2,"prefijo":"G471","numero":598240,"usuaId":1}]' ;
+
+    print(jsonString);
+
+    //print(requestModel[0].prefijo);
+    final response = await http.post(url,  headers: {
+      "Accept": "text/plain",
+      "Content-Type": "application/json"
+    }, body: jsonString);
+    print('Responde respuesta');
+    print(response.statusCode);
+    print(response.body);
+    if (response.statusCode == 200 || response.statusCode == 400) {
+
+      print(response.body);
+      print("bbb");
+
+      final responseData = json.decode(response.body);
+      resul = responseData['codi'];
+
+      salida = Salida(responseData['codi'], responseData['mens']);
+      return salida;
+
+    } else {
+
+      print('problem');
+      print(response.body);
+      //return resul;
+      throw Exception('Failed to load data!');
+    }
+  }
+
+  Future<Salida> reasignarPedido(List<asignarOrden> requestModel) async {
+    //String url = "https://10.0.2.2:5001/api/DomiApp/Actulizar";
+    String url = url_api_domiciliario+reasignar_pedido;
     Salida salida;
 
 

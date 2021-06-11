@@ -18,6 +18,12 @@ class entregarPedido extends PedidoEvent {
   entregarPedido(this.pedido);
 }
 
+class reasignarPedido extends PedidoEvent {
+  final List<Pedido> pedidos;
+  reasignarPedido(this.pedidos);
+}
+
+
 
 
  class PedidoBloc extends Bloc<PedidoEvent, PedidoState> {
@@ -78,6 +84,48 @@ class entregarPedido extends PedidoEvent {
          print(respuesta);
          print("Salida");
          final profile = await pedidoRepo.fetchPedidoUser(event.pedido.usuario.toString());
+         print(profile);
+         yield (PedidoLoaded(profile));
+       }
+
+       if (event is reasignarPedido) {
+         print("Reasignar Pedido");
+         yield (PedidoLoading());
+
+         Ordenes.clear();
+
+         Funciones funciones = Funciones();
+         UserLocation ubicaion = UserLocation();
+
+         ubicaion = await funciones.ubicacionLatLong();
+
+
+         print("BLOC");
+         print(event.pedidos[0].numero);
+
+         print(event.pedidos[0].name);
+
+          int cant_pedidos = event.pedidos.length;
+
+
+         //var item in list
+         for (var i = 0; i < cant_pedidos; i++) {
+           if (event.pedidos[i].checked == true){
+
+             asignarOrden ao = new asignarOrden(id: event.pedidos[i].id, prefijo: event.pedidos[i].restaurante, numero: event.pedidos[i].numero, latitud: ubicaion.latitude, longitud: ubicaion.longitude, usuaId: 2);
+             print(ao);
+             print("ao");
+             Ordenes.add(ao);
+           }
+         }
+
+
+         PedidoDomiclioRepository APIpedido = new PedidoDomiclioRepository();
+
+         final Salida respuesta = await APIpedido.reasignarPedido( Ordenes );
+         print(respuesta);
+         print("Reasignacion ");
+         final profile = await pedidoRepo.fetchPedidoUser("1");
          print(profile);
          yield (PedidoLoaded(profile));
        }

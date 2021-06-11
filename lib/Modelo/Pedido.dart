@@ -7,6 +7,7 @@ class Pedido {
   int usuario;
   String restaurante;
   String fecha;
+  bool checked;
 
 
   Pedido({
@@ -16,6 +17,7 @@ class Pedido {
     this.usuario,
     this.restaurante,
     this.fecha,
+    this.checked
   });
 
   factory Pedido.fromJson( dynamic responseData) {
@@ -39,7 +41,11 @@ class Pedido {
           name: responseData['factura'] != "" ? responseData['factura'] : "",
           usuario: responseData['usuaId'] != null ? responseData['usuaId'] : 0,
           restaurante: rest != null ? rest : "",
-          fecha: "" != null ? "" : "");
+          fecha: "" != null ? "" : "",
+          checked: false
+
+      );
+
       /*return Pedido(
           id: responseData.id != null ? responseData.id : "",
           numero: num != 0 ? num : "",

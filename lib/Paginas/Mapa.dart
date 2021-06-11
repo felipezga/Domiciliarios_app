@@ -227,7 +227,6 @@ context.read<PedidoBloc>().add(entregarPedido( pedido));
           print(_isGettingLocation);
           print("bebeb");
           return
-
             BlocBuilder<LocationBloc, LocationState>(
               builder: (context, state) {
                 if (state is LocationInitial) {

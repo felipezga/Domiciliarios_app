@@ -3,6 +3,7 @@ import 'package:domiciliarios_app/Paginas/EscanerFactura.dart';
 import 'package:domiciliarios_app/Paginas/Mapa.dart';
 import 'package:domiciliarios_app/Paginas/Configuraciones.dart';
 import 'package:domiciliarios_app/Paginas/PerfilUsuario.dart';
+import 'package:domiciliarios_app/Paginas/ReasignarEntregas.dart';
 import 'package:domiciliarios_app/Servicios/SharedPreferencesServicio.dart';
 import 'package:flutter/material.dart';
 //import 'package:restaurantes_tipoventas_app/Paginas/Mapa.dart';
@@ -77,6 +78,26 @@ Drawer buildDrawer(BuildContext context, String currentRoute) {
 
                   },
                 ),
+                    Divider(),
+                    ListTile(
+                      leading: Icon(Icons.assignment_return_outlined),
+                      title: const Text('Reasignar Entrega'),
+                      //selected: currentRoute == Restaurante.route,
+                      onTap: () {
+
+                       // Navigator.pushReplacementNamed(context, Reasignacion.route);
+
+                        Navigator.popAndPushNamed(
+                          context,
+                          Reasignacion.route,
+                          //ExtractArgumentsScreen.routeName,
+                          arguments:  "asignar"
+                          ,
+                        );
+
+
+                      },
+                    ),
                 Divider(),
                 ListTile(
                   leading: Icon(Icons.motorcycle),

@@ -4,6 +4,7 @@ import 'package:domiciliarios_app/Bloc/ThemeBloc.dart';
 import 'package:domiciliarios_app/Paginas/Configuraciones.dart';
 import 'package:domiciliarios_app/Paginas/Domicilios.dart';
 import 'package:domiciliarios_app/Paginas/PerfilUsuario.dart';
+import 'package:domiciliarios_app/Paginas/ReasignarEntregas.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -141,6 +142,7 @@ class _MyAppState extends State<App> {
         PerfilUsuario.route: (context) => PerfilUsuario(),
         '/login': (context) => LoginPage(),
         EscanearFactura.route: (context) =>  EscanearFactura(ModalRoute.of(context).settings.arguments),
+        Reasignacion.route: (context) => Reasignacion(ModalRoute.of(context).settings.arguments),
       },
     );
 

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:domiciliarios_app/Modelo/AsignarOrdenModel.dart';
+import 'package:domiciliarios_app/Modelo/Pedido.dart';
 import 'package:domiciliarios_app/Modelo/SalidaModel.dart';
 import 'package:domiciliarios_app/Modelo/UserLocation.dart';
 import 'package:domiciliarios_app/Servicios/FuncionesServicio.dart';
@@ -49,14 +50,29 @@ class EscaneoBloc extends Bloc<EscaneoEvent, EscaneoState>{
         String factura = parts.last.trim();
         var fact = factura.split('-');
 
+        var id = 0;
+
         PedidoDomiclioRepository APIpedido = new PedidoDomiclioRepository();
+
+        // VALIDACCION PARA OBTENER EL ID PARA ASOCIAR AL USUARIO
+        if(event.opc =="entregar"){
+          final profile = await APIpedido.fetchPedidoUser("1");
+          print(profile);
+
+          List<Pedido> pedidoUsuario = profile.where((i) => i.restaurante == fact[0] &&  i.numero == int.parse(fact[1]) ).toList();
+
+          print("Este es el id");
+          print(pedidoUsuario[0].id);
+          id = pedidoUsuario[0].id;
+
+        }
 
         Funciones funciones = Funciones();
         UserLocation ubicaion = UserLocation();
 
         ubicaion = await funciones.ubicacionLatLong();
 
-        Ordenes.add(asignarOrden(id: 0, prefijo: fact[0], numero: int.parse(fact[1]), latitud: ubicaion.latitude, longitud: ubicaion.longitude, usuaId: 1));
+        Ordenes.add(asignarOrden(id: id, prefijo: fact[0], numero: int.parse(fact[1]), latitud: ubicaion.latitude, longitud: ubicaion.longitude, usuaId: 1));
 
         print(Ordenes[0].numero);
         print(Ordenes[0].prefijo);
