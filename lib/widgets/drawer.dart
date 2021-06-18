@@ -1,3 +1,4 @@
+import 'package:domiciliarios_app/Modelo/UsuarioModel.dart';
 import 'package:domiciliarios_app/Paginas/Domicilios.dart';
 import 'package:domiciliarios_app/Paginas/EscanerFactura.dart';
 import 'package:domiciliarios_app/Paginas/Mapa.dart';
@@ -13,6 +14,8 @@ import 'package:flutter/material.dart';
 //import '../Paginas/prueba.dart';
 
 Drawer buildDrawer(BuildContext context, String currentRoute) {
+  Future<User> getUserData() => UserPreferences().getUser();
+
   return Drawer(
     child: Column(
         mainAxisAlignment: MainAxisAlignment
@@ -30,7 +33,7 @@ Drawer buildDrawer(BuildContext context, String currentRoute) {
             color: Colors.blue,
           ),
         ),*/
-                _createHeader(),
+                _createHeader( getUserData() ),
 
                 ListTile(
                   leading: Icon(Icons.perm_identity),
@@ -141,7 +144,7 @@ Drawer buildDrawer(BuildContext context, String currentRoute) {
   );
 }
 
-Widget _createHeader() {
+Widget _createHeader( Future<User> _session ) {
   return DrawerHeader(
       margin: EdgeInsets.zero,
       padding: EdgeInsets.zero,
@@ -155,12 +158,36 @@ Widget _createHeader() {
         Positioned(
             bottom: 8.0,
             left: 12.0,
-            child: Text("Felipe Rios",
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 22.0,
-                  fontWeight: FontWeight.w500,
-                ))),
+            child:
+            FutureBuilder(
+              //future: getUserData(),
+                future: _session,
+                builder: (context, snapshot) {
+                  print("snapshot");
+                  print(snapshot.data);
+                  switch (snapshot.connectionState) {
+                    case ConnectionState.none:
+                    case ConnectionState.waiting:
+                    return Text("");
+
+                    default:
+                      if (snapshot.hasError)
+                        return Text('Error: ${snapshot.error}');
+                      else if (snapshot.data.token == "")
+                        return Text("");
+                      else
+                        return Text(snapshot.data.name != null ? snapshot.data.name : "" ,
+                            style: TextStyle(
+                              //color: Colors.black,
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.w700,
+                            ));
+                      //return Welcome(user: snapshot.data);
+                      //return Mapa();
+                  }
+                })
+
+            ),
         Image.asset('images/icono_frisby.png'),
       ]));
 }

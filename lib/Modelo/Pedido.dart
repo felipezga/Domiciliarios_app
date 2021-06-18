@@ -4,7 +4,7 @@ class Pedido {
   int id;
   int numero;
   String name;
-  int usuario;
+  String usuario;
   String restaurante;
   String fecha;
   bool checked;

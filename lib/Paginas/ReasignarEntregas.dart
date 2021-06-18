@@ -23,7 +23,7 @@ class Reasignacion extends StatelessWidget {
     //return ReasignacionScreen(opcion : arguments);
 
     return BlocProvider(
-      create: (context) { return PedidoBloc(pedidoRepo: PedidoDomiclioRepository())..add(GetPedidoUser("1"));
+      create: (context) { return PedidoBloc(pedidoRepo: PedidoDomiclioRepository())..add(GetPedidoUser());
       },
       child:  ReasignacionScreen(),
     );
@@ -47,7 +47,7 @@ class _ReasignacionState extends State<ReasignacionScreen> {
   bool _isChecked = true;
   String _currText = '';
 
-    int _chosenValue  ;
+  String  _chosenValue  ;
 
     List<Pedido> pedidos = [];
 
@@ -77,10 +77,10 @@ class _ReasignacionState extends State<ReasignacionScreen> {
 
 
     List<ListItem> _dropdownItems = [
-      ListItem(1, "First Value"),
-      ListItem(2, "Second Item"),
-      ListItem(3, "Third Item"),
-      ListItem(4, "Fourth Item")
+      ListItem("F07183fdeb8e495940c38be2d750fc720d4d", " 000 IVAN	NARANJO"),
+      ListItem("G0529eb74ab18b1744509282efd5bb0f9951", "9692468	JUAN	LOPEZ"),
+      ListItem("F502df663e3943d94dc6a85e44db14421790", "80854915	1-ARLEY	SALDAÑA   3203443838"),
+      ListItem("H19132474f0977e548b986caf2dbb6a9be15", "4104238	JUAN 	RAMOS")
     ];
 
     return BlocBuilder<ThemeBloc, ThemeState>(builder: (context, theme) {
@@ -171,6 +171,7 @@ class _ReasignacionState extends State<ReasignacionScreen> {
                 child: Center(
                   child: Text("No hay entregas por reasignar",
                       style: TextStyle(
+                        color: theme.getTheme.hoverColor,
                         fontSize: 20.0,
                         fontWeight: FontWeight.bold,
                       )
@@ -184,23 +185,29 @@ class _ReasignacionState extends State<ReasignacionScreen> {
           height: 20,
         ),
 
-        DropdownButton<int>(
-          focusColor:Colors.white,
+        DropdownButton<String>(
+          //focusColor:Colors.white,
           value: _chosenValue,
           //elevation: 5,
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(
+              color: Theme.of(context).textTheme.bodyText1.color,
+              fontSize: 15,
+            fontWeight: FontWeight.bold,
+          ),
           iconEnabledColor:Colors.black,
           items: _dropdownItems.map((ListItem item) {
-            return DropdownMenuItem<int>(
+            return DropdownMenuItem<String>(
               value: item.value,
-              child: Text(item.name,style:TextStyle(color:Colors.black),),
+              child: Text(item.name,style:TextStyle(
+                  //color:Colors.black
+              ),),
             );
           }).toList(),
           hint:Text(
-            "Por favor seleccione un domiliciaraio",
+            "Por favor seleccione un domiciliario",
             style: TextStyle(
-                color: Colors.black,
-                fontSize: 14,
+                //color: Colors.black,
+                fontSize: 16,
                 fontWeight: FontWeight.w500),
           ),
           onChanged: ( valu) {
@@ -221,14 +228,14 @@ class _ReasignacionState extends State<ReasignacionScreen> {
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                   primary: Colors.green, // background
-                  onPrimary: Theme.of(context).textTheme.bodyText1.color,
+                  //onPrimary: Theme.of(context).textTheme.bodyText1.color,
                   elevation: 5// foreground
               ),
               onPressed: (){
                 print(pedidos[0].numero);
                 print(pedidos[0].checked);
                 //Navigator.popAndPushNamed(context, '/escaner');
-                BlocProvider.of<PedidoBloc>(context).add(reasignarPedido( pedidos));
+                BlocProvider.of<PedidoBloc>(context).add(reasignarPedido( pedidos, _chosenValue ));
                 //Navigator.pop(context, todo);
               },
               //width: 90,
@@ -274,7 +281,7 @@ class _ReasignacionState extends State<ReasignacionScreen> {
 }
 
 class ListItem {
-  int value;
+  String value;
   String name;
 
   ListItem(this.value, this.name);

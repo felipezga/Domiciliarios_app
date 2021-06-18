@@ -1,13 +1,12 @@
 import 'dart:convert';
 
+import 'package:domiciliarios_app/Bloc/LoginBloc.dart';
 import 'package:domiciliarios_app/Modelo/LoginModel.dart';
 import 'package:domiciliarios_app/Servicios/ApiServicio.dart';
-import 'package:domiciliarios_app/Servicios/AuthServicio.dart';
-import 'package:domiciliarios_app/Servicios/FuncionesServicio.dart';
 import 'package:domiciliarios_app/widgets/ProgressHUD.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'Mapa.dart';
 
 /*class Login_state extends StatefulWidget{
 
@@ -165,6 +164,54 @@ class Login extends StatelessWidget {
   }
 }*/
 
+class LoginScreen extends StatelessWidget {
+  const LoginScreen({Key key}) : super(key: key);
+
+  static const String route = '/login';
+
+  @override
+  Widget build(BuildContext context) {
+    print("Login");
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Container(
+          color:  Colors.yellow[600],
+          child: CustomScrollView(
+            reverse: true,
+            slivers: [
+              SliverFillRemaining(
+                hasScrollBody: false,
+                child: Center(
+                  //children: <Widget>[
+                    /*SizedBox(
+                      height: 10.0,
+                    ),*/
+                    /*Image.asset(
+                      'images/domiciliario.png',
+                      height: 280,
+                    ),*/
+                    //Expanded(
+                      child: BlocProvider(
+                        create: (BuildContext context) => LoginBloc(),
+                        child: LoginPage(),
+                      ),
+                    //),
+                  //],
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+
+    /*return BlocProvider(
+      create: (BuildContext context) => LoginBloc(),
+      child: LoginBuilder(),
+    );*/
+  }
+}
 
 class LoginPage extends StatefulWidget {
   @override
@@ -172,6 +219,17 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+
+
+  final _userNameController = TextEditingController();
+  final _passwordController = TextEditingController();
+
+  _onLoginButtonPressed() {
+    //Navigator.pushReplacementNamed(context, '/mapa');
+    BlocProvider.of<LoginBloc>(context).add(LoginButtonPressed(email: _userNameController.text, password: _passwordController.text));
+  }
+
+
   bool hidePassword = true;
   bool isApiCallProcess = false;
   GlobalKey<FormState> globalFormKey = GlobalKey<FormState>();
@@ -185,12 +243,172 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return ProgressHUD(
+    /*return ProgressHUD(
       child: _uiSetup(context),
       inAsyncCall: isApiCallProcess,
       opacity: 0.3,
+    );*/
+
+    return BlocListener<LoginBloc, LoginState>(
+      listener: (context, state) {
+        print("listener");
+        if (state is LoginFinishedState) {
+          /*Navigator.pushAndRemoveUntil(context,
+              MaterialPageRoute(builder: (context) => PaginaHome()),
+                  (Route<dynamic> route) => false);*/
+
+          Navigator.pushReplacementNamed(context, '/mapa');
+        }else if (state is ErrorLoginState) {
+          /*final snackBar = SnackBar(content: Text(state.errorMessage));
+          scaffoldKey.currentState.showSnackBar(snackBar);*/
+          print("Es aquiddd");
+          print(state.errorMessage);
+
+    // ignore: deprecated_member_use
+          Scaffold.of(context).showSnackBar(SnackBar(
+            backgroundColor: Colors.red,
+            content: Text(state.errorMessage),
+            duration: Duration(seconds: 2),
+            ));
+        }
+      },
+        child: _uiSetup1( context),
+    );
+
+
+
+  }
+
+  _uiSetup1(BuildContext context){
+    return Stack(
+      children: <Widget>[
+        BlocBuilder<LoginBloc, LoginState>(
+          builder: (context, state) {
+            return Card(
+              //color: Colors.blue,
+              //padding: EdgeInsets.symmetric(vertical: 30, horizontal: 20),
+              //margin: EdgeInsets.symmetric(vertical: 85, horizontal: 20),
+                margin: const EdgeInsets.all(20),
+                elevation: 8.0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+
+                child: Container(
+                  //padding: EdgeInsets.all(15),
+                  margin: EdgeInsets.all(15),
+                  height: 480,
+                  child: Column(
+                    //mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Image.asset(
+                        'images/domiciliario.png',
+                        height: 220,
+                      ),
+                      Center(
+                          child: Text(
+                            "APP DOMICILIARIOS",
+                            style: TextStyle(
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          )
+                      ),
+                      SizedBox(height: 10.0),
+                      TextFormField(
+                        decoration: InputDecoration(
+                          labelText: 'Documento',
+                        ),
+                        controller: _userNameController,
+                      ),
+                      TextFormField(
+                        decoration: InputDecoration(
+                          labelText: 'Clave',
+                          suffixIcon: IconButton(
+                            onPressed: () {
+                              setState(() {
+                                hidePassword = !hidePassword;
+                              });
+                            },
+                            color: Theme.of(context)
+                                .accentColor
+                                .withOpacity(0.4),
+                            icon: Icon(hidePassword
+                                ? Icons.visibility_off
+                                : Icons.visibility),
+                          ),
+                        ),
+                        controller: _passwordController,
+                        obscureText: hidePassword,
+                      ),
+
+                      SizedBox(
+                        height: 10.0,
+                      ),
+                      /*LoginButton(
+                            userName: this._userNameController.text,
+                            password: this._passwordController.text,
+                          )*/
+                      Padding(
+                        padding: EdgeInsets.only(top: 30.0, bottom: 20.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: <Widget>[
+                            SizedBox(
+
+                                height: 45,
+                                child: state is LoginLoading
+                                    ? Column(
+                                  crossAxisAlignment:
+                                  CrossAxisAlignment.center,
+                                  mainAxisAlignment:
+                                  MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    Center(
+                                        child: Column(
+
+                                          mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                          children: [
+                                            SizedBox(
+                                                height: 25.0,
+                                                width: 25.0,
+                                                child: CircularProgressIndicator()
+                                            )
+                                          ],
+                                        ))
+                                  ],
+                                )
+                                    : RaisedButton(
+                                    color: Colors.red,
+                                    disabledColor: Colors.blueAccent,
+                                    disabledTextColor: Colors.white,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius:
+                                      BorderRadius.circular(30.0),
+                                    ),
+                                    onPressed: _onLoginButtonPressed,
+                                    child: Text("INGRESAR",
+                                        style: new TextStyle(
+                                            fontSize: 12.0,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white)))),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              //)
+            );
+          },
+          //bloc: BlocProvider.of<LoginBloc>(context),
+        )
+      ],
     );
   }
+
+
 
   Widget _uiSetup(BuildContext context) {
     return Scaffold(
@@ -294,7 +512,8 @@ class _LoginPageState extends State<LoginPage> {
                           padding: EdgeInsets.symmetric(
                               vertical: 12, horizontal: 80),
                           onPressed: () {
-                            Navigator.pushReplacementNamed(context, '/mapa');
+                            print("Este es el login");
+                            /*Navigator.pushReplacementNamed(context, '/mapa');
                             if (validateAndSave()) {
                               print(loginRequestModel.toJson());
 
@@ -324,7 +543,7 @@ class _LoginPageState extends State<LoginPage> {
                                   }
                                 }
                               });
-                            }
+                            }*/
                           },
                           child: Text(
                             "Ingresar",

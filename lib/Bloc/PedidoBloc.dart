@@ -6,11 +6,12 @@ import 'package:domiciliarios_app/Modelo/UserLocation.dart';
 import 'package:domiciliarios_app/Servicios/FuncionesServicio.dart';
 import 'package:domiciliarios_app/Servicios/PedidoDomicilioServicio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 abstract class PedidoEvent {}
 
 class GetPedidoUser extends PedidoEvent {
-  final String userName;
-  GetPedidoUser(this.userName);
+
+  GetPedidoUser();
 }
 
 class entregarPedido extends PedidoEvent {
@@ -20,7 +21,8 @@ class entregarPedido extends PedidoEvent {
 
 class reasignarPedido extends PedidoEvent {
   final List<Pedido> pedidos;
-  reasignarPedido(this.pedidos);
+  final String UserId;
+  reasignarPedido(this.pedidos, this.UserId);
 }
 
 
@@ -55,7 +57,11 @@ class reasignarPedido extends PedidoEvent {
          print(respuesta);
          print("Salida");
          */
-         final profile = await pedidoRepo.fetchPedidoUser(event.userName);
+
+         final SharedPreferences prefs = await SharedPreferences.getInstance();
+         String userId = prefs.getString("userId");
+
+         final profile = await pedidoRepo.fetchPedidoUser(userId);
          print(profile);
          yield (PedidoLoaded(profile));
        }
@@ -93,6 +99,8 @@ class reasignarPedido extends PedidoEvent {
          yield (PedidoLoading());
 
          Ordenes.clear();
+         final SharedPreferences prefs = await SharedPreferences.getInstance();
+         String userId = prefs.getString("userId");
 
          Funciones funciones = Funciones();
          UserLocation ubicaion = UserLocation();
@@ -112,7 +120,7 @@ class reasignarPedido extends PedidoEvent {
          for (var i = 0; i < cant_pedidos; i++) {
            if (event.pedidos[i].checked == true){
 
-             asignarOrden ao = new asignarOrden(id: event.pedidos[i].id, prefijo: event.pedidos[i].restaurante, numero: event.pedidos[i].numero, latitud: ubicaion.latitude, longitud: ubicaion.longitude, usuaId: 2);
+             asignarOrden ao = new asignarOrden(id: event.pedidos[i].id, prefijo: event.pedidos[i].restaurante, numero: event.pedidos[i].numero, latitud: ubicaion.latitude, longitud: ubicaion.longitude, usuaId: event.UserId);
              print(ao);
              print("ao");
              Ordenes.add(ao);
@@ -125,7 +133,7 @@ class reasignarPedido extends PedidoEvent {
          final Salida respuesta = await APIpedido.reasignarPedido( Ordenes );
          print(respuesta);
          print("Reasignacion ");
-         final profile = await pedidoRepo.fetchPedidoUser("1");
+         final profile = await pedidoRepo.fetchPedidoUser(userId);
          print(profile);
          yield (PedidoLoaded(profile));
        }
