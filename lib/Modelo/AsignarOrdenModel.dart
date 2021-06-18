@@ -4,7 +4,7 @@ class asignarOrden{
   int numero;
   double latitud;
   double longitud;
-  int usuaId;
+  String usuaId;
 
   asignarOrden({
     this.id,

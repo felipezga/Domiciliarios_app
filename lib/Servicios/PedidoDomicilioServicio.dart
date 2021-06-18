@@ -21,11 +21,14 @@ class PedidoDomiclioRepository {
   Future<List<Pedido>> fetchPedidoUser(String userName) async {
     //String api = 'https://api.github.com/users/${userName}';
 
+    print(userName);
+    print("USERNAME");
 
 
     //String api = 'http://bengkelrobot.net:8001/${userName}';
     String api = url_api_domiciliario+listar_pedidos+userName;
     print(api);
+    print(userName);
     print("appaa");
     var data = await http.get(api);
     //return await get(api).then((data) {
@@ -87,14 +90,25 @@ class PedidoDomiclioRepository {
     print('Responde respuesta');
     print(response.statusCode);
     print(response.body);
-    if (response.statusCode == 200 || response.statusCode == 400) {
+    if (response.statusCode == 200 ) {
 
     final responseData = json.decode(response.body);
 
     salida = Salida(responseData['codi'], responseData['mens']);
     return salida;
 
-    } else {
+    }
+    else if ( response.statusCode == 400) {
+      print("bbb");
+
+      final Map<String, dynamic> responseData = json.decode(response.body);
+
+      Salida respuesta =  new Salida(responseData['salida']["codi"], "Problema al asignar el pedido");
+
+      return respuesta;
+    }
+
+    else {
 
       print('problem');
       print(response.body);

@@ -320,7 +320,8 @@ class _ScannerState extends State<ScannerScreen> {
                                   ),
 
                                   onPressed: (){
-                                    Navigator.popAndPushNamed(context, '/escaner');
+                                    //Navigator.popAndPushNamed(context, '/escaner');
+                                    Navigator.popAndPushNamed(context, EscanearFactura.route, arguments:  "asignar",);
                                   },
                                   //width: 90,
                                   //height: 40,

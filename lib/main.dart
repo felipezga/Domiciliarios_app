@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'Modelo/LoginModel.dart';
+import 'Modelo/UsuarioModel.dart';
 import 'Paginas/EscanerFactura.dart';
 import 'Paginas/Login.dart';
 import 'Paginas/Mapa.dart';
@@ -32,6 +33,7 @@ class App extends StatefulWidget {
 
 class _MyAppState extends State<App> {
   int _paginaActual = 0;
+  Future<User> _session;
 
   /*final _pageOptions = [
 
@@ -41,6 +43,15 @@ class _MyAppState extends State<App> {
     ),
   ];*/
 
+  void initState() {
+    _session = UserPreferences().getUser();
+    //Future<User> getUserData() => UserPreferences().getUser();
+    print(_session);
+    print("Inicio user");
+
+    super.initState();
+  }
+
   List<Widget> paginas = [
     //Login(),
     LoginPage(),
@@ -48,7 +59,7 @@ class _MyAppState extends State<App> {
     //Restaurante(),
   ];
 
-  Future<User> getUserData() => UserPreferences().getUser();
+
 
   @override
   Widget build(BuildContext context) {
@@ -115,8 +126,11 @@ class _MyAppState extends State<App> {
       theme: state.getTheme,
       // home: paginas[_paginaActual],
       home: FutureBuilder(
-          future: getUserData(),
+          //future: getUserData(),
+          future: _session,
           builder: (context, snapshot) {
+            print("Main snapshot");
+            print(snapshot.data);
             switch (snapshot.connectionState) {
               case ConnectionState.none:
               case ConnectionState.waiting:
@@ -124,12 +138,11 @@ class _MyAppState extends State<App> {
               default:
                 if (snapshot.hasError)
                   return Text('Error: ${snapshot.error}');
-                else if (snapshot.data.token == null)
-                  return LoginPage();
+                else if (snapshot.data.token == null || snapshot.data.token == "")
+                  return LoginScreen();
                 else
-                  UserPreferences().removeUser();
-                //return Welcome(user: snapshot.data);
-                return Mapa();
+                  return Mapa();
+                  //UserPreferences().removeUser();
             }
           }),
       routes: <String, WidgetBuilder>{
@@ -140,7 +153,7 @@ class _MyAppState extends State<App> {
         Domicilios.route: (context) => Domicilios(),
         "/contacto": (context) => PluginScaleBar(),
         PerfilUsuario.route: (context) => PerfilUsuario(),
-        '/login': (context) => LoginPage(),
+        '/login': (context) => LoginScreen(),
         EscanearFactura.route: (context) =>  EscanearFactura(ModalRoute.of(context).settings.arguments),
         Reasignacion.route: (context) => Reasignacion(ModalRoute.of(context).settings.arguments),
       },

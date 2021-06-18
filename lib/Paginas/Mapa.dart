@@ -413,7 +413,7 @@ context.read<PedidoBloc>().add(entregarPedido( pedido));
 
     //context.read<PedidoBloc>().add(GetPedidoUser("mojombo"));
     //context.read<PedidoBloc>().add(GetPedidoUser("herbivora"));
-    context.read<PedidoBloc>().add(GetPedidoUser("1"));
+    context.read<PedidoBloc>().add(GetPedidoUser());
     print("Pedido Cargado");
   }
 
@@ -622,9 +622,9 @@ context.read<PedidoBloc>().add(entregarPedido( pedido));
         //height: 40,
         child: Center(
           child: Row( // Replace with a Row for horizontal icon + text
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
-              Icon( Icon_boton , size: 30,),
+
               Text(estado,
                 textAlign: TextAlign.center,
                 style: TextStyle(
@@ -632,6 +632,7 @@ context.read<PedidoBloc>().add(entregarPedido( pedido));
                     fontWeight: FontWeight.w900
                 ),
               ),
+              Icon( Icon_boton , size: 25,),
             ],
           ),
         ),
@@ -647,7 +648,7 @@ context.read<PedidoBloc>().add(entregarPedido( pedido));
       children: <Widget>[
             SizedBox(height: 12),
             CustomDraggingHandle(),
-            SizedBox(height: 16),
+            SizedBox(height: 5),
             _Header(),
         //ScreenProgress(ticks: 3,),
 
@@ -665,7 +666,7 @@ context.read<PedidoBloc>().add(entregarPedido( pedido));
   Widget CustomRecentPhotosText( listaraking, pedidosAsignados ) {
     return
         Padding(
-          padding: EdgeInsets.all(20.0),
+          padding: EdgeInsets.all(12.0),
           child: Column(
           children: [
 
@@ -688,7 +689,58 @@ context.read<PedidoBloc>().add(entregarPedido( pedido));
                         end: levelClock,
                         ).animate(_controller),
                         ),*/
-                      Botones(state.Value, Colors.green, Icons.motorcycle_rounded, "Finalizar"),
+
+                      BlocBuilder<SeleccionBloc, SeleccionState>(
+                          builder: (BuildContext context, SeleccionState state) {
+
+                            if (state is Selected) {
+                              print("estado seeeee");
+                              print(state.pedido);
+
+                              pedidoSeleccionado = state.pedido;
+
+                              print(pedidosAsignados);
+                              //List<Pedido> pedidosAsignados = state.pedido;
+                              //dropdownValue = state.pedidoSelected;
+                              return DropdownButton<String>(
+                                value: state.pedido.name,
+                                icon: Icon(Icons.arrow_drop_down),
+                                iconSize: 24,
+                                elevation: 16,
+                                style: TextStyle(color: Colors.red, fontSize: 18),
+                                /*underline: Container(
+                                  height: 2,
+                                  color: Colors.red,
+                                ),*/
+                                onChanged: (String data) {
+
+                                  List<Pedido> cambioPedido = pedidosAsignados.where((i) => i.name == data ).toList();
+
+                                  print("cambioz");
+                                  print(cambioPedido[0].id);
+                                  print(cambioPedido[0].name);
+                                  context.read<SeleccionBloc>().add(SeleccionarEvent(  cambioPedido[0] ));
+                                  /*setState(() {
+                  dropdownValue = data;
+                });*/
+                                },
+                                //items: actorsName.map<DropdownMenuItem<String>>((String value) {
+                                items: pedidosAsignados.map<DropdownMenuItem<String>>((Pedido value) {
+                                  return DropdownMenuItem<String>(
+                                    value: value.name,
+                                    child: Text(value.name),
+                                  );
+                                }).toList(),
+                              );
+
+                            }
+                            /*if(state is PedidoSelected){
+                        dropdownValue = state.pedido;
+                      }*/
+                            return Loading();
+                            //return Text("fdf");
+                          }),
+                      Botones(state.Value, Colors.green, Icons.play_arrow_outlined, "Finalizar"),
 
 
                     /*Botones(mens_boton, Colors.green, Icons.motorcycle_rounded, "Finalizar"),
@@ -709,14 +761,211 @@ context.read<PedidoBloc>().add(entregarPedido( pedido));
               } else if (state is BotonStateFinalizar) {
               print("finalizar");
               return
+              Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
 
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Botones(state.Value, Colors.green, Icons.motorcycle_rounded, "Finalizar"),
-                    Botones("Novedad", Colors.yellow, Icons.event_note_rounded, "Finalizar")
-                  ],
-                );
+                      BlocBuilder<SeleccionBloc, SeleccionState>(
+                          builder: (BuildContext context, SeleccionState state) {
+
+                            if (state is Selected) {
+                              print("estado seeeee");
+                              print(state.pedido);
+
+                              pedidoSeleccionado = state.pedido;
+
+                              print(pedidosAsignados);
+                              //List<Pedido> pedidosAsignados = state.pedido;
+                              //dropdownValue = state.pedidoSelected;
+                              return DropdownButton<String>(
+                                value: state.pedido.name,
+                                icon: Icon(Icons.arrow_drop_down),
+                                iconSize: 24,
+                                elevation: 16,
+                                style: TextStyle(color: Colors.red, fontSize: 18),
+                                underline: Container(
+                                  height: 2,
+                                  color: Colors.red,
+                                ),
+                                onChanged: (String data) {
+
+                                  List<Pedido> cambioPedido = pedidosAsignados.where((i) => i.name == data ).toList();
+
+                                  print("cambioz");
+                                  print(cambioPedido[0].id);
+                                  print(cambioPedido[0].name);
+                                  context.read<SeleccionBloc>().add(SeleccionarEvent(  cambioPedido[0] ));
+                                  /*setState(() {
+                  dropdownValue = data;
+                });*/
+                                },
+                                //items: actorsName.map<DropdownMenuItem<String>>((String value) {
+                                items: pedidosAsignados.map<DropdownMenuItem<String>>((Pedido value) {
+                                  return DropdownMenuItem<String>(
+                                    value: value.name,
+                                    child: Text(value.name),
+                                  );
+                                }).toList(),
+                              );
+
+                            }
+                            /*if(state is PedidoSelected){
+                        dropdownValue = state.pedido;
+                      }*/
+                            return Loading();
+                            //return Text("fdf");
+                          }),
+                      //Botones(state.Value, Colors.green, Icons.stop_outlined, "Finalizar"),
+                      //Botones("Novedad", Colors.yellow, Icons.event_note_rounded, "Finalizar")
+                    ],
+                  ),
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+
+
+
+
+                        ElevatedButton(
+                          //onPressed: () => { getDropDownItem(pedidoSeleccionado) },
+                          onPressed: ()  {
+                            print("confirm45454acion");
+                            showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return AlertDialog(
+                                    title: Text('Entregar producto'),
+                                    content: Text("Estas seguro de aceptar esta accion?"),
+                                    actions: <Widget>[
+
+                                      /*ElevatedButton.icon(
+                  label: Text(" Cancelar"),
+                  icon: Icon(Icons.cancel_outlined),
+                  onPressed: () => { Navigator.pop(context)},
+                  style: ElevatedButton.styleFrom(
+                    //shape: CircleBorder(),
+                    primary: Colors.red,
+                  ),
+                ),*/
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        children: [
+                                          ElevatedButton(
+                                            onPressed: () => {
+                                              //Navigator.pop(context)
+                                              Navigator.of(context).pop(),
+                                            },
+                                            child: Icon(Icons.cancel_outlined, color: Colors.white),
+                                            style: ElevatedButton.styleFrom(
+                                              shape: CircleBorder(),
+                                              padding: EdgeInsets.all(10),
+                                              primary: Colors.red, // <-- Button color
+                                              onPrimary: Colors.black, // <-- Splash color
+                                            ),
+                                          ),
+
+                                          ElevatedButton(
+                                            onPressed: () => {
+                                              //context.read<PedidoBloc>().add(entregarPedido( pedidoSeleccionado))
+                                              getDropDownItem(pedidoSeleccionado),
+                                              Navigator.of(context).pop(),
+                                            },
+                                            child: Icon(Icons.check_circle_outline_outlined, color: Colors.white),
+                                            style: ElevatedButton.styleFrom(
+                                              shape: CircleBorder(),
+                                              padding: EdgeInsets.all(10),
+                                              primary: Colors.green, // <-- Button color
+                                              onPrimary: Colors.black, // <-- Splash color
+                                            ),
+                                          ),
+                                        ],
+                                      )
+
+
+
+                                    ],
+                                  );
+                                }
+                            );
+                            //Confirmacion(pedidoSeleccionado);
+                          },
+
+                          child: Icon(Icons.send_outlined, color: Colors.white),
+                          style: ElevatedButton.styleFrom(
+                            shape: CircleBorder(),
+                            padding: EdgeInsets.all(10),
+                            //primary: Colors.blue, // <-- Button color
+                            onPrimary: Colors.red, // <-- Splash color
+                          ),
+                        ),
+                        /*ElevatedButton.icon(
+                  label: Text("Ent"),
+                  icon: Icon(Icons.send_and_archive),
+
+                  onPressed:  () => { getDropDownItem(pedidoSeleccionado) } ,
+                  style: ElevatedButton.styleFrom(
+                    shape: CircleBorder(),
+                    primary: Colors.blue,
+                  ),
+                ),*/
+
+                        ElevatedButton(
+                          onPressed: (){
+                            //Navigator.popAndPushNamed(context, '/escaner');
+                            print("aquiii");
+                            //Navigator.of(context).push(MaterialPageRoute(builder: (context) => Scanner(opcion: "entregar")));
+                            /*Navigator.popAndPushNamed(context, EscanearFactura.route, arguments: EscanearFactura(
+                      opcion: "entregar",
+                    ));*/
+
+
+                            Navigator.pushNamed(
+                              context,
+                              EscanearFactura.route,
+                              //ExtractArgumentsScreen.routeName,
+                              arguments:  "entregar"
+                              //'Extract Arguments Screen',
+                              //'This message is extracted in the build method.',
+                              ,
+                            );
+
+                            /*return MaterialPageRoute(
+                        builder: (context) {
+                          return Scanner(
+                            opcion: "entregar"
+                          );
+                        },
+                      );*/
+                          },
+                          child: Icon(Icons.qr_code_scanner_sharp, color: Colors.white),
+                          style: ElevatedButton.styleFrom(
+                            shape: CircleBorder(),
+                            padding: EdgeInsets.all(10),
+                            //primary: Colors.blue, // <-- Button color
+                            onPrimary: Colors.red, // <-- Splash color
+                          ),
+                        ),
+
+                        ElevatedButton(
+                          onPressed: (){
+                            MensajeNovedad();
+                          },
+                          child: Icon(Icons.message, color: Colors.white),
+                          style: ElevatedButton.styleFrom(
+                            shape: CircleBorder(),
+                            padding: EdgeInsets.all(10),
+                            //primary: Colors.blue, // <-- Button color
+                            onPrimary: Colors.red, // <-- Splash color
+                          ),
+                        )
+
+                      ])
+                ],
+              )
+
+                ;
 
 
               /// Show Counter Value
@@ -777,184 +1026,6 @@ context.read<PedidoBloc>().add(entregarPedido( pedido));
               }
               ),
 
-
-          Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-
-
-                BlocBuilder<SeleccionBloc, SeleccionState>(
-                    builder: (BuildContext context, SeleccionState state) {
-
-                      if (state is Selected) {
-                        print("estado seeeee");
-                        print(state.pedido);
-
-                        pedidoSeleccionado = state.pedido;
-
-                        print(pedidosAsignados);
-                        //List<Pedido> pedidosAsignados = state.pedido;
-                        //dropdownValue = state.pedidoSelected;
-                        return DropdownButton<String>(
-                          value: state.pedido.name,
-                          icon: Icon(Icons.arrow_drop_down),
-                          iconSize: 24,
-                          elevation: 16,
-                          style: TextStyle(color: Colors.red, fontSize: 18),
-                          underline: Container(
-                            height: 2,
-                            color: Colors.blue,
-                          ),
-                          onChanged: (String data) {
-
-                            List<Pedido> cambioPedido = pedidosAsignados.where((i) => i.name == data ).toList();
-
-                            print("cambioz");
-                            print(cambioPedido[0].id);
-                            print(cambioPedido[0].name);
-                            context.read<SeleccionBloc>().add(SeleccionarEvent(  cambioPedido[0] ));
-                            /*setState(() {
-                  dropdownValue = data;
-                });*/
-                          },
-                          //items: actorsName.map<DropdownMenuItem<String>>((String value) {
-                          items: pedidosAsignados.map<DropdownMenuItem<String>>((Pedido value) {
-                            return DropdownMenuItem<String>(
-                              value: value.name,
-                              child: Text(value.name),
-                            );
-                          }).toList(),
-                        );
-
-                    }
-                      /*if(state is PedidoSelected){
-                        dropdownValue = state.pedido;
-                      }*/
-                      return Loading();
-                      //return Text("fdf");
-                    }),
-
-                ElevatedButton(
-                  //onPressed: () => { getDropDownItem(pedidoSeleccionado) },
-                    onPressed: ()  {
-                      print("confirm45454acion");
-                      showDialog(
-                          context: context,
-                          builder: (context) {
-                            return AlertDialog(
-                              title: Text('Entregar producto'),
-                              content: Text("Estas seguro de aceptar esta accion?"),
-                              actions: <Widget>[
-
-                                /*ElevatedButton.icon(
-                  label: Text(" Cancelar"),
-                  icon: Icon(Icons.cancel_outlined),
-                  onPressed: () => { Navigator.pop(context)},
-                  style: ElevatedButton.styleFrom(
-                    //shape: CircleBorder(),
-                    primary: Colors.red,
-                  ),
-                ),*/
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    ElevatedButton(
-                                      onPressed: () => {
-                                        //Navigator.pop(context)
-                                        Navigator.of(context).pop(),
-                                      },
-                                      child: Icon(Icons.cancel_outlined, color: Colors.white),
-                                      style: ElevatedButton.styleFrom(
-                                        shape: CircleBorder(),
-                                        padding: EdgeInsets.all(10),
-                                        primary: Colors.red, // <-- Button color
-                                        onPrimary: Colors.black, // <-- Splash color
-                                      ),
-                                    ),
-
-                                    ElevatedButton(
-                                      onPressed: () => {
-                                        //context.read<PedidoBloc>().add(entregarPedido( pedidoSeleccionado))
-                                        getDropDownItem(pedidoSeleccionado),
-                                        Navigator.of(context).pop(),
-                                      },
-                                      child: Icon(Icons.check_circle_outline_outlined, color: Colors.white),
-                                      style: ElevatedButton.styleFrom(
-                                        shape: CircleBorder(),
-                                        padding: EdgeInsets.all(10),
-                                        primary: Colors.green, // <-- Button color
-                                        onPrimary: Colors.black, // <-- Splash color
-                                      ),
-                                    ),
-                                  ],
-                                )
-
-
-
-                              ],
-                            );
-                          }
-                      );
-                       //Confirmacion(pedidoSeleccionado);
-                    },
-
-                  child: Icon(Icons.send_outlined, color: Colors.white),
-                  style: ElevatedButton.styleFrom(
-                    shape: CircleBorder(),
-                    padding: EdgeInsets.all(10),
-                    //primary: Colors.blue, // <-- Button color
-                    onPrimary: Colors.red, // <-- Splash color
-                  ),
-                ),
-                /*ElevatedButton.icon(
-                  label: Text("Ent"),
-                  icon: Icon(Icons.send_and_archive),
-
-                  onPressed:  () => { getDropDownItem(pedidoSeleccionado) } ,
-                  style: ElevatedButton.styleFrom(
-                    shape: CircleBorder(),
-                    primary: Colors.blue,
-                  ),
-                ),*/
-
-                ElevatedButton(
-                  onPressed: (){
-                      //Navigator.popAndPushNamed(context, '/escaner');
-                    print("aquiii");
-                     //Navigator.of(context).push(MaterialPageRoute(builder: (context) => Scanner(opcion: "entregar")));
-                    /*Navigator.popAndPushNamed(context, EscanearFactura.route, arguments: EscanearFactura(
-                      opcion: "entregar",
-                    ));*/
-
-
-                    Navigator.pushNamed(
-                      context,
-                      EscanearFactura.route,
-                      //ExtractArgumentsScreen.routeName,
-                      arguments:  "entregar"
-                        //'Extract Arguments Screen',
-                        //'This message is extracted in the build method.',
-                      ,
-                    );
-
-                      /*return MaterialPageRoute(
-                        builder: (context) {
-                          return Scanner(
-                            opcion: "entregar"
-                          );
-                        },
-                      );*/
-                      },
-                  child: Icon(Icons.qr_code_scanner_sharp, color: Colors.white),
-                  style: ElevatedButton.styleFrom(
-                    shape: CircleBorder(),
-                    padding: EdgeInsets.all(10),
-                    //primary: Colors.blue, // <-- Button color
-                    onPrimary: Colors.red, // <-- Splash color
-                  ),
-                )
-
-          ]),
 
 
 
@@ -1019,9 +1090,9 @@ context.read<PedidoBloc>().add(entregarPedido( pedido));
 
   Widget _trackingPedido( List<Pedido> pedidosAsignados) {
     return DraggableScrollableSheet(
-      initialChildSize: 0.10,
+      initialChildSize: 0.087,
       minChildSize: 0.05,
-      maxChildSize: 0.75,
+      maxChildSize: 0.7,
       builder: (BuildContext context, ScrollController scrollController) {
         return SingleChildScrollView(
           controller: scrollController,
@@ -1199,7 +1270,7 @@ class _Header extends StatelessWidget {
         ),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(4),
+        padding: const EdgeInsets.all(6),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
