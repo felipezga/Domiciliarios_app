@@ -1,4 +1,3 @@
-import 'package:domiciliarios_app/Modelo/EstadoPedidoDomiciliario.dart';
 import 'package:domiciliarios_app/Modelo/Pedido.dart';
 import 'package:domiciliarios_app/Servicios/PedidoDomicilioServicio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

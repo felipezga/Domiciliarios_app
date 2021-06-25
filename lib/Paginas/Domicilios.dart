@@ -1,29 +1,28 @@
-//import 'package:flutter/widgets.dart';
-//
-//import 'package:flutter/cupertino.dart';
-
-import 'package:domiciliarios_app/Bloc/DomicilioBloc.dart';
+import 'package:domiciliarios_app/Bloc/PedidoBloc.dart';
 import 'package:domiciliarios_app/Bloc/ThemeBloc.dart';
-import 'package:domiciliarios_app/Modelo/DomicilioModel.dart';
-import 'package:domiciliarios_app/Servicios/DomicilioServicio.dart';
+import 'package:domiciliarios_app/Modelo/Pedido.dart';
+import 'package:domiciliarios_app/Modelo/RutaModel.dart';
+import 'package:domiciliarios_app/Servicios/PedidoDomicilioServicio.dart';
 import 'package:domiciliarios_app/widgets/ErrorText.dart';
 import 'package:domiciliarios_app/widgets/Loading.dart';
 import 'package:domiciliarios_app/widgets/drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'HistorialMapa.dart';
+
 class Domicilios extends StatelessWidget {
-  @override
 
   static const String route = '/domicilios';
+
+  @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    print("esere");
     return BlocProvider(
-      create: (context) => DomicilioBloc(domicilioRepo: DomicilioServices()),
+      //create: (context) => DomicilioBloc(domicilioRepo: DomicilioServices()),
+      create: (BuildContext context) =>  PedidoBloc(pedidoRepo: PedidoDomiclioRepository()),
       child: DomiciliosScreen(),
     );
-    throw UnimplementedError();
   }
 }
 
@@ -37,14 +36,9 @@ class _DomicilioState extends State<DomiciliosScreen> {
 
   @override
   void initState() {
-    print("ini");
     super.initState();
     //_loadTheme();
     _loadDomicilios();
-
-    /*Future.delayed(Duration.zero, () {
-      this._loadDomicilios();
-    });*/
   }
 
   /*_loadTheme() async {
@@ -53,7 +47,8 @@ class _DomicilioState extends State<DomiciliosScreen> {
 
   _loadDomicilios() async {
     print("load");
-    context.read<DomicilioBloc>().add(DomicilioEvents.fetchDomicilios);
+    //context.read<DomicilioBloc>().add(DomicilioEvents.fetchDomicilios);
+    context.read<PedidoBloc>().add(GetPedidoUser());
     print("loadeee");
   }
 
@@ -64,12 +59,17 @@ class _DomicilioState extends State<DomiciliosScreen> {
     Preferences.saveTheme(selectedTheme);
   }*/
 
+  List<Ruta> rutas = <Ruta>[
+    new Ruta('Ruta1', '12345', []),
+    new Ruta('Ruta2', '67890', []),
+    new Ruta('Ruta3', '5555', []),
+  ];
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ThemeBloc, ThemeState>(builder: (context, theme) {
       return Scaffold(
         appBar: AppBar(
-          //backgroundColor: Colors.purple[200],
           leading: Builder(
               builder: (context) {
                 return IconButton(
@@ -80,7 +80,7 @@ class _DomicilioState extends State<DomiciliosScreen> {
           ),
           //automaticallyImplyLeading: false,
           title: Text(
-            'DOMICILIOS',
+            'HISTORIAL ENTREGAS',
             style: TextStyle(
               color: theme.getTheme.hoverColor,
               fontWeight: FontWeight.bold,
@@ -99,19 +99,20 @@ class _DomicilioState extends State<DomiciliosScreen> {
   _body() {
     return Column(
       children: [
-        BlocBuilder<DomicilioBloc, DomicilioState>(
-            builder: (BuildContext context, DomicilioState state) {
-              if (state is DomicilioListError) {
+        BlocBuilder<PedidoBloc, PedidoState>(
+            builder: (BuildContext context, PedidoState state) {
+              if (state is PedidoError) {
                 final error = state.error;
-                String message = '${error.message}\nTap to Retry.';
+                String message = error+'\nTap to Retry.';
                 return ErrorTxt(
                   message: message,
                   onTap: _loadDomicilios(),
                 );
               }
-              if (state is DomicilioLoaded) {
-                List<Domicilio> albums = state.domicilios;
-                return _list(albums);
+              if (state is PedidoLoaded) {
+                List<Pedido> historialPedidos = state.pedido;
+                //List<Domicilio> albums = state.domicilios;
+                return _list(historialPedidos, rutas);
               }
               return Loading();
             }),
@@ -119,13 +120,15 @@ class _DomicilioState extends State<DomiciliosScreen> {
     );
   }
 
-  Widget _list(List<Domicilio> domis) {
+  Widget _list(List<Pedido> pedidos, rutas) {
     return Expanded(
       child: ListView.builder(
-        itemCount: domis.length,
+        itemCount: rutas.length,
         itemBuilder: (_, index) {
-          Domicilio d = domis[index];
-          return ListRow(domicilio: d);
+          //Pedido p = pedidos[index];
+          Ruta r = rutas[index];
+          //return ListRow(pedido: p);
+          return ListRow(pedidos: pedidos, ruta: r,);
         },
       ),
     );
@@ -138,8 +141,9 @@ class _DomicilioState extends State<DomiciliosScreen> {
 
 class ListRow extends StatelessWidget {
   //
-  final Domicilio domicilio;
-  ListRow({this.domicilio});
+  final List<Pedido> pedidos;
+  final Ruta ruta;
+  ListRow({this.pedidos, this.ruta});
 
   @override
   Widget build(BuildContext context) {
@@ -149,8 +153,57 @@ class ListRow extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text( domicilio.nombre.toString()),
-          Divider(),
+          ExpansionTile(
+            //key: PageStorageKey<NameBean>(bean),
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text(
+                      ruta.id,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        fontSize: 18,
+                      )
+                  ),
+                ),
+                IconButton(
+                    icon: new Icon(Icons.location_history, color: Colors.red, size: 35,),
+                    highlightColor: Colors.pink,
+                    onPressed: (){
+                      print("No fuimos");
+                      Navigator.push( context,
+                        new MaterialPageRoute(
+                          builder: (context) => new HistorialMapa(),
+                        ),
+                      );
+
+                      //Navigator.popAndPushNamed(context, HistorialMapa.route);
+
+
+                    }
+                    ),
+              ],
+            ),
+            subtitle: Text(ruta.fecha ),
+            children: pedidos.map<Widget>((ped) =>
+              ListTile(
+                leading: Icon(Icons.volunteer_activism, size: 50, color: Colors.red,),
+                title: Text(ped.name.toString()),
+                subtitle: Text(ped.id.toString()),
+                trailing: Text(ped.estado.toString()),
+              ),
+              //Text( pedido.numero.toString()),
+              //Divider(),
+
+            ).toList(),
+            leading: CircleAvatar(
+              backgroundColor: Colors.green,
+              child: Text(ruta.fecha.substring(0,1),style: TextStyle(color: Colors.white),),
+      ),
+    )
+
+
         ],
       ),
     );

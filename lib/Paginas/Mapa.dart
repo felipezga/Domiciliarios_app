@@ -9,25 +9,19 @@ import 'package:domiciliarios_app/Bloc/TrackingBloc.dart';
 import 'package:domiciliarios_app/Bloc/UserLocationBloc.dart';
 import 'package:domiciliarios_app/Modelo/EstadoPedidoDomiciliario.dart';
 import 'package:domiciliarios_app/Modelo/Pedido.dart';
-import 'package:domiciliarios_app/Modelo/UserLocation.dart';
 import 'package:domiciliarios_app/Paginas/EscanerFactura.dart';
 import 'package:domiciliarios_app/Servicios/NotificacionPushFirebase.dart';
 import 'package:domiciliarios_app/Servicios/PedidoDomicilioServicio.dart';
 import 'package:domiciliarios_app/widgets/AlertConfirmacion.dart';
-import 'package:domiciliarios_app/widgets/ErrorText.dart';
 import 'package:domiciliarios_app/widgets/Loading.dart';
-import 'package:domiciliarios_app/widgets/Scanner.dart';
 import 'package:domiciliarios_app/widgets/drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong/latlong.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:geocoding/geocoding.dart';
 import 'package:intl/intl.dart';
 import 'package:timeline_tile/timeline_tile.dart';
 //import 'package:restaurantes_tipoventas_app/widgets/drawer.dart';
-import 'package:geocoding/geocoding.dart';
 
 class Mapa extends StatelessWidget{
   static const String route = '/mapa';
@@ -76,7 +70,7 @@ class Mapa extends StatelessWidget{
           ),
           drawer: buildDrawer(context, Mapa.route),
 
-          body: mapaState(),
+          body: MapaState(),
         ),
     );
     /*return new Scaffold(
@@ -102,18 +96,17 @@ class Mapa extends StatelessWidget{
   }
 }
 
-class mapaState extends StatefulWidget{
-  mapaState() : super();
+class MapaState extends StatefulWidget{
+  MapaState() : super();
   _AppState createState() => _AppState();
 }
 
-class _AppState extends State<mapaState> {
+class _AppState extends State<MapaState> {
 //class _AppState extends State<mapaState> with TickerProviderStateMixin {
 
   BotonesBloc _botonesWidgetBloc;
-  String _locationMessage = "";
-  Future<Position> UserPosition;
-  String _currentAddress;
+  //String _locationMessage = "";
+  //String _currentAddress;
 
   // Default Drop Down Item.
   String dropdownValue = '-';
@@ -131,7 +124,7 @@ class _AppState extends State<mapaState> {
   ] ;
 
   void getDropDownItem( pedido){
-context.read<PedidoBloc>().add(entregarPedido( pedido));
+context.read<PedidoBloc>().add(EntregarPedido( pedido));
 /*
     setState(() {
       holder = dropdownValue ;
@@ -140,10 +133,10 @@ context.read<PedidoBloc>().add(entregarPedido( pedido));
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  double _latitude;
-  double _longitude;
+  //double _latitude;
+  //double _longitude;
   bool _isGettingLocation;
-  String mens_boton = "Iniciar";
+  String mensBoton = "Iniciar";
   int contador;
 
   Pedido pedidoSeleccionado;
@@ -152,7 +145,7 @@ context.read<PedidoBloc>().add(entregarPedido( pedido));
   //AnimationController _controller;
   //int levelClock = 180;
 
-  List<EstadoDomiciliario> _esta_domi = [];
+  List<EstadoDomiciliario> estaDomi = [];
   List<LatLng> points = [];
 
   List<LatLng> tappedPoints = [];
@@ -167,9 +160,9 @@ context.read<PedidoBloc>().add(entregarPedido( pedido));
   final myController = TextEditingController();
   TextEditingController  descripcionCtrl = new TextEditingController();
 
-  Marker _marker;
-  Timer _timer;
-  int _markerIndex = 0;
+  //Marker _marker;
+  //Timer _timer;
+  //int _markerIndex = 0;
 
   @override
   void dispose() {
@@ -207,8 +200,8 @@ context.read<PedidoBloc>().add(entregarPedido( pedido));
             levelClock) // gameData.levelClock is a user entered number elsewhere in the applciation
     );*/
 
-    final NotificacionServicio = new NotificacionesPush();
-    NotificacionServicio.initNotification();
+    final notificacionServicio = new NotificacionesPush();
+    notificacionServicio.initNotification();
 
     _loadPedidoUsuario();
 
@@ -307,8 +300,7 @@ context.read<PedidoBloc>().add(entregarPedido( pedido));
                                 if (state is PedidoError) {
                                   final error = state.error;
                                   //String message = '${error.message}\nTap to Retry.';
-                                  return Text("fff"
-                                  );
+                                  return Text(error);
                                 }
                                 if (state is PedidoLoaded) {
                                   List<Pedido> pedidosAsignados = state.pedido;
@@ -320,7 +312,7 @@ context.read<PedidoBloc>().add(entregarPedido( pedido));
                                     //context.read<SeleccionBloc>().add(SeleccionarEvent( dropdownValue));
                                     context.read<SeleccionBloc>().add(SeleccionarEvent( state.pedido[0]));
 
-                                    BlocProvider.of<TrackingBloc>(context).add(AddEstadoDomiciliario(  estadoTracking:  "PREPARADO", descripcionTracking: "PRODUCTO PREPARADO", listaTracking: _esta_domi));
+                                    BlocProvider.of<TrackingBloc>(context).add(AddEstadoDomiciliario(  estadoTracking:  "PREPARADO", descripcionTracking: "PRODUCTO PREPARADO", listaTracking: estaDomi));
                                     return _trackingPedido( pedidosAsignados );
 
                                 }
@@ -421,7 +413,7 @@ context.read<PedidoBloc>().add(entregarPedido( pedido));
 
 
 
-  _getCurrentLocation() async {
+  /*_getCurrentLocation() async {
 
     final _currentPosition = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
     print(_currentPosition);
@@ -437,12 +429,12 @@ context.read<PedidoBloc>().add(entregarPedido( pedido));
 
     });
 
-  }
+  }*/
 
 
 
 
-  _obtenerLocationEstado(String estado, String descripcion, String next_estado) async {
+  /*_obtenerLocationEstado(String estado, String descripcion, String next_estado) async {
 
     final _currentPosition = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
     //print(_currentPosition);
@@ -459,12 +451,12 @@ context.read<PedidoBloc>().add(entregarPedido( pedido));
         if(contador > 0){
           _esta_domi.add( EstadoDomiciliario( _latitude, _longitude, descripcion, estado ,  formattedDate ) );
           if(estado== "Finalizar" && next_estado ==  "Finalizar" ){
-            mens_boton = "Iniciar";
+            mensBoton = "Iniciar";
 
             //_controller.stop();
 
           }else{
-            mens_boton = next_estado;
+            mensBoton = next_estado;
 
             points.add(LatLng(_latitude, _longitude));
 
@@ -475,9 +467,9 @@ context.read<PedidoBloc>().add(entregarPedido( pedido));
         print("ffffffsss");
         contador++;
     });
-  }
+  }*/
 
-  _getAddressFromLatLng() async {
+  /*_getAddressFromLatLng() async {
     try {
       List<Placemark> placemarks = await placemarkFromCoordinates(
          // _currentPosition.latitude,
@@ -504,16 +496,16 @@ context.read<PedidoBloc>().add(entregarPedido( pedido));
     } catch (e) {
       print(e);
     }
-  }
+  }*/
 
 
-  Widget MensajeNovedad(){
+  Widget mensajeNovedad(){
      showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           content: Stack(
-            overflow: Overflow.visible,
+            //overflow: Overflow.visible,
             children: <Widget>[
               Positioned(
                 right: -40.0,
@@ -569,7 +561,7 @@ context.read<PedidoBloc>().add(entregarPedido( pedido));
     );
   }
 
-  Widget Botones(estado, color_boton, Icon_boton, next_estado ){
+  Widget botones(estado, colorBoton, iconBoton, nextEstado ){
 
     return ElevatedButton(
       //color: color_boton,
@@ -595,7 +587,7 @@ context.read<PedidoBloc>().add(entregarPedido( pedido));
             _botonesWidgetBloc.add(EventFinalizarBoton());
           BlocProvider.of<LocationBloc>(context).add(LocationStarted());
           //BlocProvider.of<TrackingBloc>(context).add(AddEstadoDomiciliario( estadoTracking: EstadoDomiciliario( 9.9, 9.6, "Iniciar entrega", "Hoover", ''  ), listaTracking: _esta_domi));
-          BlocProvider.of<TrackingBloc>(context).add(AddEstadoDomiciliario(  estadoTracking:  estado, descripcionTracking: "INICIAR ENTREGA", listaTracking: _esta_domi));
+          BlocProvider.of<TrackingBloc>(context).add(AddEstadoDomiciliario(  estadoTracking:  estado, descripcionTracking: "INICIAR ENTREGA", listaTracking: estaDomi));
 
         }
         else if(estado == "FINALIZAR"){
@@ -610,11 +602,11 @@ context.read<PedidoBloc>().add(entregarPedido( pedido));
 
           BlocProvider.of<LocationBloc>(context).add(LocationStarted());
           //BlocProvider.of<TrackingBloc>(context).add(AddEstadoDomiciliario( estadoTracking: EstadoDomiciliario( 9.9, 9.6, "Iniciar entrega", "Hoover", ''  ), listaTracking: _esta_domi));
-          BlocProvider.of<TrackingBloc>(context).add(AddEstadoDomiciliario(  estadoTracking:  estado, descripcionTracking: "INICIAR ENTREGA", listaTracking: _esta_domi));
+          BlocProvider.of<TrackingBloc>(context).add(AddEstadoDomiciliario(  estadoTracking:  estado, descripcionTracking: "INICIAR ENTREGA", listaTracking: estaDomi));
           _botonesWidgetBloc.add(EventTiempoRuta());
         }
         else{
-          MensajeNovedad();
+          mensajeNovedad();
         }
 
         },
@@ -632,7 +624,7 @@ context.read<PedidoBloc>().add(entregarPedido( pedido));
                     fontWeight: FontWeight.w900
                 ),
               ),
-              Icon( Icon_boton , size: 25,),
+              Icon( iconBoton , size: 25,),
             ],
           ),
         ),
@@ -642,7 +634,7 @@ context.read<PedidoBloc>().add(entregarPedido( pedido));
   }
 
 
-  Widget CustomInnerContent( listaraking, pedidosAsignados ) {
+  Widget widgetPedidosEntregar( listaraking, pedidosAsignados ) {
     return
       Column(
       children: <Widget>[
@@ -655,7 +647,7 @@ context.read<PedidoBloc>().add(entregarPedido( pedido));
             //SizedBox(height: 16),
             //CustomExplore(),
             //SizedBox(height: 24),
-            CustomRecentPhotosText( listaraking, pedidosAsignados),
+            widgetOperacionPedidos( listaraking, pedidosAsignados),
             //SizedBox(height: 16),
       ],
 
@@ -663,7 +655,7 @@ context.read<PedidoBloc>().add(entregarPedido( pedido));
   }
 
 
-  Widget CustomRecentPhotosText( listaraking, pedidosAsignados ) {
+  Widget widgetOperacionPedidos( listaraking, pedidosAsignados ) {
     return
         Padding(
           padding: EdgeInsets.all(12.0),
@@ -740,7 +732,7 @@ context.read<PedidoBloc>().add(entregarPedido( pedido));
                             return Loading();
                             //return Text("fdf");
                           }),
-                      Botones(state.Value, Colors.green, Icons.play_arrow_outlined, "Finalizar"),
+                      botones(state.value, Colors.green, Icons.play_arrow_outlined, "Finalizar"),
 
 
                     /*Botones(mens_boton, Colors.green, Icons.motorcycle_rounded, "Finalizar"),
@@ -817,7 +809,7 @@ context.read<PedidoBloc>().add(entregarPedido( pedido));
                             return Loading();
                             //return Text("fdf");
                           }),
-                      //Botones(state.Value, Colors.green, Icons.stop_outlined, "Finalizar"),
+                      //Botones(state.value, Colors.green, Icons.stop_outlined, "Finalizar"),
                       //Botones("Novedad", Colors.yellow, Icons.event_note_rounded, "Finalizar")
                     ],
                   ),
@@ -832,7 +824,10 @@ context.read<PedidoBloc>().add(entregarPedido( pedido));
                           //onPressed: () => { getDropDownItem(pedidoSeleccionado) },
                           onPressed: ()  {
                             print("confirm45454acion");
-                            showDialog(
+
+                            var accion = EntregarPedido( pedidoSeleccionado );
+                            alertConfirmacion( context, accion, "PedidoBloc", "Entregar pedido" );
+                            /*showDialog(
                                 context: context,
                                 builder: (context) {
                                   return AlertDialog(
@@ -840,15 +835,6 @@ context.read<PedidoBloc>().add(entregarPedido( pedido));
                                     content: Text("Estas seguro de aceptar esta accion?"),
                                     actions: <Widget>[
 
-                                      /*ElevatedButton.icon(
-                  label: Text(" Cancelar"),
-                  icon: Icon(Icons.cancel_outlined),
-                  onPressed: () => { Navigator.pop(context)},
-                  style: ElevatedButton.styleFrom(
-                    //shape: CircleBorder(),
-                    primary: Colors.red,
-                  ),
-                ),*/
                                       Row(
                                         mainAxisAlignment: MainAxisAlignment.start,
                                         children: [
@@ -888,7 +874,7 @@ context.read<PedidoBloc>().add(entregarPedido( pedido));
                                     ],
                                   );
                                 }
-                            );
+                            );*/
                             //Confirmacion(pedidoSeleccionado);
                           },
 
@@ -950,7 +936,7 @@ context.read<PedidoBloc>().add(entregarPedido( pedido));
 
                         ElevatedButton(
                           onPressed: (){
-                            MensajeNovedad();
+                            mensajeNovedad();
                           },
                           child: Icon(Icons.message, color: Colors.white),
                           style: ElevatedButton.styleFrom(
@@ -969,16 +955,15 @@ context.read<PedidoBloc>().add(entregarPedido( pedido));
 
 
               /// Show Counter Value
-              return Text(state.Value);
+              //return Text(state.value);
               }
 
               else if (state is FinStateBotones) {
                 print("FIN DE TRACKING");
-                DateTime  hora_iniciar;
-                DateTime  hora_finalizar;
-                String tiempo_domicilio = "";
+                DateTime  horaIniciar;
+                DateTime  horaFinalizar;
+                String tiempoDomicilio = "";
 
-                String ini;
                 String fin;
 
                 if(listaraking.length > 0) {
@@ -988,30 +973,30 @@ context.read<PedidoBloc>().add(entregarPedido( pedido));
                     print(a.estado);
 
                     if (a.estado == "INICIAR") {
-                      hora_iniciar = DateFormat("HH:mm:ss").parse(a.hora+":00");
+                      horaIniciar = DateFormat("HH:mm:ss").parse(a.hora+":00");
                      // ini = a.hora;
                      // var newDateTimeObj2 = DateFormat("HH:mm:ss").parse("10/02/2000 15:13:09")
                     }
                     if (a.estado == "FINALIZAR") {
-                      hora_finalizar = DateFormat("HH:mm:ss").parse(a.hora+":00");
+                      horaFinalizar = DateFormat("HH:mm:ss").parse(a.hora+":00");
 
                       //fin = a.hora;
                     }
                   }
                 }
 
-                Duration _tiempo = hora_finalizar.difference(hora_iniciar);
+                Duration _tiempo = horaFinalizar.difference(horaIniciar);
                 fin = _tiempo.toString();
 
                 var parts = fin.split('.');
-                tiempo_domicilio = parts[0].trim();
-                print(tiempo_domicilio);
+                tiempoDomicilio = parts[0].trim();
+                print(tiempoDomicilio);
 
                 return
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text("Tiempo: "+ tiempo_domicilio)
+                      Text("Tiempo: "+ tiempoDomicilio)
                     ],
                   );
 
@@ -1021,7 +1006,7 @@ context.read<PedidoBloc>().add(entregarPedido( pedido));
               print("ELSE");
 
               /// Just returning an empty container
-              return  Text("Else fuera");;
+              return  Text("Else fuera");
               }
               }
               ),
@@ -1036,7 +1021,7 @@ context.read<PedidoBloc>().add(entregarPedido( pedido));
               children: [
                 Flexible(
                   //child:
-                  child: _TimelineDelivery( listaraking)
+                  child: TimelineDelivery( listaraking)
                   /*Card(
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     // Con esta propiedad agregamos margen a nuestro Card
@@ -1116,10 +1101,10 @@ context.read<PedidoBloc>().add(entregarPedido( pedido));
 
                     if (state is TrackingLoaded) {
                       print("Entro tracking");
-                      print(state.esta_domi.length);
-                      print(state.esta_domi[0].descripcion);
-                      _esta_domi = state.esta_domi;
-                      return CustomInnerContent(_esta_domi, pedidosAsignados);
+                      print(state.estaDomi.length);
+                      print(state.estaDomi[0].descripcion);
+                      estaDomi = state.estaDomi;
+                      return widgetPedidosEntregar(estaDomi, pedidosAsignados);
 
                     }
                     return Loading();
@@ -1153,20 +1138,17 @@ context.read<PedidoBloc>().add(entregarPedido( pedido));
   }
 
 
-  void _handleTap(LatLng latlng) {
+  /*void _handleTap(LatLng latlng) {
 
     setState(() {
       //tappedPoints.add(latlng);
       casa = latlng;
-      _getAddressFromLatLng();
-      _scaffoldKey.currentState.showSnackBar(SnackBar(
+      //_getAddressFromLatLng();
+      /*_scaffoldKey.currentState.showSnackBar(SnackBar(
         content: Text( 'Direccion de desino : $_currentAddress  $latlng'),
-      ));
+      ));*/
     });
-
-
-
-  }
+  }*/
 
   save() {
     if (_formKey.currentState.validate()) {
@@ -1186,7 +1168,7 @@ context.read<PedidoBloc>().add(entregarPedido( pedido));
 
 class Countdown extends AnimatedWidget {
   Countdown({Key key, this.animation}) : super(key: key, listenable: animation);
-  Animation<int> animation;
+  final Animation<int> animation;
 
   @override
   build(BuildContext context) {
@@ -1366,50 +1348,50 @@ class ScreenProgress extends StatelessWidget {
 
 
 
-class _TimelineDelivery extends StatelessWidget {
-  List<EstadoDomiciliario> _esta_domi = [];
-  _TimelineDelivery( this._esta_domi );
+class TimelineDelivery extends StatelessWidget {
+  final List<EstadoDomiciliario> estaDomiTL;
+  TimelineDelivery( this.estaDomiTL );
 
 
   @override
   Widget build(BuildContext context) {
 
     print("tiemlinee");
-    print(_esta_domi.length);
+    print(estaDomiTL.length);
     EstadoDomiciliario a;
-    bool band_preparado = false;
-    Color Color_preparado = Color(0xFFDADADA);
-    String hora_preparado ="";
+    bool bandPreparado = false;
+    Color colorPreparado = Color(0xFFDADADA);
+    String horaPreparado ="";
 
-    bool band_iniciar = false;
-    Color Color_iniciar = Color(0xFFDADADA);
-    String hora_iniciar ="";
+    bool bandIniciar = false;
+    Color colorIniciar = Color(0xFFDADADA);
+    String horaIniciarTL ="";
 
-    bool band_finalizar = false;
-    Color Color_finalizar = Color(0xFFDADADA);
-    String hora_finalizar ="";
+    bool bandFinalizar = false;
+    Color colorFinalizar = Color(0xFFDADADA);
+    String horaFinalizarTL ="";
 
 
-    if(_esta_domi.length > 0){
-      for(  a in _esta_domi){
+    if(estaDomiTL.length > 0){
+      for(  a in estaDomiTL){
         print("aaaaa");
         print(a.estado);
         if (a.estado == "PREPARADO"){
-          band_preparado = true;
-          hora_preparado = a.hora;
-          Color_preparado =  band_preparado == true? Color(0xFF27AA69) : Color(0xFFDADADA);
+          bandPreparado = true;
+          horaPreparado = a.hora;
+          colorPreparado =  bandPreparado == true? Color(0xFF27AA69) : Color(0xFFDADADA);
 
         }
         if (a.estado == "INICIAR"){
-          band_iniciar = true;
-          hora_iniciar = a.hora;
-          Color_iniciar =  band_iniciar == true? Color(0xFF27AA69) : Color(0xFFDADADA);
+          bandIniciar = true;
+          horaIniciarTL = a.hora;
+          colorIniciar =  bandIniciar == true? Color(0xFF27AA69) : Color(0xFFDADADA);
 
         }
         if (a.estado == "FINALIZAR"){
-          band_finalizar = true;
-          hora_finalizar = a.hora;
-          Color_finalizar =  band_finalizar == true? Color(0xFF27AA69) : Color(0xFFDADADA);
+          bandFinalizar = true;
+          horaFinalizarTL = a.hora;
+          colorFinalizar =  bandFinalizar == true? Color(0xFF27AA69) : Color(0xFFDADADA);
 
         }
 
@@ -1428,18 +1410,18 @@ class _TimelineDelivery extends StatelessWidget {
               isFirst: true,
               indicatorStyle:  IndicatorStyle(
                 width: 20,
-                iconStyle: IconStyle( color: Colors.white, iconData: band_preparado == true? Icons.check : Icons.lock_outline_rounded , fontSize: 15 ),
-                color: Color_preparado,
+                iconStyle: IconStyle( color: Colors.white, iconData: bandPreparado == true? Icons.check : Icons.lock_outline_rounded , fontSize: 15 ),
+                color: colorPreparado,
                 padding: EdgeInsets.all(6),
               ),
               endChild:  _RightChild(
                 asset: 'images/preparado.png',
                 title: 'PRODUCTO PREPARADO',
-                message: hora_preparado,
-                disabled: !band_preparado,
+                message: horaPreparado,
+                disabled: !bandPreparado,
               ),
               beforeLineStyle:  LineStyle(
-                color: Color_preparado,
+                color: colorPreparado,
               ),
             ),
             TimelineTile(
@@ -1447,18 +1429,18 @@ class _TimelineDelivery extends StatelessWidget {
               lineXY: 0.1,
               indicatorStyle:  IndicatorStyle(
                 width: 20,
-                iconStyle: IconStyle( color: Colors.white, iconData: band_iniciar == true? Icons.check : Icons.lock_outline_rounded , fontSize: 16 ),
-                color: Color_iniciar,
+                iconStyle: IconStyle( color: Colors.white, iconData: bandIniciar == true? Icons.check : Icons.lock_outline_rounded , fontSize: 16 ),
+                color: colorIniciar,
                 padding: EdgeInsets.all(6),
               ),
               endChild:  _RightChild(
-                disabled: !band_iniciar,
+                disabled: !bandIniciar,
                 asset: 'images/domiciliario.png',
                 title: 'INICIAR ENTREGA',
-                message: hora_iniciar,
+                message: horaIniciarTL,
               ),
               beforeLineStyle:  LineStyle(
-                color: Color_iniciar,
+                color: colorIniciar,
               ),
             ),
             TimelineTile(
@@ -1467,18 +1449,18 @@ class _TimelineDelivery extends StatelessWidget {
               isLast: true,
               indicatorStyle:  IndicatorStyle(
                 width: 20,
-                iconStyle: IconStyle( color: Colors.white, iconData: band_finalizar == true? Icons.check : Icons.lock_outline_rounded , fontSize: 15 ),
-                color: Color_finalizar,
+                iconStyle: IconStyle( color: Colors.white, iconData: bandFinalizar == true? Icons.check : Icons.lock_outline_rounded , fontSize: 15 ),
+                color: colorFinalizar,
                 padding: EdgeInsets.all(6),
               ),
               endChild:  _RightChild(
-                disabled: !band_finalizar,
+                disabled: !bandFinalizar,
                 asset: 'images/entregado.png',
                 title: 'PEDIDO ENTREGADO',
-                message: hora_finalizar,
+                message: horaFinalizarTL,
               ),
               beforeLineStyle:  LineStyle(
-                color: Color_finalizar,
+                color: colorFinalizar,
               ),
               //afterLineStyle:  LineStyle(
               //  color: Color_finalizar,

@@ -98,6 +98,7 @@ class GeneralSettings extends StatelessWidget {
 
   /// Standard build function for the GeneralSettings widget
   Widget build(BuildContext context) {
+    //ignore: close_sinks
     var themeBloc = context.watch<ThemeBloc>();
     var isSwitched = theme.isDarkMode;
     print(isSwitched);
@@ -257,13 +258,13 @@ class PrivacyPolicyPage extends StatelessWidget {
   PrivacyPolicyPage({this.theme});
 
   /// Launches the given url
-  void _launch(String url) async {/*
+  /*void _launch(String url) async {
     if (await canLaunch(url)) {
       await launch(url);
     } else {
       throw 'Could not launch $url';
-    }*/
-  }
+    }
+  }*/
 
   /// Builds the hyperlink based on the given link and text
   TextSpan buildHyperlink(String link, String placeholder) {

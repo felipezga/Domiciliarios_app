@@ -1,16 +1,8 @@
 import 'dart:async';
-import 'dart:developer' as developer;
 
 import 'package:bloc/bloc.dart';
-import 'package:domiciliarios_app/Modelo/PerfilUsuarioModel.dart';
 import 'package:domiciliarios_app/Modelo/SalidaModel.dart';
-import 'package:domiciliarios_app/Modelo/UsuarioModel.dart';
 import 'package:domiciliarios_app/Servicios/ApiServicio.dart';
-//import 'package:restaurantes_tipoventas_app/Modelos/clUsuarios.dart';
-//import 'package:restaurantes_tipoventas_app/Servicios/AuthAPI.dart';
-
-//import 'Login_event.dart';
-//import 'Login_state.dart';
 
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
@@ -127,8 +119,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     }*/
   }
 
-  @override
-  LoginState get initialState => LoginDefaultState();
+
 }
 
 

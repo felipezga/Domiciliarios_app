@@ -90,7 +90,6 @@ class Contacto extends StatelessWidget{
 
 
 PushNotification _notificationInfo;
-int _totalNotifications;
 
 class HomePage extends StatefulWidget {
   HomePage({Key key}) : super(key: key);

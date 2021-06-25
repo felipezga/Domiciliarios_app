@@ -105,9 +105,11 @@ class _ScannerState extends State<ScannerScreen> {
                   ),
                 ),
 
-        Expanded(
-          flex: 1,
-          child: Center(
+                SizedBox(
+                    height: 100,
+          //flex: 1,
+          child:
+            Center(
             child:
                 BlocBuilder<EscaneoBloc, EscaneoState>(
                     builder: (BuildContext context, EscaneoState state) {
@@ -244,12 +246,43 @@ class _ScannerState extends State<ScannerScreen> {
 
                       if (state is EscaneoError) {
                         final error = state.error;
-                        String message = '${error.message}';
-
+                        //String message = '${error.message}';
                         print(error);
 
                         return
                           Container(
+                              padding: EdgeInsets.all(5.0),
+                              color: Colors.red,
+                              child: Center(
+                                  child:
+                                  Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                          Expanded(
+                          child: Text(
+                              "Por favor volver a escanear el codigo, si el error persiste comunicarse con su jefe\n "
+                                  //+ message
+                          ),
+                      ),
+                                ElevatedButton(
+                                  onPressed: (){
+                                    Navigator.pushNamed(context, EscanearFactura.route, arguments:  opc, );
+                                  },
+                                  child: Icon(Icons.qr_code_scanner_sharp, color: Colors.white),
+                                  style: ElevatedButton.styleFrom(
+
+                                    shape: CircleBorder(),
+                                    padding: EdgeInsets.all(10),
+                                    primary: Colors.black, // <-- Button color
+                                    onPrimary: Colors.red, // <-- Splash color
+                                  ),
+                                ),
+
+                      ],
+                                  )
+                              )
+                                  );
+                          /*Container(
                             padding: EdgeInsets.all(5.0),
                             color: Colors.red,
                             child: Center(
@@ -271,7 +304,7 @@ class _ScannerState extends State<ScannerScreen> {
                                 ],
                               ),
                             ),
-                          );
+                          );*/
 
                       }
 
@@ -505,6 +538,7 @@ class _ScannerState extends State<ScannerScreen> {
                     }
                       ),
           ),
+
         )
 
 
@@ -517,10 +551,6 @@ class _ScannerState extends State<ScannerScreen> {
     );
   }
 
-  void showInSnackBar(String message) {
-    _scaffoldKey.currentState
-        .showSnackBar(new SnackBar(content: new Text(message)));
-  }
 
   void _onQRViewCreated(QRViewController controller) {
     this.controller = controller;

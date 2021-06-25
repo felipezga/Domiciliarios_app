@@ -9,7 +9,7 @@ class UserPreferences {
     //prefs.setInt("userId", user.userId);
     prefs.setString("userId", user.userId);
     prefs.setString("name", user.name);
-    prefs.setString("email", user.email);
+    prefs.setString("docIdent", user.docIdent);
     prefs.setString("token", user.token);
     prefs.setString("salida", user.salida);
 
@@ -25,14 +25,14 @@ class UserPreferences {
 
     String userId = prefs.getString("userId");
     String name = prefs.getString("name");
-    String email = prefs.getString("email");
+    String docIdent = prefs.getString("docIdent");
     String token = prefs.getString("token");
     String error = prefs.getString("salida");
 
     return User(
         userId: userId,
         name: name,
-        email: email,
+        docIdent: docIdent,
         token: token,
         salida: error);
   }
@@ -41,7 +41,7 @@ class UserPreferences {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 
     prefs.remove("name");
-    prefs.remove("email");
+    prefs.remove("docIdent");
     prefs.remove("token");
     prefs.remove("salida");
   }

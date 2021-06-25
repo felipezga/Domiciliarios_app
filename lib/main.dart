@@ -3,12 +3,12 @@ import 'dart:io';
 import 'package:domiciliarios_app/Bloc/ThemeBloc.dart';
 import 'package:domiciliarios_app/Paginas/Configuraciones.dart';
 import 'package:domiciliarios_app/Paginas/Domicilios.dart';
+import 'package:domiciliarios_app/Paginas/HistorialMapa.dart';
 import 'package:domiciliarios_app/Paginas/PerfilUsuario.dart';
 import 'package:domiciliarios_app/Paginas/ReasignarEntregas.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
-import 'Modelo/LoginModel.dart';
 import 'Modelo/UsuarioModel.dart';
 import 'Paginas/EscanerFactura.dart';
 import 'Paginas/Login.dart';
@@ -32,7 +32,7 @@ class App extends StatefulWidget {
 }
 
 class _MyAppState extends State<App> {
-  int _paginaActual = 0;
+  //int _paginaActual = 0;
   Future<User> _session;
 
   /*final _pageOptions = [
@@ -149,6 +149,7 @@ class _MyAppState extends State<App> {
         // "/restaurante" : ( context) => Restaurante(opcion: 1),
         // Restaurante.route: ( context) =>  Restaurante(opcion: 2),
         Mapa.route: (context) => Mapa(),
+        HistorialMapa.route: (context) => HistorialMapa(),
         Configuraciones.route: (context) => Configuraciones(),
         Domicilios.route: (context) => Domicilios(),
         "/contacto": (context) => PluginScaleBar(),

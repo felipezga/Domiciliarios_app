@@ -1,13 +1,11 @@
 import 'dart:async';
 
-import 'package:domiciliarios_app/Modelo/AsignarOrdenModel.dart';
+import 'package:domiciliarios_app/Modelo/OrdenModel.dart';
 import 'package:domiciliarios_app/Modelo/Pedido.dart';
 import 'package:domiciliarios_app/Modelo/SalidaModel.dart';
 import 'package:domiciliarios_app/Modelo/UserLocation.dart';
-import 'package:domiciliarios_app/Modelo/UsuarioModel.dart';
 import 'package:domiciliarios_app/Servicios/FuncionesServicio.dart';
 import 'package:domiciliarios_app/Servicios/PedidoDomicilioServicio.dart';
-import 'package:domiciliarios_app/Servicios/SharedPreferencesServicio.dart';
 import 'package:domiciliarios_app/Servicios/exceptions.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -26,7 +24,7 @@ class EscaneandoEvent extends EscaneoEvent{
 class EscaneoBloc extends Bloc<EscaneoEvent, EscaneoState>{
   EscaneoBloc() : super(EscaneoInicial());
 
-  List<asignarOrden> Ordenes = [];
+  List<Orden> ordenes = [];
 
   @override
   Stream<EscaneoState> mapEventToState(EscaneoEvent event) async* {
@@ -55,14 +53,14 @@ class EscaneoBloc extends Bloc<EscaneoEvent, EscaneoState>{
 
         var id = 0;
 
-        PedidoDomiclioRepository APIpedido = new PedidoDomiclioRepository();
+        PedidoDomiclioRepository apiPedido = new PedidoDomiclioRepository();
 
         final SharedPreferences prefs = await SharedPreferences.getInstance();
         String userId = prefs.getString("userId");
 
         // VALIDACCION PARA OBTENER EL ID PARA ASOCIAR AL USUARIO
         if(event.opc =="entregar"){
-          final profile = await APIpedido.fetchPedidoUser( userId );
+          final profile = await apiPedido.fetchPedidoUser( userId );
           print(profile);
 
           List<Pedido> pedidoUsuario = profile.where((i) => i.restaurante == fact[0] &&  i.numero == int.parse(fact[1]) ).toList();
@@ -78,10 +76,10 @@ class EscaneoBloc extends Bloc<EscaneoEvent, EscaneoState>{
 
         ubicaion = await funciones.ubicacionLatLong();
 
-        Ordenes.add(asignarOrden(id: id, prefijo: fact[0], numero: int.parse(fact[1]), latitud: ubicaion.latitude, longitud: ubicaion.longitude, usuaId: userId));
+        ordenes.add(Orden(id: id, prefijo: fact[0], numero: int.parse(fact[1]), latitud: ubicaion.latitude, longitud: ubicaion.longitude, usuaId: userId));
 
-        print(Ordenes[0].numero);
-        print(Ordenes[0].prefijo);
+        print(ordenes[0].numero);
+        print(ordenes[0].prefijo);
 
 
 
@@ -90,10 +88,10 @@ class EscaneoBloc extends Bloc<EscaneoEvent, EscaneoState>{
         Salida respuesta;
 
         if(event.opc =="entregar"){
-          respuesta = await APIpedido.entregarPedido( Ordenes );
+          respuesta = await apiPedido.entregarPedido( ordenes );
 
         }else{
-          respuesta = await APIpedido.asignarPedido( Ordenes);
+          respuesta = await apiPedido.asignarPedido( ordenes);
 
         }
 

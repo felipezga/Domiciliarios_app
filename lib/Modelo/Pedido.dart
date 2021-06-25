@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 class Pedido {
   int id;
   int numero;
@@ -8,6 +6,7 @@ class Pedido {
   String restaurante;
   String fecha;
   bool checked;
+  String estado;
 
 
   Pedido({
@@ -17,7 +16,8 @@ class Pedido {
     this.usuario,
     this.restaurante,
     this.fecha,
-    this.checked
+    this.checked,
+    this.estado
   });
 
   factory Pedido.fromJson( dynamic responseData) {
@@ -42,7 +42,8 @@ class Pedido {
           usuario: responseData['usuaId'] != null ? responseData['usuaId'] : 0,
           restaurante: rest != null ? rest : "",
           fecha: "" != null ? "" : "",
-          checked: false
+          checked: false,
+          estado: responseData['estado'] != null ? responseData['estado'] : ""
 
       );
 
@@ -65,7 +66,7 @@ class Pedido {
   }
 }
 
-List<Pedido> PedidosFromJson(dynamic  l) =>
+List<Pedido> pedidosFromJson(dynamic  l) =>
     List<Pedido>.from( l.map((x) => Pedido.fromJson(x)));
 
 
