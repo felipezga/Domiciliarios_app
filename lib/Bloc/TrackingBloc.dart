@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:domiciliarios_app/Modelo/EstadoPedidoDomiciliario.dart';
-import 'package:domiciliarios_app/Servicios/FuncionesServicio.dart';
 import 'package:domiciliarios_app/Servicios/exceptions.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -98,7 +97,7 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
 
   TrackingBloc() : super(TrackingInitState());
 
-  List<EstadoDomiciliario> EstadosTracking;
+  List<EstadoDomiciliario> estadosTracking;
 
 
   @override
@@ -128,7 +127,7 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
           print(event.listaTracking.length);
           event.listaTracking.add(tracking);
           //estados  = await EstadosTracking();
-          yield TrackingLoaded(esta_domi: event.listaTracking);
+          yield TrackingLoaded(estaDomi: event.listaTracking);
 
         } catch (e) {
           yield AlbumsListError(
@@ -148,8 +147,8 @@ abstract class TrackingState extends Equatable {
 class TrackingInitState extends TrackingState {}
 class TrackingLoading extends TrackingState {}
 class TrackingLoaded extends TrackingState {
-  final List<EstadoDomiciliario> esta_domi;
-  TrackingLoaded({this.esta_domi});
+  final List<EstadoDomiciliario> estaDomi;
+  TrackingLoaded({this.estaDomi});
 }
 
 class AddTracking extends TrackingState {

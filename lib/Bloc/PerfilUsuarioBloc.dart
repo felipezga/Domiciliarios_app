@@ -1,12 +1,13 @@
-import 'package:domiciliarios_app/Modelo/PerfilUsuarioModel.dart';
+import 'package:domiciliarios_app/Modelo/UsuarioModel.dart';
 import 'package:domiciliarios_app/Servicios/PerfilUsuarioServicio.dart';
+import 'package:domiciliarios_app/Servicios/SharedPreferencesServicio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 abstract class ProfileEvent {}
 
 class GetUser extends ProfileEvent {
-  final String userName;
-  GetUser(this.userName);
+  //final String userName;
+  GetUser();
 }
 
 class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
@@ -19,9 +20,14 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     try {
       if (event is GetUser) {
         yield (ProfileLoading());
-        final profile = await profileRepo.fetchUser(event.userName);
-        print(profile);
-        yield (ProfileLoaded(profile));
+
+        User userSession;
+        userSession =  await UserPreferences().getUser();
+        //final profile = await profileRepo.fetchUser(user_session.userId);
+
+        print(userSession);
+        print(userSession.name);
+        yield (ProfileLoaded(userSession));
       }
     } on UserNotFoundException {
       yield (ProfileError('This User was Not Found!'));
@@ -42,7 +48,8 @@ class ProfileLoading extends ProfileState {
 }
 
 class ProfileLoaded extends ProfileState {
-  final PerfilUser profile;
+  //final PerfilUser profile;
+  final User profile;
   const ProfileLoaded(this.profile);
 }
 

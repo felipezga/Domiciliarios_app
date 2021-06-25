@@ -4,7 +4,7 @@ class Loading extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     //return Expanded(
-      child:
+      //child:
       return Center(
         child: CircularProgressIndicator(),
       );

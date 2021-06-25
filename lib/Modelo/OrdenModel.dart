@@ -1,4 +1,4 @@
-class asignarOrden{
+class Orden{
   int id;
   String prefijo;
   int numero;
@@ -6,7 +6,7 @@ class asignarOrden{
   double longitud;
   String usuaId;
 
-  asignarOrden({
+  Orden({
     this.id,
     this.prefijo,
     this.numero,
@@ -15,7 +15,7 @@ class asignarOrden{
     this.usuaId
   });
 
-  factory asignarOrden.fromJson(Map<String, dynamic> json) => asignarOrden(
+  factory Orden.fromJson(Map<String, dynamic> json) => Orden(
     id: json["userId"],
     prefijo: json["id"],
     numero: json["title"],

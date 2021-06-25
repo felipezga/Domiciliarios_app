@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
-import 'package:equatable/equatable.dart';
 
 
 /// Events
@@ -21,13 +20,13 @@ class BotonStateLoading extends BotonesState {}
 
 
 class BotonStateIniciar extends BotonesState {
-  final String Value;
-  BotonStateIniciar(this.Value);
+  final String value;
+  BotonStateIniciar(this.value);
 }
 
 class BotonStateFinalizar extends BotonesState {
-  final String Value;
-  BotonStateFinalizar(this.Value);
+  final String value;
+  BotonStateFinalizar(this.value);
 }
 
 class FinStateBotones extends BotonesState {
@@ -35,8 +34,8 @@ class FinStateBotones extends BotonesState {
 }
 
 class BotonStateNovedad extends BotonesState {
-  final String Value;
-  BotonStateNovedad(this.Value);
+  final String value;
+  BotonStateNovedad(this.value);
 }
 
 /*

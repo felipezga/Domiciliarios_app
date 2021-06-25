@@ -35,8 +35,6 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
 
   LocationBloc() : super(LocationInitial());
 
-  @override
-  LocationState get initialState => LocationInitial();
 
   @override
   Stream<LocationState> mapEventToState(

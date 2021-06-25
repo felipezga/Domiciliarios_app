@@ -1,10 +1,11 @@
-import 'package:domiciliarios_app/Modelo/AsignarOrdenModel.dart';
-import 'package:domiciliarios_app/Modelo/EstadoPedidoDomiciliario.dart';
+import 'package:domiciliarios_app/Modelo/OrdenModel.dart';
 import 'package:domiciliarios_app/Modelo/Pedido.dart';
 import 'package:domiciliarios_app/Modelo/SalidaModel.dart';
 import 'package:domiciliarios_app/Modelo/UserLocation.dart';
 import 'package:domiciliarios_app/Servicios/FuncionesServicio.dart';
 import 'package:domiciliarios_app/Servicios/PedidoDomicilioServicio.dart';
+import 'package:domiciliarios_app/widgets/ShowSnackBar.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 abstract class PedidoEvent {}
@@ -14,15 +15,16 @@ class GetPedidoUser extends PedidoEvent {
   GetPedidoUser();
 }
 
-class entregarPedido extends PedidoEvent {
+class EntregarPedido extends PedidoEvent {
   final Pedido pedido;
-  entregarPedido(this.pedido);
+  EntregarPedido(this.pedido);
 }
 
-class reasignarPedido extends PedidoEvent {
+class ReasignarPedido extends PedidoEvent {
   final List<Pedido> pedidos;
-  final String UserId;
-  reasignarPedido(this.pedidos, this.UserId);
+  final String userId;
+  final BuildContext c;
+  ReasignarPedido(this.pedidos, this.userId, this.c);
 }
 
 
@@ -33,7 +35,7 @@ class reasignarPedido extends PedidoEvent {
    final PedidoDomiclioRepository pedidoRepo;
    PedidoBloc({this.pedidoRepo}) : super(PedidoInitial());
 
-   List<asignarOrden> Ordenes = [];
+   List<Orden> ordenes = [];
 
    @override
    Stream<PedidoState> mapEventToState(PedidoEvent event) async* {
@@ -66,27 +68,27 @@ class reasignarPedido extends PedidoEvent {
          yield (PedidoLoaded(profile));
        }
 
-       if (event is entregarPedido) {
+       if (event is EntregarPedido) {
          print("Entregar Pedido");
          yield (PedidoLoading());
 
-         Ordenes.clear();
+         ordenes.clear();
 
          Funciones funciones = Funciones();
          UserLocation ubicaion = UserLocation();
 
          ubicaion = await funciones.ubicacionLatLong();
 
-         asignarOrden ao = new asignarOrden(id: event.pedido.id, prefijo: event.pedido.restaurante, numero: event.pedido.numero, latitud: ubicaion.latitude, longitud: ubicaion.longitude, usuaId: event.pedido.usuario);
+         Orden ao = new Orden(id: event.pedido.id, prefijo: event.pedido.restaurante, numero: event.pedido.numero, latitud: ubicaion.latitude, longitud: ubicaion.longitude, usuaId: event.pedido.usuario);
          print(ao);
          print("ao");
-         Ordenes.add(ao);
+         ordenes.add(ao);
 
 
-         PedidoDomiclioRepository APIpedido = new PedidoDomiclioRepository();
+         PedidoDomiclioRepository apiPedido = new PedidoDomiclioRepository();
          print("eres");
-         print(Ordenes[0]);
-         final Salida respuesta = await APIpedido.entregarPedido( Ordenes );
+         print(ordenes[0]);
+         final Salida respuesta = await apiPedido.entregarPedido( ordenes );
          print(respuesta);
          print("Salida");
          final profile = await pedidoRepo.fetchPedidoUser(event.pedido.usuario.toString());
@@ -94,11 +96,11 @@ class reasignarPedido extends PedidoEvent {
          yield (PedidoLoaded(profile));
        }
 
-       if (event is reasignarPedido) {
+       if (event is ReasignarPedido) {
          print("Reasignar Pedido");
          yield (PedidoLoading());
 
-         Ordenes.clear();
+         ordenes.clear();
          final SharedPreferences prefs = await SharedPreferences.getInstance();
          String userId = prefs.getString("userId");
 
@@ -113,26 +115,48 @@ class reasignarPedido extends PedidoEvent {
 
          print(event.pedidos[0].name);
 
-          int cant_pedidos = event.pedidos.length;
+          int cantPedidos = event.pedidos.length;
 
 
          //var item in list
-         for (var i = 0; i < cant_pedidos; i++) {
+         for (var i = 0; i < cantPedidos; i++) {
            if (event.pedidos[i].checked == true){
 
-             asignarOrden ao = new asignarOrden(id: event.pedidos[i].id, prefijo: event.pedidos[i].restaurante, numero: event.pedidos[i].numero, latitud: ubicaion.latitude, longitud: ubicaion.longitude, usuaId: event.UserId);
+             Orden ao = new Orden(id: event.pedidos[i].id, prefijo: event.pedidos[i].restaurante, numero: event.pedidos[i].numero, latitud: ubicaion.latitude, longitud: ubicaion.longitude, usuaId: event.userId);
              print(ao);
              print("ao");
-             Ordenes.add(ao);
+             ordenes.add(ao);
            }
          }
 
+         if( ordenes.length == 0){
+           showSnackBarMessage( "No hay pedidos seleccionados " ,  Colors.blue, Icons.warning_amber_outlined, event.c);
+         }else{
+           PedidoDomiclioRepository apiPedido = new PedidoDomiclioRepository();
 
-         PedidoDomiclioRepository APIpedido = new PedidoDomiclioRepository();
+           final Salida respuesta = await apiPedido.reasignarPedido( ordenes );
+           print(respuesta.code);
+           print(respuesta.mens);
+           print("Reasignacion ");
 
-         final Salida respuesta = await APIpedido.reasignarPedido( Ordenes );
-         print(respuesta);
-         print("Reasignacion ");
+           String mens = "";
+           Color col;
+           IconData icono;
+           if(respuesta.code == 1){
+             mens = "Reasignación exitosa!";
+             col = Colors.green;
+             icono = Icons.check_circle_outline;
+
+           }else{
+             mens = respuesta.mens;
+             col = Colors.red;
+             icono = Icons.cancel_outlined;
+           }
+
+           showSnackBarMessage( mens ,  col, icono, event.c);
+
+         }
+
          final profile = await pedidoRepo.fetchPedidoUser(userId);
          print(profile);
          yield (PedidoLoaded(profile));
@@ -161,6 +185,11 @@ class PedidoLoading extends PedidoState {
 class PedidoLoaded extends PedidoState {
   final List<Pedido> pedido;
   const PedidoLoaded(this.pedido);
+}
+
+class PedidoRespuesta extends PedidoState {
+  final String pedido;
+  const PedidoRespuesta(this.pedido);
 }
 
 class PedidoError extends PedidoState {

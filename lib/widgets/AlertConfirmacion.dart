@@ -1,44 +1,37 @@
 import 'package:domiciliarios_app/Bloc/PedidoBloc.dart';
 import 'package:flutter/material.dart';
-import '../Paginas/Mapa.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 
-class Confirmacion extends StatelessWidget {
-  final pedidoSeleccionado;
+/*class Confirmacion extends StatelessWidget {
+  final  accionBloc;
+  final String pregunta;
+  final context;
 
-  Confirmacion(this.pedidoSeleccionado);
-
-  @override
-  Widget build(BuildContext context) {
-    print("alert");
+  Confirmacion( this.context, this.accionBloc, this.pregunta);
+*/
+  //@override
+ // Widget build(BuildContext context) {
+   // print("alerta entro");
 
     //Confirmacion(context, pedidoSeleccionado){
 
+    void alertConfirmacion(cont, accionBloc,  bloc, pregunta) {
+
       showDialog(
-          context: context,
+          context: cont ,
           builder: (context) {
             return AlertDialog(
-              title: Text('Entregar producto'),
-              content: Text("Estas seguro de aceptar esta accion?"),
+              title: Text(pregunta),
+              content: Text("Esta seguro de confirmar esta operacion?"),
               actions: <Widget>[
-
-                /*ElevatedButton.icon(
-                  label: Text(" Cancelar"),
-                  icon: Icon(Icons.cancel_outlined),
-                  onPressed: () => { Navigator.pop(context)},
-                  style: ElevatedButton.styleFrom(
-                    //shape: CircleBorder(),
-                    primary: Colors.red,
-                  ),
-                ),*/
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     ElevatedButton(
                       onPressed: () => {
-                        //Navigator.pop(context)
                         Navigator.of(context).pop(),
-                        },
+                      },
                       child: Icon(Icons.cancel_outlined, color: Colors.white),
                       style: ElevatedButton.styleFrom(
                         shape: CircleBorder(),
@@ -47,12 +40,21 @@ class Confirmacion extends StatelessWidget {
                         onPrimary: Colors.black, // <-- Splash color
                       ),
                     ),
-
                     ElevatedButton(
-                      onPressed: () => {
-                      context.read<PedidoBloc>().add(entregarPedido( pedidoSeleccionado))
-                        //getDropDownItem(context, pedidoSeleccionado)
-                      },
+                      onPressed: ()  {
+
+                        if(bloc == "PedidoBloc"){
+                          BlocProvider.of<PedidoBloc>(cont).add(accionBloc);
+                        }
+                        if(bloc == "entregarbloc"){
+                          BlocProvider.of<PedidoBloc>(cont).add(accionBloc);
+                        }
+
+                        //Provider.of<PedidoBloc>(context, listen: false)
+                        // context.read<PedidoBloc>().add(accionBloc)
+
+                        Navigator.of(context).pop();
+                        },
                       child: Icon(Icons.check_circle_outline_outlined, color: Colors.white),
                       style: ElevatedButton.styleFrom(
                         shape: CircleBorder(),
@@ -73,14 +75,7 @@ class Confirmacion extends StatelessWidget {
   }
 
 
-void getDropDownItem(context, pedido){
-
-/*
-    setState(() {
-      holder = dropdownValue ;
-    });*/
-}
-}
+//}
 
 
 

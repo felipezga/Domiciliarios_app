@@ -1120,14 +1120,12 @@ class OverlayImagePage extends StatelessWidget {
 
  */
 
-import 'package:flutter/material.dart';
+
 import 'package:flutter_map/plugin_api.dart';
-import 'package:latlong/latlong.dart';
 import '../widgets/drawer.dart';
 //import 'scale_layer_plugin_option.dart';
 import 'dart:math';
 
-import 'Mapa.dart';
 
 class PluginScaleBar extends StatelessWidget {
   static const String route = '/plugin_scalebar';

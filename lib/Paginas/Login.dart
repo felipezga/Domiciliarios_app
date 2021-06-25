@@ -1,9 +1,5 @@
-import 'dart:convert';
-
 import 'package:domiciliarios_app/Bloc/LoginBloc.dart';
 import 'package:domiciliarios_app/Modelo/LoginModel.dart';
-import 'package:domiciliarios_app/Servicios/ApiServicio.dart';
-import 'package:domiciliarios_app/widgets/ProgressHUD.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -379,20 +375,40 @@ class _LoginPageState extends State<LoginPage> {
                                         ))
                                   ],
                                 )
-                                    : RaisedButton(
-                                    color: Colors.red,
-                                    disabledColor: Colors.blueAccent,
-                                    disabledTextColor: Colors.white,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius:
-                                      BorderRadius.circular(30.0),
+                                    :
+
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                      primary: Colors.red, // background
+                                      onPrimary: Colors.white,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12.0),
+                                      ),
+                                      elevation: 5// foreground
+                                  ),
+                                  onPressed: _onLoginButtonPressed,
+                                  child: Center(
+                                    child: Row( // Replace with a Row for horizontal icon + text
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: <Widget>[
+                                        Text("INGRESAR    ",
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w700,
+                                              fontSize: 16.0,
+                                              //fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        Icon( Icons.input_rounded , size: 25,),
+                                      ],
                                     ),
-                                    onPressed: _onLoginButtonPressed,
-                                    child: Text("INGRESAR",
-                                        style: new TextStyle(
-                                            fontSize: 12.0,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white)))),
+                                  ),
+
+                                )
+
+
+                                ),
                           ],
                         ),
                       ),
@@ -410,7 +426,7 @@ class _LoginPageState extends State<LoginPage> {
 
 
 
-  Widget _uiSetup(BuildContext context) {
+  /*Widget _uiSetup(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
       backgroundColor: Theme.of(context).accentColor,
@@ -508,50 +524,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                         SizedBox(height: 30),
-                        FlatButton(
-                          padding: EdgeInsets.symmetric(
-                              vertical: 12, horizontal: 80),
-                          onPressed: () {
-                            print("Este es el login");
-                            /*Navigator.pushReplacementNamed(context, '/mapa');
-                            if (validateAndSave()) {
-                              print(loginRequestModel.toJson());
 
-                              setState(() {
-                                isApiCallProcess = true;
-                              });
-
-                              APIServicio apiService = new APIServicio();
-                              apiService.login(loginRequestModel).then((value) {
-                                if (value != null) {
-                                  setState(() {
-                                    isApiCallProcess = false;
-                                  });
-
-                                  if (value.token.isNotEmpty) {
-                                    final snackBar = SnackBar(
-                                        content: Text("Login Successful"));
-                                    scaffoldKey.currentState
-                                        .showSnackBar(snackBar);
-                                    //Mapa();
-                                    Navigator.pushReplacementNamed(context, '/mapa');
-                                  } else {
-                                    final snackBar =
-                                    SnackBar(content: Text(value.error));
-                                    scaffoldKey.currentState
-                                        .showSnackBar(snackBar);
-                                  }
-                                }
-                              });
-                            }*/
-                          },
-                          child: Text(
-                            "Ingresar",
-                            style: TextStyle(color: Colors.white),
-                          ),
-                          color: Theme.of(context).accentColor,
-                          shape: StadiumBorder(),
-                        ),
                         SizedBox(height: 15),
                       ],
                     ),
@@ -563,7 +536,7 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
     );
-  }
+  }*/
 
   bool validateAndSave() {
     final form = globalFormKey.currentState;

@@ -19,7 +19,7 @@ class ProgressHUD extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> widgetList = new List<Widget>();
+    List<Widget> widgetList = [];
     widgetList.add(child);
     if (inAsyncCall) {
       final modal = new Stack(

@@ -1,11 +1,8 @@
 import 'dart:convert';
 
-import 'package:domiciliarios_app/Modelo/AsignarOrdenModel.dart';
-import 'package:domiciliarios_app/Modelo/EstadoPedidoDomiciliario.dart';
+import 'package:domiciliarios_app/Modelo/OrdenModel.dart';
 import 'package:domiciliarios_app/Modelo/Pedido.dart';
-import 'package:domiciliarios_app/Modelo/PerfilUsuarioModel.dart';
 import 'package:domiciliarios_app/Modelo/SalidaModel.dart';
-import 'package:http/http.dart';
 
 import 'package:http/http.dart' as http;
 import '../Configuraciones.dart';
@@ -44,7 +41,7 @@ class PedidoDomiclioRepository {
         print(jsonData['ordenes']);
         // If the call to the server was successful, parse the JSON
 
-        List<Pedido> pedidos = PedidosFromJson(jsonData['ordenes']);
+        List<Pedido> pedidos = pedidosFromJson(jsonData['ordenes']);
         return pedidos;
       } else {
         // If that call was not successful, throw an error.
@@ -71,7 +68,7 @@ class PedidoDomiclioRepository {
 
 
 
-  Future<Salida> asignarPedido(List<asignarOrden> requestModel) async {
+  Future<Salida> asignarPedido(List<Orden> requestModel) async {
     //String url = "https://10.0.2.2:5001/api/DomiApp/AsignarOrden";
     String url = url_api_domiciliario+asignar_pedido;
     Salida salida;
@@ -116,14 +113,13 @@ class PedidoDomiclioRepository {
     }
   }
 
-  Future<Salida> entregarPedido(List<asignarOrden> requestModel) async {
+  Future<Salida> entregarPedido(List<Orden> requestModel) async {
     //String url = "https://10.0.2.2:5001/api/DomiApp/Actulizar";
     String url = url_api_domiciliario+entregar_pedido;
     Salida salida;
 
 
     print(url);
-    int resul = 1;
     print('responsa');
 
     String jsonString = json.encode(requestModel);
@@ -145,7 +141,6 @@ class PedidoDomiclioRepository {
       print("bbb");
 
       final responseData = json.decode(response.body);
-      resul = responseData['codi'];
 
       salida = Salida(responseData['codi'], responseData['mens']);
       return salida;
@@ -159,14 +154,13 @@ class PedidoDomiclioRepository {
     }
   }
 
-  Future<Salida> reasignarPedido(List<asignarOrden> requestModel) async {
+  Future<Salida> reasignarPedido(List<Orden> requestModel) async {
     //String url = "https://10.0.2.2:5001/api/DomiApp/Actulizar";
     String url = url_api_domiciliario+reasignar_pedido;
     Salida salida;
 
 
     print(url);
-    int resul = 1;
     print('responsa');
 
     String jsonString = json.encode(requestModel);
@@ -188,7 +182,6 @@ class PedidoDomiclioRepository {
       print("bbb");
 
       final responseData = json.decode(response.body);
-      resul = responseData['codi'];
 
       salida = Salida(responseData['codi'], responseData['mens']);
       return salida;

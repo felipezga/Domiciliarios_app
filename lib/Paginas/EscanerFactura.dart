@@ -1,9 +1,4 @@
-import 'package:domiciliarios_app/Bloc/DomicilioBloc.dart';
 import 'package:domiciliarios_app/Bloc/ThemeBloc.dart';
-import 'package:domiciliarios_app/Modelo/DomicilioModel.dart';
-import 'package:domiciliarios_app/Servicios/DomicilioServicio.dart';
-import 'package:domiciliarios_app/widgets/ErrorText.dart';
-import 'package:domiciliarios_app/widgets/Loading.dart';
 import 'package:domiciliarios_app/widgets/Scanner.dart';
 import 'package:domiciliarios_app/widgets/drawer.dart';
 import 'package:flutter/material.dart';
@@ -11,11 +6,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class EscanearFactura extends StatelessWidget {
 
-  EscanearFactura( this.arguments );
-
   static const String route = '/escaneo';
-
   final String arguments;
+
+  EscanearFactura( this.arguments );
 
   @override
   Widget build(BuildContext context) {
@@ -23,8 +17,6 @@ class EscanearFactura extends StatelessWidget {
     print("ESCANEAR " + arguments);
 
     return EscanearScreen(opcion : arguments);
-
-    throw UnimplementedError();
   }
 }
 
