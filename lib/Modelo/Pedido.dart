@@ -33,13 +33,15 @@ class Pedido {
         num =  int.parse(parts[1].trim());
       }
 
+      print("holi");
+
 
 
       return Pedido(
-          id: responseData['id'] != null ? responseData['id'] : "",
+          id: responseData['id'] != null ? responseData['id'] : 0,
           numero: num != 0 ? num : 0,
           name: responseData['factura'] != "" ? responseData['factura'] : "",
-          usuario: responseData['usuaId'] != null ? responseData['usuaId'] : 0,
+          usuario: responseData['usuaId'] != null ? responseData['usuaId'] : "",
           restaurante: rest != null ? rest : "",
           fecha: "" != null ? "" : "",
           checked: false,

@@ -11,11 +11,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class Reasignacion extends StatelessWidget {
 
-  Reasignacion( this.arguments );
+  //Reasignacion( this.arguments );
 
   static const String route = '/reasignacion';
 
-  final String arguments;
+  //final String arguments;
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +79,7 @@ class _ReasignacionState extends State<ReasignacionScreen> {
               ),
           //automaticallyImplyLeading: false,
           title: Text(
-            'REASIGNAR',
+            'REASIGNAR PEDIDO',
             style: TextStyle(
               color: theme.getTheme.hoverColor,
               fontWeight: FontWeight.bold,
@@ -146,7 +146,7 @@ class _ReasignacionState extends State<ReasignacionScreen> {
                             }
                             if (state is PedidoLoaded) {
                               print("Hay pedidos");
-                              pedidos = state.pedido;
+                              pedidos = state.rutaPedido.pedidos;
                               if(pedidos.length > 0 ){
                                 return  ListView(
                                   shrinkWrap: true,

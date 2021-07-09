@@ -12,15 +12,18 @@ void showSnackBarMessage( String text, Color color, IconData icono, BuildContext
             size: 25,
             color: Colors.white,
           ),
-          Text(
-            text,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-                fontSize: 14.0,
-                fontWeight:
-                FontWeight.bold
-            ),
-          ),
+          Expanded(
+              child: Text(
+                text,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontSize: 14.0,
+                    fontWeight:
+                    FontWeight.bold
+                ),
+              ),
+          )
+
         ]
         ,)
       ,

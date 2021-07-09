@@ -6,6 +6,7 @@ import 'package:domiciliarios_app/Paginas/Domicilios.dart';
 import 'package:domiciliarios_app/Paginas/HistorialMapa.dart';
 import 'package:domiciliarios_app/Paginas/PerfilUsuario.dart';
 import 'package:domiciliarios_app/Paginas/ReasignarEntregas.dart';
+import 'package:domiciliarios_app/Paginas/Splash.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -134,7 +135,8 @@ class _MyAppState extends State<App> {
             switch (snapshot.connectionState) {
               case ConnectionState.none:
               case ConnectionState.waiting:
-                return CircularProgressIndicator();
+                //return CircularProgressIndicator();
+                return SplashPagina();
               default:
                 if (snapshot.hasError)
                   return Text('Error: ${snapshot.error}');
@@ -156,7 +158,7 @@ class _MyAppState extends State<App> {
         PerfilUsuario.route: (context) => PerfilUsuario(),
         '/login': (context) => LoginScreen(),
         EscanearFactura.route: (context) =>  EscanearFactura(ModalRoute.of(context).settings.arguments),
-        Reasignacion.route: (context) => Reasignacion(ModalRoute.of(context).settings.arguments),
+        Reasignacion.route: (context) => Reasignacion(),
       },
     );
 

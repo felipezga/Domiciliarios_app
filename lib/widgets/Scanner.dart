@@ -1,15 +1,20 @@
+import 'dart:async';
+
 import 'package:domiciliarios_app/Bloc/EscaneoBloc.dart';
+import 'package:domiciliarios_app/Modelo/ArgumentsModel.dart';
+import 'package:domiciliarios_app/Modelo/OrdenModel.dart';
 import 'package:domiciliarios_app/Paginas/EscanerFactura.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
+import 'ListaOrdenesEscaneadas.dart';
 import 'Loading.dart';
 
 
 class Scanner extends StatelessWidget {
 
-  final String opcion;
+  final Arguments opcion;
 
   Scanner({ Key key,    this.opcion }) : super(key: key);
 
@@ -32,7 +37,7 @@ class ScannerScreen extends StatefulWidget {
   ScannerScreen({Key key, this.opcion}) : super(key: key);
 
 
-  final String opcion;
+  final Arguments opcion;
 
 
   @override
@@ -42,6 +47,7 @@ class ScannerScreen extends StatefulWidget {
 class _ScannerState extends State<ScannerScreen> {
 
   String opc;
+  List<Orden> ordenes = [];
 
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   QRViewController controller;
@@ -61,7 +67,8 @@ class _ScannerState extends State<ScannerScreen> {
   @override
   Widget build(BuildContext context) {
 
-    opc = widget.opcion;
+    opc = widget.opcion.message;
+    ordenes = widget.opcion.ordenes;
     print('Este es: ' + opc);
 
     var scanArea = (MediaQuery.of(context).size.width < 400 ||
@@ -113,7 +120,16 @@ class _ScannerState extends State<ScannerScreen> {
             child:
                 BlocBuilder<EscaneoBloc, EscaneoState>(
                     builder: (BuildContext context, EscaneoState state) {
+
+                      if(state is EscaneoAsignado){
+                        Timer(Duration(seconds: 3), () {
+                          print("Yeah, this line is printed after 3 seconds");
+                          Navigator.popAndPushNamed(context, '/mapa');
+                          });
+
+                      }
                       if (state is EscaneoExistente) {
+                        ordenes = state.listOrdenes;
                         String message = '${state.asignacion}';
 
                         return  ListView(
@@ -151,7 +167,7 @@ class _ScannerState extends State<ScannerScreen> {
                                   ),
                                   onPressed: (){
                                     //Navigator.popAndPushNamed(context, '/escaner');
-                                    Navigator.popAndPushNamed(context, EscanearFactura.route, arguments:  "asignar",);
+                                    Navigator.popAndPushNamed(context, EscanearFactura.route, arguments:  Arguments("asignar", ordenes ) );
                                   },
                                   //width: 90,
                                   //height: 40,
@@ -172,7 +188,7 @@ class _ScannerState extends State<ScannerScreen> {
                                   ),
 
                                 ),
-                                ElevatedButton(
+                                /*ElevatedButton(
                                   style: ElevatedButton.styleFrom(
                                       primary: Theme.of(context).textTheme.bodyText1.color, // background
                                       onPrimary: Theme.of(context).textTheme.bodyText1.color,
@@ -195,6 +211,61 @@ class _ScannerState extends State<ScannerScreen> {
                                           ),
                                         ),
                                         Icon( Icons.assignment_turned_in_outlined  , size: 23, color: Theme.of(context).backgroundColor,),
+                                      ],
+                                    ),
+                                  ),
+
+                                ),*/
+
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                      primary: Theme.of(context).textTheme.bodyText1.color, // background
+                                      onPrimary: Theme.of(context).textTheme.bodyText1.color,
+                                      elevation: 5// foreground
+                                  ),
+                                  onPressed: (){
+                                    //Navigator.popAndPushNamed(context, '/mapa');
+                                    showDialog(
+                                        context: context,
+                                        builder: (BuildContext cont) {
+                                          return AlertDialog(
+                                              title: Text('Ordenes Escaneadas'),
+                                              content: setupAlertDialoadContainer( ordenes ),
+                                              actions: <Widget>[
+                                                ElevatedButton(
+                                                  child: Text("Enviar"),
+                                                  onPressed: () {
+                                                    BlocProvider.of<EscaneoBloc>(context).add(AsignarPedido(ordenes, context));
+                                                    Navigator.of(cont).pop();
+                                                  },
+                                                ),
+                                                ElevatedButton(
+                                                  child: Text("Cerrar"),
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                ),
+
+                                              ]
+                                          );
+                                        });
+                                  },
+                                  //width: 90,
+                                  //height: 40,
+                                  child: Center(
+                                    child: Row( // Replace with a Row for horizontal icon + text
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: <Widget>[
+                                        Text("Ordenes   ",
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                              color: Theme.of(context).backgroundColor,
+                                              fontWeight: FontWeight.w900
+                                          ),
+                                        ),
+                                        //Icon( Icons.assignment_turned_in_outlined  , size: 23, color: Theme.of(context).backgroundColor,),
+                                        Icon( Icons.list  , size: 23, color: Theme.of(context).backgroundColor,),
+
                                       ],
                                     ),
                                   ),
@@ -310,6 +381,9 @@ class _ScannerState extends State<ScannerScreen> {
 
                       if (state is EscaneoCompletado) {
                         String texto = "";
+                        ordenes = state.listOrdenes;
+
+
                         if (opc == "entregar"){
                           texto = "ENTREGADO";
 
@@ -354,7 +428,7 @@ class _ScannerState extends State<ScannerScreen> {
 
                                   onPressed: (){
                                     //Navigator.popAndPushNamed(context, '/escaner');
-                                    Navigator.popAndPushNamed(context, EscanearFactura.route, arguments:  "asignar",);
+                                    Navigator.popAndPushNamed(context, EscanearFactura.route, arguments: Arguments("asignar", ordenes ), );
                                   },
                                   //width: 90,
                                   //height: 40,
@@ -382,7 +456,31 @@ class _ScannerState extends State<ScannerScreen> {
                                       elevation: 5// foreground
                                   ),
                                   onPressed: (){
-                                    Navigator.popAndPushNamed(context, '/mapa');
+                                    //Navigator.popAndPushNamed(context, '/mapa');
+                                    showDialog(
+                                        context: context,
+                                        builder: (BuildContext cont) {
+                                          return AlertDialog(
+                                              title: Text('Ordenes Escaneadas'),
+                                              content: setupAlertDialoadContainer( ordenes ),
+                                              actions: <Widget>[
+                                                ElevatedButton(
+                                                  child: Text("Enviar"),
+                                                  onPressed: () {
+                                                    BlocProvider.of<EscaneoBloc>(context).add(AsignarPedido(ordenes, context));
+                                                    Navigator.of(cont).pop();
+                                                  },
+                                                ),
+                                                ElevatedButton(
+                                                  child: Text("Cerrar"),
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                ),
+
+                                              ]
+                                          );
+                                        });
                                   },
                                   //width: 90,
                                   //height: 40,
@@ -390,14 +488,16 @@ class _ScannerState extends State<ScannerScreen> {
                                     child: Row( // Replace with a Row for horizontal icon + text
                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: <Widget>[
-                                        Text("Entregar   ",
+                                        Text("Ordenes   ",
                                           textAlign: TextAlign.center,
                                           style: TextStyle(
                                               color: Theme.of(context).backgroundColor,
                                               fontWeight: FontWeight.w900
                                           ),
                                         ),
-                                        Icon( Icons.assignment_turned_in_outlined  , size: 23, color: Theme.of(context).backgroundColor,),
+                                        //Icon( Icons.assignment_turned_in_outlined  , size: 23, color: Theme.of(context).backgroundColor,),
+                                        Icon( Icons.list  , size: 23, color: Theme.of(context).backgroundColor,),
+
                                       ],
                                     ),
                                   ),
@@ -562,7 +662,7 @@ class _ScannerState extends State<ScannerScreen> {
 
       //context.read<EscaneoBloc>().add(EscaneandoEvent());
       print(opc);
-      BlocProvider.of<EscaneoBloc>(context).add(EscaneandoEvent(scanData.code, opc));
+      BlocProvider.of<EscaneoBloc>(context).add(EscaneandoEvent(scanData.code, opc, ordenes ));
 
 
 
