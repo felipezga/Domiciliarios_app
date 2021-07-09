@@ -2,11 +2,14 @@ import 'dart:async';
 
 import 'package:domiciliarios_app/Modelo/OrdenModel.dart';
 import 'package:domiciliarios_app/Modelo/Pedido.dart';
+import 'package:domiciliarios_app/Modelo/RutaModel.dart';
 import 'package:domiciliarios_app/Modelo/SalidaModel.dart';
 import 'package:domiciliarios_app/Modelo/UserLocation.dart';
 import 'package:domiciliarios_app/Servicios/FuncionesServicio.dart';
 import 'package:domiciliarios_app/Servicios/PedidoDomicilioServicio.dart';
 import 'package:domiciliarios_app/Servicios/exceptions.dart';
+import 'package:domiciliarios_app/widgets/ShowSnackBar.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -17,14 +20,21 @@ abstract class EscaneoEvent {
 class EscaneandoEvent extends EscaneoEvent{
   String data;
   String opc;
-  EscaneandoEvent(this.data, this.opc);
+  List<Orden> ordenesEscan;
+  EscaneandoEvent(this.data, this.opc, this.ordenesEscan);
+}
+
+class AsignarPedido extends EscaneoEvent {
+  final List<Orden> ordenes;
+  final BuildContext c;
+  AsignarPedido(this.ordenes, this.c);
 }
 
 
 class EscaneoBloc extends Bloc<EscaneoEvent, EscaneoState>{
   EscaneoBloc() : super(EscaneoInicial());
 
-  List<Orden> ordenes = [];
+  //List<Orden> ordenes = [];
 
   @override
   Stream<EscaneoState> mapEventToState(EscaneoEvent event) async* {
@@ -52,6 +62,7 @@ class EscaneoBloc extends Bloc<EscaneoEvent, EscaneoState>{
         var fact = factura.split('-');
 
         var id = 0;
+        var estadoOrden = "ASIGNAR";
 
         PedidoDomiclioRepository apiPedido = new PedidoDomiclioRepository();
 
@@ -60,31 +71,34 @@ class EscaneoBloc extends Bloc<EscaneoEvent, EscaneoState>{
 
         // VALIDACCION PARA OBTENER EL ID PARA ASOCIAR AL USUARIO
         if(event.opc =="entregar"){
-          final profile = await apiPedido.fetchPedidoUser( userId );
-          print(profile);
+          final rutaPed = await apiPedido.fetchPedidoUser( userId );
+          print(rutaPed);
 
-          List<Pedido> pedidoUsuario = profile.where((i) => i.restaurante == fact[0] &&  i.numero == int.parse(fact[1]) ).toList();
+          List<Pedido> pedidoUsuario = rutaPed.pedidos.where((i) => i.restaurante == fact[0] &&  i.numero == int.parse(fact[1]) ).toList();
 
           print("Este es el id");
           print(pedidoUsuario[0].id);
           id = pedidoUsuario[0].id;
-
+          estadoOrden = "ENTREGAR";
         }
 
         Funciones funciones = Funciones();
         UserLocation ubicaion = UserLocation();
-
         ubicaion = await funciones.ubicacionLatLong();
 
-        ordenes.add(Orden(id: id, prefijo: fact[0], numero: int.parse(fact[1]), latitud: ubicaion.latitude, longitud: ubicaion.longitude, usuaId: userId));
+        Orden nuevaOrden = Orden(id: id, estado: estadoOrden, prefijo: fact[0], numero: int.parse(fact[1]), latitud: ubicaion.latitude, longitud: ubicaion.longitude, usuaId: userId);
 
-        print(ordenes[0].numero);
-        print(ordenes[0].prefijo);
+        int existe = event.ordenesEscan.indexWhere((element) => element.numero == nuevaOrden.numero);
 
+        if( existe == -1 ){
+          event.ordenesEscan.add( nuevaOrden );
+          yield EscaneoCompletado(factura, event.ordenesEscan);
 
+        }else{
+          yield EscaneoExistente(  " Ya existe: "+ factura, event.ordenesEscan );
+        }
 
-
-
+        /*
         Salida respuesta;
 
         if(event.opc =="entregar"){
@@ -95,23 +109,67 @@ class EscaneoBloc extends Bloc<EscaneoEvent, EscaneoState>{
 
         }
 
-
-
-
         if(respuesta.code == 1){
           yield EscaneoCompletado(factura);
         }else{
           yield EscaneoExistente( respuesta.mens + " "+ factura );
         }
 
-
+        */
       } catch (e) {
-        yield EscaneoError(error: UnknownException( e ) );
+        print(e);
+        yield ErrorAgregar(error: UnknownException( e ), listOrdenes: event.ordenesEscan );
 
       }
+    }
+
+
+    if (event is AsignarPedido) {
+      print("Asig Pedido");
+      yield (Escaneando());
+
+      if( event.ordenes.length == 0){
+        showSnackBarMessage( "No hay pedidos seleccionados " ,  Colors.blue, Icons.warning_amber_outlined, event.c);
+      }else{
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+        String userId = prefs.getString("userId");
+
+        PedidoDomiclioRepository apiPedido = new PedidoDomiclioRepository();
+
+        Ruta ruta =  Ruta( usuaId: userId, ordenes: event.ordenes);
+
+        final Salida respuesta = await apiPedido.asignarPedido( ruta );
+        print(respuesta.code);
+        print(respuesta.mens);
+
+        String mens = "";
+        Color col;
+        IconData icono;
+        if(respuesta.code == 1){
+          mens = "Asignación exitosa!";
+          col = Colors.green;
+          icono = Icons.check_circle_outline;
+
+          showSnackBarMessage( mens ,  col, icono, event.c);
+          //Navigator.popAndPushNamed(event.c, '/mapa');
+
+          yield (EscaneoAsignado(mens: "OK"));
+
+        }else{
+          mens = respuesta.mens;
+          col = Colors.red;
+          icono = Icons.cancel_outlined;
+
+          showSnackBarMessage( mens ,  col, icono, event.c);
+          //Navigator.popAndPushNamed(event.c, '/mapa');
+
+          yield EscaneoError( error: mens  );
+        }
 
     }
   }
+
+}
 
 }
 
@@ -125,7 +183,8 @@ class Escaneando extends EscaneoState {}
 
 class EscaneoCompletado extends EscaneoState{
   String respuesta="";
-  EscaneoCompletado(this.respuesta);
+  List<Orden> listOrdenes;
+  EscaneoCompletado(this.respuesta, this.listOrdenes);
 }
 
 class EscaneoError extends EscaneoState{
@@ -133,9 +192,22 @@ class EscaneoError extends EscaneoState{
   EscaneoError({this.error});
 }
 
+class ErrorAgregar extends EscaneoState{
+  final error;
+  List<Orden> listOrdenes;
+  ErrorAgregar({this.error, this.listOrdenes});
+}
+
+class EscaneoAsignado extends EscaneoState{
+  final mens;
+  EscaneoAsignado({this.mens});
+  }
+
+
 class EscaneoExistente extends EscaneoState{
   String asignacion;
-  EscaneoExistente(this.asignacion);
+  List<Orden> listOrdenes;
+  EscaneoExistente(this.asignacion, this.listOrdenes);
 }
 
 

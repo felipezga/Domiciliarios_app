@@ -60,9 +60,9 @@ class _DomicilioState extends State<DomiciliosScreen> {
   }*/
 
   List<Ruta> rutas = <Ruta>[
-    new Ruta('Ruta1', '12345', []),
-    new Ruta('Ruta2', '67890', []),
-    new Ruta('Ruta3', '5555', []),
+    new Ruta(usuaId: 'Ruta1', ordenes: []),
+    new Ruta(usuaId:'Ruta2', ordenes:  []),
+    new Ruta(usuaId: 'Ruta3', ordenes: []),
   ];
 
   @override
@@ -110,7 +110,7 @@ class _DomicilioState extends State<DomiciliosScreen> {
                 );
               }
               if (state is PedidoLoaded) {
-                List<Pedido> historialPedidos = state.pedido;
+                List<Pedido> historialPedidos = state.rutaPedido.pedidos;
                 //List<Domicilio> albums = state.domicilios;
                 return _list(historialPedidos, rutas);
               }
@@ -160,32 +160,24 @@ class ListRow extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                      ruta.id,
+                      ruta.usuaId,
                       style: TextStyle(
                         fontWeight: FontWeight.w500,
                         fontSize: 18,
                       )
                   ),
                 ),
-                IconButton(
-                    icon: new Icon(Icons.location_history, color: Colors.red, size: 35,),
-                    highlightColor: Colors.pink,
-                    onPressed: (){
-                      print("No fuimos");
-                      Navigator.push( context,
-                        new MaterialPageRoute(
-                          builder: (context) => new HistorialMapa(),
-                        ),
-                      );
+                Text(
+                    "23:43",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w500,
+                      fontSize: 16,
+                    )
+                ),
 
-                      //Navigator.popAndPushNamed(context, HistorialMapa.route);
-
-
-                    }
-                    ),
               ],
             ),
-            subtitle: Text(ruta.fecha ),
+            subtitle: Text(ruta.usuaId ),
             children: pedidos.map<Widget>((ped) =>
               ListTile(
                 leading: Icon(Icons.volunteer_activism, size: 50, color: Colors.red,),
@@ -197,10 +189,27 @@ class ListRow extends StatelessWidget {
               //Divider(),
 
             ).toList(),
-            leading: CircleAvatar(
+            leading: IconButton(
+                icon: new Icon(Icons.location_history, color: Colors.red, size: 45,),
+                highlightColor: Colors.pink,
+                onPressed: (){
+                  print("No fuimos");
+                  Navigator.push( context,
+                    new MaterialPageRoute(
+                      builder: (context) => new HistorialMapa(),
+                    ),
+                  );
+
+                  //Navigator.popAndPushNamed(context, HistorialMapa.route);
+
+
+                }
+            ),
+
+            /*CircleAvatar(
               backgroundColor: Colors.green,
               child: Text(ruta.fecha.substring(0,1),style: TextStyle(color: Colors.white),),
-      ),
+            ),*/
     )
 
 

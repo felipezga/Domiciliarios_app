@@ -116,7 +116,7 @@ class RutasMapa extends State<HistorialMapaState> {
                 ),
               ),
               title: Text(
-                'PINTAR RUTA',
+                'Ruta 1',
                 style: TextStyle(
                   color: theme.getTheme.hoverColor,
                   fontWeight: FontWeight.bold,
@@ -125,7 +125,7 @@ class RutasMapa extends State<HistorialMapaState> {
               backgroundColor: theme.getTheme.appBarTheme.color,
             ),
             //drawer: buildDrawer(context, Configuraciones.route),
-            body: MarcarOrdenes( isDarkMode ),
+            body: marcarOrdenes( isDarkMode ),
           );
 
 
@@ -136,10 +136,7 @@ class RutasMapa extends State<HistorialMapaState> {
 
   }
 
-  MarcarOrdenes( isDarkMode){
-
-
-
+  marcarOrdenes( isDarkMode){
 
     return
       BlocBuilder<LocationBloc, LocationState>(
@@ -155,14 +152,14 @@ class RutasMapa extends State<HistorialMapaState> {
             var markers = <Marker>[
 
               Marker(
-                width: 40.0,
-                height: 40.0,
+                width: 50.0,
+                height: 50.0,
                 //point: LatLng(_latitude, _longitude),
                 point: LatLng(state.position.latitude, state.position.longitude),
                 builder: (ctx) =>
                     Container(
                         child: Image(
-                          image: new AssetImage("images/frisby.png"),
+                          image: new AssetImage("images/entregado.png"),
                           width: 20,
                           height: 20,
                           color: null,
@@ -277,17 +274,17 @@ class RutasMapa extends State<HistorialMapaState> {
                             return Text(error);
                           }
                           if (state is PedidoLoaded) {
-                            List<Pedido> pedidosAsignados = state.pedido;
+                            List<Pedido> pedidosAsignados = state.rutaPedido.pedidos;
                             if(pedidosAsignados.length > 0){
                               //dropdownValue = state.pedido[0];
                               //_obtenerLocationEstado( "Iniciar" , "PEDIDO PREPARADO", "Finalizar");
                               //_obtenerLocationEstado(mens_boton, "", "Finalizar");
 
                               //context.read<SeleccionBloc>().add(SeleccionarEvent( dropdownValue));
-                              context.read<SeleccionBloc>().add(SeleccionarEvent( state.pedido[0]));
+                              context.read<SeleccionBloc>().add(SeleccionarEvent( state.rutaPedido.pedidos[0]));
 
                               //BlocProvider.of<TrackingBloc>(context).add(AddEstadoDomiciliario(  estadoTracking:  "PREPARADO", descripcionTracking: "PRODUCTO PREPARADO", listaTracking: estaDomi));
-                              return Text( "Ordenes" );
+                              return Text( "" );
 
                             }
 

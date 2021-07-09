@@ -1,9 +1,13 @@
 import 'package:domiciliarios_app/Modelo/OrdenModel.dart';
 
 class Ruta {
-  String id;
-  String fecha;
+  String usuaId;
   List<Orden> ordenes = [];
 
-  Ruta(this.id, this.fecha, this.ordenes);
+  Ruta({this.usuaId, this.ordenes});
+
+  Map<String, dynamic> toJson() => {
+    "usuaId": usuaId,
+    "ordenes": ordenes,
+  };
 }

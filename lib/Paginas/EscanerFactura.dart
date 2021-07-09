@@ -1,4 +1,5 @@
 import 'package:domiciliarios_app/Bloc/ThemeBloc.dart';
+import 'package:domiciliarios_app/Modelo/ArgumentsModel.dart';
 import 'package:domiciliarios_app/widgets/Scanner.dart';
 import 'package:domiciliarios_app/widgets/drawer.dart';
 import 'package:flutter/material.dart';
@@ -7,14 +8,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class EscanearFactura extends StatelessWidget {
 
   static const String route = '/escaneo';
-  final String arguments;
+  final Arguments arguments;
 
   EscanearFactura( this.arguments );
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    print("ESCANEAR " + arguments);
 
     return EscanearScreen(opcion : arguments);
   }
@@ -24,7 +23,7 @@ class EscanearScreen extends StatefulWidget {
 
   EscanearScreen({Key key, this.opcion}) : super(key: key);
 
-  final String opcion;
+  final Arguments opcion;
 
   @override
   _EscanearState createState() => _EscanearState();
@@ -33,7 +32,7 @@ class EscanearScreen extends StatefulWidget {
 class _EscanearState extends State<EscanearScreen> {
   //
 
-  String opc;
+  Arguments opc;
 
   @override
   void initState() {
@@ -42,7 +41,7 @@ class _EscanearState extends State<EscanearScreen> {
 
     opc = widget.opcion;
     print('Este es: ');
-    print(opc);
+    print(opc.message);
 
   }
 
@@ -63,7 +62,7 @@ class _EscanearState extends State<EscanearScreen> {
           ),
           //automaticallyImplyLeading: false,
           title: Text(
-            'ESCANER',
+            'ESCANEAR PEDIDO',
             style: TextStyle(
               color: theme.getTheme.hoverColor,
               fontWeight: FontWeight.bold,

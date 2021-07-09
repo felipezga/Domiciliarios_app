@@ -1,5 +1,6 @@
 import 'package:domiciliarios_app/Modelo/OrdenModel.dart';
 import 'package:domiciliarios_app/Modelo/Pedido.dart';
+import 'package:domiciliarios_app/Modelo/RutaPedidoEstado.dart';
 import 'package:domiciliarios_app/Modelo/SalidaModel.dart';
 import 'package:domiciliarios_app/Modelo/UserLocation.dart';
 import 'package:domiciliarios_app/Servicios/FuncionesServicio.dart';
@@ -18,6 +19,13 @@ class GetPedidoUser extends PedidoEvent {
 class EntregarPedido extends PedidoEvent {
   final Pedido pedido;
   EntregarPedido(this.pedido);
+}
+
+class ActualizarPedido extends PedidoEvent{
+  final String estado;
+  final Pedido pedido;
+  final BuildContext c;
+  ActualizarPedido(this.estado, this.pedido, this.c);
 }
 
 class ReasignarPedido extends PedidoEvent {
@@ -88,12 +96,78 @@ class ReasignarPedido extends PedidoEvent {
          PedidoDomiclioRepository apiPedido = new PedidoDomiclioRepository();
          print("eres");
          print(ordenes[0]);
-         final Salida respuesta = await apiPedido.entregarPedido( ordenes );
+         final Salida respuesta = await apiPedido.ActuEstaOrde( ordenes );
          print(respuesta);
          print("Salida");
          final profile = await pedidoRepo.fetchPedidoUser(event.pedido.usuario.toString());
          print(profile);
          yield (PedidoLoaded(profile));
+       }
+
+
+       if (event is ActualizarPedido) {
+         yield PedidoLoading();
+
+         final SharedPreferences prefs = await SharedPreferences.getInstance();
+         String userId = prefs.getString("userId");
+
+         Funciones funciones = Funciones();
+         UserLocation ubicaion = UserLocation();
+         ubicaion = await funciones.ubicacionLatLong();
+
+         print(event.pedido);
+         print("usuario cambi");
+         print(event.pedido.usuario);
+
+         Orden ordenEnCurso = new Orden(id: event.pedido.id, estado: event.estado, prefijo: event.pedido.restaurante, numero: event.pedido.numero, latitud: ubicaion.latitude, longitud: ubicaion.longitude, usuaId: userId);
+
+         ordenes.add(ordenEnCurso);
+
+         try {
+
+           PedidoDomiclioRepository apiPedido = new PedidoDomiclioRepository();
+
+           final Salida respuesta = await apiPedido.ActuEstaOrde( ordenes );
+           print(respuesta.code);
+           print(respuesta.mens);
+
+           String mens = "";
+           Color col;
+           IconData icono;
+           if(respuesta.code == 1){
+             mens = event.pedido.restaurante + event.pedido.numero.toString() + " EN " + event.estado;
+             col = Colors.green;
+             icono = Icons.check_circle_outline;
+
+             showSnackBarMessage( mens ,  col, icono, event.c);
+             //Navigator.popAndPushNamed(event.c, '/mapa');
+
+             // yield (EscaneoAsignado(mens: "OK"));
+
+           }else{
+             mens = respuesta.mens;
+             col = Colors.red;
+             icono = Icons.cancel_outlined;
+
+             showSnackBarMessage( mens ,  col, icono, event.c);
+             //Navigator.popAndPushNamed(event.c, '/mapa');
+
+             // yield EscaneoError( error: mens  );
+           }
+
+           final rutaPedido = await apiPedido.fetchPedidoUser(userId);
+           print(rutaPedido);
+           yield (PedidoLoaded(rutaPedido));
+
+
+
+         } catch (e) {
+           /*yield AlbumsListError(
+          error: UnknownException('Unknown Error'),
+        );*/
+         }
+
+         //yield BotonStateEnSitio("EN SITIO");
        }
 
        if (event is ReasignarPedido) {
@@ -183,8 +257,8 @@ class PedidoLoading extends PedidoState {
 }
 
 class PedidoLoaded extends PedidoState {
-  final List<Pedido> pedido;
-  const PedidoLoaded(this.pedido);
+  final RutaPedido rutaPedido;
+  const PedidoLoaded(this.rutaPedido);
 }
 
 class PedidoRespuesta extends PedidoState {

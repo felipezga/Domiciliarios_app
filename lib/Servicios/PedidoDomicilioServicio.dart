@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:domiciliarios_app/Modelo/OrdenModel.dart';
 import 'package:domiciliarios_app/Modelo/Pedido.dart';
+import 'package:domiciliarios_app/Modelo/RutaModel.dart';
+import 'package:domiciliarios_app/Modelo/RutaPedidoEstado.dart';
 import 'package:domiciliarios_app/Modelo/SalidaModel.dart';
 
 import 'package:http/http.dart' as http;
@@ -10,12 +12,9 @@ import '../Configuraciones.dart';
 class PedidoDomiclioRepository {
 
   //static const _baseUrl = "https://10.0.2.2:5001/api/DomiApp/Listar/";
-  static const listar_pedidos = "/api/DomiApp/Listar/";
-  static const asignar_pedido = "/api/DomiApp/AsignarOrden";
-  static const entregar_pedido = "/api/DomiApp/Actualizar";
-  static const reasignar_pedido = "/api/DomiApp/Reasignar";
 
-  Future<List<Pedido>> fetchPedidoUser(String userName) async {
+
+  Future<RutaPedido> fetchPedidoUser(String userName) async {
     //String api = 'https://api.github.com/users/${userName}';
 
     print(userName);
@@ -29,7 +28,8 @@ class PedidoDomiclioRepository {
     print("appaa");
     var data = await http.get(api);
     //return await get(api).then((data) {
-      print(data);
+      print(data.body);
+    print(data.statusCode);
       print("dataaa");
 
 
@@ -42,7 +42,8 @@ class PedidoDomiclioRepository {
         // If the call to the server was successful, parse the JSON
 
         List<Pedido> pedidos = pedidosFromJson(jsonData['ordenes']);
-        return pedidos;
+        RutaPedido rutaPed = RutaPedido(jsonData['idRuta'], jsonData['estaRuta'], pedidos );
+        return rutaPed;
       } else {
         // If that call was not successful, throw an error.
         throw Exception('Failed to load post');
@@ -68,16 +69,17 @@ class PedidoDomiclioRepository {
 
 
 
-  Future<Salida> asignarPedido(List<Orden> requestModel) async {
+  Future<Salida> asignarPedido(Ruta requestModel) async {
     //String url = "https://10.0.2.2:5001/api/DomiApp/AsignarOrden";
     String url = url_api_domiciliario+asignar_pedido;
     Salida salida;
 
-    print('Asignacion');
+    print('Servicio Asignacion');
+    print(requestModel.usuaId);
+    print(requestModel.ordenes[0].numero);
 
     String jsonString = json.encode(requestModel);
     //String jsonString ='[{"id":2,"prefijo":"G471","numero":598240,"usuaId":1}]' ;
-
     print(jsonString);
 
     final response = await http.post( url,
@@ -113,9 +115,9 @@ class PedidoDomiclioRepository {
     }
   }
 
-  Future<Salida> entregarPedido(List<Orden> requestModel) async {
+  Future<Salida> ActuEstaOrde(List<Orden> requestModel) async {
     //String url = "https://10.0.2.2:5001/api/DomiApp/Actulizar";
-    String url = url_api_domiciliario+entregar_pedido;
+    String url = url_api_domiciliario+actualizar_pedido;
     Salida salida;
 
 

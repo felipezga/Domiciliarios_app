@@ -1,3 +1,4 @@
+import 'package:domiciliarios_app/Modelo/ArgumentsModel.dart';
 import 'package:domiciliarios_app/Modelo/UsuarioModel.dart';
 import 'package:domiciliarios_app/Paginas/Domicilios.dart';
 import 'package:domiciliarios_app/Paginas/EscanerFactura.dart';
@@ -15,114 +16,79 @@ import 'package:flutter/material.dart';
 
 Drawer buildDrawer(BuildContext context, String currentRoute) {
   Future<User> getUserData() => UserPreferences().getUser();
-
   return Drawer(
     child: Column(
-        mainAxisAlignment: MainAxisAlignment
-            .spaceBetween, // place the logout at the end of the drawer
+        mainAxisAlignment: MainAxisAlignment.spaceBetween, // place the logout at the end of the drawer
         children: <Widget>[
           Flexible(
               child: ListView(
-                  //shrinkWrap: true,
                   children: <Widget>[
-                /*DrawerHeader(
-          child: Center(
-            child: const Text('Felipe Rios'),
-          ),
-          decoration: BoxDecoration(
-            color: Colors.blue,
-          ),
-        ),*/
-                _createHeader( getUserData() ),
+                    _createHeader( getUserData() ),
+                    ListTile(
+                      leading: Icon(Icons.perm_identity),
+                      title: const Text('Perfil '),
+                      //selected: currentRoute == Mapa.route,
+                      onTap: () {
+                        Navigator.popAndPushNamed(context, PerfilUsuario.route);
+                        //  Navigator.pushReplacementNamed(context, Mapa.route);
+                      },
+                    ),
+                    Divider(),
+                    ListTile(
+                      leading: Icon(Icons.map),
+                      title: const Text('Mapa'),
+                      //selected: currentRoute == Mapa.route,
+                      onTap: () {
+                        Navigator.popAndPushNamed(context, Mapa.route);
+                        //  Navigator.pushReplacementNamed(context, Mapa.route);
+                      },
+                    ),
+                    Divider(),
+                    ListTile(
+                      leading: Icon(Icons.qr_code_scanner),
+                      title: const Text('Asignar Pedido'),
+                      //selected: currentRoute == Restaurante.route,
+                      onTap: () {
+                        //Navigator.pushReplacementNamed(context, Restaurante.route);
+                        //Navigator.popAndPushNamed(context, '/escaner');
+                        /*Navigator.popAndPushNamed(context, EscanearFactura.route, arguments: EscanearFactura(
+                           "liperi",
+                        ));*/
 
-                ListTile(
-                  leading: Icon(Icons.perm_identity),
-                  title: const Text('Perfil '),
-                  //selected: currentRoute == Mapa.route,
-                  onTap: () {
-                    Navigator.popAndPushNamed(context, PerfilUsuario.route);
-                    //  Navigator.pushReplacementNamed(context, Mapa.route);
-                  },
-                ),
-
-                Divider(),
-
-                ListTile(
-                  leading: Icon(Icons.map),
-                  title: const Text('Mapa'),
-                  //selected: currentRoute == Mapa.route,
-                  onTap: () {
-                    Navigator.popAndPushNamed(context, Mapa.route);
-                    //  Navigator.pushReplacementNamed(context, Mapa.route);
-                  },
-                ),
-                Divider(),
-                ListTile(
-                  leading: Icon(Icons.qr_code_scanner),
-                  title: const Text('Escanear'),
-                  //selected: currentRoute == Restaurante.route,
-                  onTap: () {
-                    //Navigator.pushReplacementNamed(context, Restaurante.route);
-                    //Navigator.popAndPushNamed(context, '/escaner');
-                    /*Navigator.popAndPushNamed(context, EscanearFactura.route, arguments: EscanearFactura(
-                       "liperi",
-                    ));*/
-
-                    Navigator.popAndPushNamed(
-                      context,
-                      EscanearFactura.route,
-                      //ExtractArgumentsScreen.routeName,
-                      arguments:  "asignar"
-                      //'Extract Arguments Screen',
-                      //'This message is extracted in the build method.',
-                      ,
-                    );
-
-
-                  },
-                ),
+                        Navigator.popAndPushNamed( context, EscanearFactura.route, arguments:  Arguments("asignar", [] ) );
+                      },
+                    ),
                     Divider(),
                     ListTile(
                       leading: Icon(Icons.assignment_return_outlined),
-                      title: const Text('Reasignar Entrega'),
+                      title: const Text('Reasignar Pedido'),
                       //selected: currentRoute == Restaurante.route,
                       onTap: () {
-
-                       // Navigator.pushReplacementNamed(context, Reasignacion.route);
-
-                        Navigator.popAndPushNamed(
-                          context,
-                          Reasignacion.route,
-                          //ExtractArgumentsScreen.routeName,
-                          arguments:  "asignar"
-                          ,
-                        );
-
-
+                        Navigator.pushReplacementNamed(context, Reasignacion.route);
                       },
                     ),
-                Divider(),
-                ListTile(
-                  leading: Icon(Icons.motorcycle),
-                  title: const Text('Domicilios '),
-                  //selected: currentRoute == Mapa.route,
-                  onTap: () {
-                    Navigator.popAndPushNamed(context, Domicilios.route);
-                    //  Navigator.pushReplacementNamed(context, Mapa.route);
-                  },
-                ),
-                Divider(),
-                ListTile(
-                  leading: Icon(Icons.settings),
-                  title: const Text('Configuraciones'),
-                  //selected: currentRoute == Restaurante.route,
-                  onTap: () {
-                    //Navigator.pushReplacementNamed(context, Restaurante.route);
-                    Navigator.popAndPushNamed(context, Configuraciones.route);
-                  },
-                ),
-                //Divider(),
-              ])),
+                    Divider(),
+                    ListTile(
+                      leading: Icon(Icons.motorcycle),
+                      title: const Text('Historial Domicilios '),
+                      //selected: currentRoute == Mapa.route,
+                      onTap: () {
+                        Navigator.popAndPushNamed(context, Domicilios.route);
+                      },
+                    ),
+                    Divider(),
+                    ListTile(
+                      leading: Icon(Icons.settings),
+                      title: const Text('Configuraciones'),
+                      //selected: currentRoute == Restaurante.route,
+                      onTap: () {
+                        //Navigator.pushReplacementNamed(context, Restaurante.route);
+                        Navigator.popAndPushNamed(context, Configuraciones.route);
+                      },
+                    ),
+                  ]
+              )
+          ),
           ListTile(
             leading: Icon(Icons.arrow_back_outlined),
             title: const Text('Salir'),
@@ -136,11 +102,10 @@ Drawer buildDrawer(BuildContext context, String currentRoute) {
             onTap: () {
               UserPreferences().removeUser();
               Navigator.pushReplacementNamed(context, '/login');
-              //Navigator.pushReplacementNamed(context, Restaurante.route);
-              //Navigator.pushNamed(context, Restaurante.route);
             },
           ),
-        ]),
+        ]
+    ),
   );
 }
 
