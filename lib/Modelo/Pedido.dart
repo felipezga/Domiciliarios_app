@@ -7,6 +7,8 @@ class Pedido {
   String fecha;
   bool checked;
   String estado;
+  double latitud;
+  double longitud;
 
 
   Pedido({
@@ -17,7 +19,9 @@ class Pedido {
     this.restaurante,
     this.fecha,
     this.checked,
-    this.estado
+    this.estado,
+    this.latitud,
+    this.longitud
   });
 
   factory Pedido.fromJson( dynamic responseData) {
@@ -45,7 +49,9 @@ class Pedido {
           restaurante: rest != null ? rest : "",
           fecha: "" != null ? "" : "",
           checked: false,
-          estado: responseData['estado'] != null ? responseData['estado'] : ""
+          estado: responseData['estado'] != null ? responseData['estado'] : "",
+          latitud: responseData['latitud'] != null ? responseData['latitud'] : 0,
+          longitud: responseData['longitud'] != null ? responseData['longitud'] : 0
 
       );
 

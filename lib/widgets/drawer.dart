@@ -6,6 +6,7 @@ import 'package:domiciliarios_app/Paginas/Mapa.dart';
 import 'package:domiciliarios_app/Paginas/Configuraciones.dart';
 import 'package:domiciliarios_app/Paginas/PerfilUsuario.dart';
 import 'package:domiciliarios_app/Paginas/ReasignarEntregas.dart';
+import 'package:domiciliarios_app/Paginas/ScanDatawedge.dart';
 import 'package:domiciliarios_app/Servicios/SharedPreferencesServicio.dart';
 import 'package:flutter/material.dart';
 //import 'package:restaurantes_tipoventas_app/Paginas/Mapa.dart';
@@ -56,6 +57,16 @@ Drawer buildDrawer(BuildContext context, String currentRoute) {
                         ));*/
 
                         Navigator.popAndPushNamed( context, EscanearFactura.route, arguments:  Arguments("asignar", [] ) );
+                      },
+                    ),
+                    Divider(),
+                    ListTile(
+                      leading: Icon(Icons.map),
+                      title: const Text('Escanear Ordenes Laser'),
+                      //selected: currentRoute == Mapa.route,
+                      onTap: () {
+                        Navigator.popAndPushNamed(context, ScanOrden.route);
+                        //  Navigator.pushReplacementNamed(context, Mapa.route);
                       },
                     ),
                     Divider(),

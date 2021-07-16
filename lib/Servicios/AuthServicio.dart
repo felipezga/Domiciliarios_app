@@ -1,4 +1,4 @@
-import 'package:flutter_session/flutter_session.dart';
+/*import 'package:flutter_session/flutter_session.dart';
 import 'package:http/http.dart' as http;
 
 class AuthService {
@@ -64,4 +64,4 @@ class _AuthData {
     data['clientId'] = clientId;
     return data;
   }
-}
+}*/

@@ -10,8 +10,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong/latlong.dart';
 
+class ArgumentsHistorial {
+  final String message;
+  final List<Pedido> ordenes;
+
+  ArgumentsHistorial(this.message, this.ordenes);
+}
+
 class HistorialMapa extends StatelessWidget{
   static const String route = '/historialMapa';
+  final ArgumentsHistorial arguments;
+
+  HistorialMapa(this.arguments);
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +42,7 @@ class HistorialMapa extends StatelessWidget{
               })
 
         ],
-        child: HistorialMapaState(),
+        child: HistorialMapaState( arguments),
 
       );
 
@@ -40,13 +50,19 @@ class HistorialMapa extends StatelessWidget{
 }
 
 class HistorialMapaState extends StatefulWidget{
-  HistorialMapaState() : super();
+
+  final ArgumentsHistorial arguments;
+
+  HistorialMapaState( this.arguments ) : super();
   RutasMapa createState() => RutasMapa();
 }
 
 class RutasMapa extends State<HistorialMapaState> {
 
   List<Pedido> pedidosAsignados = [];
+  String idRuta;
+  List<Pedido> pedidosLatLong = [];
+  List<Marker> markers = [];
 
   void getDropDownItem( pedido){
     context.read<PedidoBloc>().add(EntregarPedido( pedido));
@@ -87,6 +103,42 @@ class RutasMapa extends State<HistorialMapaState> {
   void initState() {
     super.initState();
 
+    idRuta = widget.arguments.message;
+    pedidosLatLong = widget.arguments.ordenes;
+    print("holss");
+    print(pedidosLatLong.length);
+
+    for( Pedido pedLatLong in pedidosLatLong){
+
+      markers.add(
+          Marker(
+            width: 50.0,
+            height: 50.0,
+            //point: LatLng(_latitude, _longitude),
+            point: LatLng(pedLatLong.latitud, pedLatLong.longitud),
+            builder: (ctx) =>
+                Container(
+                    child: Image(
+                      image: new AssetImage("images/entregado.png"),
+                      width: 20,
+                      height: 20,
+                      color: null,
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.center,
+                    )
+                  /*ImageIcon(
+                                          AssetImage('images/frisby.png'),
+                                            color:Colors.red,
+                                            size: 20
+                                        )*/
+                  //Icon(Icons.motorcycle_rounded),
+                ),
+          )
+
+          );
+
+    }
+
     _isGettingLocation = true;
     //_obtenerLocationEstado(mens_boton, "", "Finalizar");
     contador = 0;
@@ -116,7 +168,7 @@ class RutasMapa extends State<HistorialMapaState> {
                 ),
               ),
               title: Text(
-                'Ruta 1',
+                "RUTA: " + idRuta,
                 style: TextStyle(
                   color: theme.getTheme.hoverColor,
                   fontWeight: FontWeight.bold,
@@ -148,9 +200,8 @@ class RutasMapa extends State<HistorialMapaState> {
             final lat = state.position.latitude;
             final lon = state.position.longitude;
 
-
+/*
             var markers = <Marker>[
-
               Marker(
                 width: 50.0,
                 height: 50.0,
@@ -227,7 +278,7 @@ class RutasMapa extends State<HistorialMapaState> {
                   child: Icon(Icons.home),
                 ),
               )
-            ];
+            ];*/
 
 
 

@@ -96,7 +96,7 @@ class _ReasignacionState extends State<ReasignacionScreen> {
                       value: _chosenValue,
                       style: TextStyle(
                         color: Theme.of(context).textTheme.bodyText1.color,
-                        fontSize: 15,
+                        fontSize: 13,
                         fontWeight: FontWeight.w500,
                       ),
                       iconEnabledColor:Colors.black,
@@ -137,7 +137,7 @@ class _ReasignacionState extends State<ReasignacionScreen> {
                         fontWeight: FontWeight.bold),
                     ),
                     SizedBox(
-                      height: 350,
+                      height: 220,
                       child: BlocBuilder<PedidoBloc, PedidoState>(
                           builder: (context, state) {
                             if (state is PedidoLoading ){

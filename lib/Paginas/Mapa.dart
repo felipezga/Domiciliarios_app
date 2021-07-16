@@ -41,10 +41,10 @@ class Mapa extends StatelessWidget{
           BlocProvider<LocationBloc>(
             create: (BuildContext context) => LocationBloc()..add(LocationStarted()),
           ),
-          BlocProvider<TrackingBloc>(
+          /*BlocProvider<TrackingBloc>(
               create: (context) {
             return TrackingBloc();
-          }),
+          }),*/
           BlocProvider<BotonesBloc>(
               create: (context) {
                 return BotonesBloc();
@@ -93,7 +93,9 @@ class _AppState extends State<MapaState> {
   // Default Drop Down Item.
   String dropdownValue = '-';
   List<Pedido> pedidosAsignados = [];
+  List<Pedido> pedidosTracking = [];
   String estadoRuta;
+  int idRuta;
 
 
   void getDropDownItem( pedido){
@@ -164,8 +166,8 @@ class _AppState extends State<MapaState> {
             levelClock) // gameData.levelClock is a user entered number elsewhere in the applciation
     );*/
 
-    final notificacionServicio = new NotificacionesPush();
-    notificacionServicio.initNotification();
+    /*final notificacionServicio = new NotificacionesPush();
+    notificacionServicio.initNotification();*/
 
     _loadPedidoUsuario();
 
@@ -268,42 +270,52 @@ class _AppState extends State<MapaState> {
                                 }
                                 if (state is PedidoLoaded) {
                                   estadoRuta = state.rutaPedido.estado;
+                                  idRuta = state.rutaPedido.id;
                                   //List<Pedido> pedidosAsignados = state.rutaPedido.pedidos.where((element) => element.numero == estadoRuta );
 
                                   print("empezamos");
 
-                                  BlocProvider.of<TrackingBloc>(context).add(AddEstadoDomiciliario(  estadoTracking:  "PREPARADO", descripcionTracking: "PRODUCTO PREPARADO", listaTracking: estaDomi));
+                                  //BlocProvider.of<TrackingBloc>(context).add(AddEstadoDomiciliario(  estadoTracking:  "PREPARADO", descripcionTracking: "PRODUCTO PREPARADO", listaTracking: estaDomi));
 
+                                  if(state.rutaPedido.pedidos.length > 0){
+                                    if(estadoRuta == "RESTAURANTE"){
+                                      print("en rest");
+                                      pedidosAsignados = state.rutaPedido.pedidos;
+                                      pedidosTracking = state.rutaPedido.pedidos;
+                                      _botonesWidgetBloc.add(EventIniciarBoton());
+                                      context.read<SeleccionBloc>().add(SeleccionarEvent( state.rutaPedido.pedidos[0]));
+                                      return _trackingPedido( idRuta, pedidosTracking , estadoRuta, pedidosAsignados );
+                                    }
 
-                                  if(estadoRuta == "RESTAURANTE"){
-                                    print("en rest");
-                                    pedidosAsignados = state.rutaPedido.pedidos;
-                                    _botonesWidgetBloc.add(EventIniciarBoton());
-                                    context.read<SeleccionBloc>().add(SeleccionarEvent( state.rutaPedido.pedidos[0]));
-                                  }
-
-                                  if(estadoRuta == "RUTA"){
-                                    print("en ruta");
-                                    pedidosAsignados = state.rutaPedido.pedidos.where((element) => element.estado == "CURSO"  ).toList();
-                                    // VALIDACION SI HAY PEDIDOS EN CURSO
-                                    if(pedidosAsignados.length > 0){
-                                      print("en curso");
-                                      _botonesWidgetBloc.add(EventEnCursoBoton( pedidosAsignados[0]));
-
-                                    }else{
-                                      pedidosAsignados = state.rutaPedido.pedidos.where((element) => element.estado == "SITIO"  ).toList();
-
-                                      // VALIDACION SI HAY PEDIDOS EN ENTREGA
+                                    if(estadoRuta == "RUTA"){
+                                      print("en ruta");
+                                      pedidosAsignados = state.rutaPedido.pedidos.where((element) => element.estado == "CURSO"  ).toList();
+                                      pedidosTracking = state.rutaPedido.pedidos;
+                                      // VALIDACION SI HAY PEDIDOS EN CURSO
                                       if(pedidosAsignados.length > 0){
-                                        print("en sitio");
-                                        _botonesWidgetBloc.add(EventEntregarBoton( pedidosAsignados[0] ));
+                                        print("en curso");
+                                        _botonesWidgetBloc.add(EventEnCursoBoton( pedidosAsignados[0]));
+                                        return _trackingPedido(idRuta, pedidosTracking , estadoRuta, [] );
 
                                       }else{
+                                        pedidosAsignados = state.rutaPedido.pedidos.where((element) => element.estado == "SITIO"  ).toList();
+                                        pedidosTracking = state.rutaPedido.pedidos;
+                                        // VALIDACION SI HAY PEDIDOS EN ENTREGA
+                                        if(pedidosAsignados.length > 0){
+                                          print("en sitio");
+                                          _botonesWidgetBloc.add(EventEntregarBoton( pedidosAsignados[0] ));
+                                          return _trackingPedido( idRuta, pedidosTracking , estadoRuta, [] );
 
-                                        print("para iniciar");
-                                        pedidosAsignados = state.rutaPedido.pedidos;
-                                        _botonesWidgetBloc.add(EventIniciarBoton());
-                                        context.read<SeleccionBloc>().add(SeleccionarEvent( state.rutaPedido.pedidos[0]));
+                                        }else{
+
+                                          print("para iniciar");
+                                          pedidosAsignados = state.rutaPedido.pedidos.where((element) => element.estado == "ASIGNADO"  ).toList();
+                                          pedidosTracking = state.rutaPedido.pedidos;
+                                          _botonesWidgetBloc.add(EventIniciarBoton());
+                                          context.read<SeleccionBloc>().add(SeleccionarEvent( pedidosAsignados[0]));
+                                          return _trackingPedido( idRuta, pedidosTracking , estadoRuta, pedidosAsignados );
+                                        }
+
                                       }
 
                                     }
@@ -311,12 +323,14 @@ class _AppState extends State<MapaState> {
                                   }
 
                                   if(estadoRuta == "RETORNO"){
+                                    print("retorno");
                                     pedidosAsignados = [];
-                                    _botonesWidgetBloc.add(EventIniciarBoton());
+                                    _botonesWidgetBloc.add(EventFinalizarBoton());
+                                    return _trackingPedido( idRuta, pedidosAsignados , estadoRuta, [] );
                                   }
 
                                   //BlocProvider.of<TrackingBloc>(context).add(AddEstadoDomiciliario(  estadoTracking:  "PREPARADO", descripcionTracking: "PRODUCTO PREPARADO", listaTracking: estaDomi));
-                                  return _trackingPedido( pedidosAsignados , estadoRuta );
+
 
 
                                   /*if(pedidosAsignados.length > 0){
@@ -511,7 +525,7 @@ class _AppState extends State<MapaState> {
 
 
 
-  Widget botones(estado, colorBoton, iconBoton, nextEstado, pedidoSeleccionado ){
+  Widget botones(estado, colorBoton, iconBoton, nextEstado, Pedido pedidoSeleccionado, idRuta ){
 
     return ElevatedButton(
       //color: color_boton,
@@ -527,7 +541,7 @@ class _AppState extends State<MapaState> {
       onPressed: () {
         if(estado == "INICIAR"){
           //_obtenerLocationEstado( estado , "", next_estado);
-          print("Hola");
+          print("Hola iniciar: " + pedidoSeleccionado.numero.toString());
 
          // BlocProvider.of<TrackingBloc>(context).add(AddEstadoDomiciliario( estadoTracking: EstadoDomiciliario( 9.9, 9.6, "Iniciar entrega", "Hoover", ''  ), listaTracking: _esta_domi));
           /*setState(() {
@@ -549,7 +563,6 @@ class _AppState extends State<MapaState> {
           //BlocProvider.of<LocationBloc>(context).add(LocationStarted());
           //BlocProvider.of<TrackingBloc>(context).add(AddEstadoDomiciliario(  estadoTracking:  estado, descripcionTracking: "INICIAR ENTREGA", listaTracking: estaDomi));
 
-          //_botonesWidgetBloc.add(EventFinalizarBoton());
           BlocProvider.of<PedidoBloc>(context).add(ActualizarPedido("CURSO", pedidoSeleccionado, context ));
 
           //var accion = MarcarPedido( pedidoSeleccionado );
@@ -567,20 +580,19 @@ class _AppState extends State<MapaState> {
           BlocProvider.of<PedidoBloc>(context).add(ActualizarPedido("ENTREGADO", pedidoSeleccionado, context ));
 
         }
-        else if(estado == "FINALIZAR"){
+        else if(estado == "EN RESTAURANTE"){
           //_obtenerLocationEstado( estado , "", next_estado);
           print("Hola");
 
-          // BlocProvider.of<TrackingBloc>(context).add(AddEstadoDomiciliario( estadoTracking: EstadoDomiciliario( 9.9, 9.6, "Iniciar entrega", "Hoover", ''  ), listaTracking: _esta_domi));
-          /*setState(() {
-            mens_boton = next_estado;
-          });*/
+
+
+          BlocProvider.of<PedidoBloc>(context).add(ActualizarRuta("TERMINADA", idRuta, context ));
 
 
           BlocProvider.of<LocationBloc>(context).add(LocationStarted());
           //BlocProvider.of<TrackingBloc>(context).add(AddEstadoDomiciliario( estadoTracking: EstadoDomiciliario( 9.9, 9.6, "Iniciar entrega", "Hoover", ''  ), listaTracking: _esta_domi));
-          BlocProvider.of<TrackingBloc>(context).add(AddEstadoDomiciliario(  estadoTracking:  estado, descripcionTracking: "INICIAR ENTREGA", listaTracking: estaDomi));
-          _botonesWidgetBloc.add(EventTiempoRuta());
+          //BlocProvider.of<TrackingBloc>(context).add(AddEstadoDomiciliario(  estadoTracking:  estado, descripcionTracking: "INICIAR ENTREGA", listaTracking: estaDomi));
+          _botonesWidgetBloc.add(EventFinalizarBoton());
         }
 
 
@@ -614,20 +626,20 @@ class _AppState extends State<MapaState> {
   }
 
 
-  Widget widgetPedidosEntregar( listaraking, pedidosAsignados, estadoRuta ) {
+  Widget widgetPedidosEntregar( listaraking, pedidosRutaTracking, estadoRuta, idRuta, pedidosAsignados ) {
     return
       Column(
       children: <Widget>[
             SizedBox(height: 12),
             CustomDraggingHandle(),
             SizedBox(height: 5),
-            _Header( estadoRuta),
+            _Header(idRuta, estadoRuta),
         //ScreenProgress(ticks: 3,),
 
             //SizedBox(height: 16),
             //CustomExplore(),
             //SizedBox(height: 24),
-            widgetOperacionPedidos( listaraking, pedidosAsignados, estadoRuta),
+            widgetOperacionPedidos( listaraking, pedidosRutaTracking, estadoRuta, idRuta, pedidosAsignados),
             //SizedBox(height: 16),
       ],
 
@@ -635,7 +647,7 @@ class _AppState extends State<MapaState> {
   }
 
 
-  Widget widgetOperacionPedidos( listaraking, pedidosAsignados, estadoRuta ) {
+  Widget widgetOperacionPedidos( listaraking, pedidosRutaTracking, estadoRuta, idRuta, pedidosAsignados ) {
     return
         Padding(
           padding: EdgeInsets.all(12.0),
@@ -647,52 +659,58 @@ class _AppState extends State<MapaState> {
                   print("estado boton");
                   print(state);
                   if (state is BotonStateIniciar) {
+
+                    String valueBoton = state.value;
                     print("88889");
                     print(state.value);
-                    return Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        /* CRONOMETRO CONTADOR
-                          Countdown(
-                          animation: StepTween(
-                          begin: 0, // THIS IS A USER ENTERED NUMBER
-                          end: levelClock,
-                          ).animate(_controller),
-                          ),*/
-                        Column(
-                          children: [
-                            Text("Seleccione la orden a entregar",
-                              style: TextStyle(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold
-                              ),
-                            ),
-                            BlocBuilder<SeleccionBloc, SeleccionState>(
-                                builder: (BuildContext context, SeleccionState state) {
 
-                                  if (state is Selected) {
-                                    print("estado seleccionado");
-                                    print(state.pedido);
-                                    pedidoSeleccionado = state.pedido;
-                                    print(pedidosAsignados);
-                                    return dropdownButtonOrdenes(context, state.pedido.name , pedidosAsignados);
-                                  }
-                                  return Loading();
-                                }
-                            ),
-                          ],
-                        ),
+                    return
+                      BlocBuilder<SeleccionBloc, SeleccionState>(
+                        builder: (BuildContext context, SeleccionState state) {
+                          if (state is Selected) {
+                            print("DENTRO DEL SELECTED");
+                            print(state.pedido.numero.toString());
+                            pedidoSeleccionado = state.pedido;
+                            return Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Column(
+                                  children: [
+                                    Text("Seleccione la orden a entregar",
+                                      style: TextStyle(
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.bold
+                                      ),
+                                    ),
+                                    dropdownButtonOrdenes(context, pedidoSeleccionado.name , pedidosAsignados),
+                                  ],
+                                ),
 
-                        Center(
-                          child: botones(state.value, Colors.green, Icons.play_arrow_outlined, "Finalizar", pedidoSeleccionado),
+                                Center(
+                                  child: botones(valueBoton, Colors.green, Icons.play_arrow_outlined, "Finalizar", pedidoSeleccionado, 0),
 
-                        )
-                        /*Botones(mens_boton, Colors.green, Icons.motorcycle_rounded, "Finalizar"),
+                                )
+                                /*Botones(mens_boton, Colors.green, Icons.motorcycle_rounded, "Finalizar"),
                         ( mens_boton == "Finalizar")
                         ? Botones("Novedad", Colors.yellow, Icons.event_note_rounded, "Finalizar")
                             : Text("")*/
-                      ],
+
+                          /* CRONOMETRO CONTADOR
+                                Countdown(
+                                animation: StepTween(
+                                begin: 0, // THIS IS A USER ENTERED NUMBER
+                                end: levelClock,
+                                ).animate(_controller),
+                                ),*/
+                              ],
+                            );
+
+                          }
+                          return Loading();
+                        }
                     );
+
+
                   }
                   else if (state is BotonStateEnSitio){
                     pedidoSeleccionado = state.pedido;
@@ -702,8 +720,8 @@ class _AppState extends State<MapaState> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text("Orden: "+ state.pedido.restaurante + state.pedido.numero.toString() ),
-                          botones(state.value, Colors.green, Icons.place_outlined, "Finalizar", pedidoSeleccionado),
+                          Text("Orden: "+ state.pedido.restaurante + '-' + state.pedido.numero.toString() ),
+                          botones(state.value, Colors.green, Icons.place_outlined, "Finalizar", pedidoSeleccionado, 0),
                         ],
                       );
                   }
@@ -718,7 +736,7 @@ class _AppState extends State<MapaState> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text("Orden: " + state.pedido.restaurante + state.pedido.numero.toString() ),
-                              botones(state.value, Colors.green, Icons.volunteer_activism, "Finalizar", pedidoSeleccionado),
+                              botones(state.value, Colors.green, Icons.volunteer_activism, "Finalizar", pedidoSeleccionado, 0),
                               /*ElevatedButton(
                                 //onPressed: () => { getDropDownItem(pedidoSeleccionado) },
                                 onPressed: ()  {
@@ -763,9 +781,19 @@ class _AppState extends State<MapaState> {
                       );
                     //return Text(state.value);
                   }
-                  else if (state is FinStateBotones) {
+                  else if (state is BotonStateFinalizar ) {
                     print("FIN DE TRACKING");
-                    DateTime  horaIniciar;
+
+                    return
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text("Tiempo: 45:22 "),
+                          botones(state.value, Colors.green, Icons.place_outlined, "Finalizar", pedidoSeleccionado, idRuta ),
+                        ],
+                      );
+
+                    /*DateTime  horaIniciar;
                     DateTime  horaFinalizar;
                     String tiempoDomicilio = "";
 
@@ -797,13 +825,7 @@ class _AppState extends State<MapaState> {
                     tiempoDomicilio = parts[0].trim();
                     print(tiempoDomicilio);
 
-                    return
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text("Tiempo: "+ tiempoDomicilio)
-                        ],
-                      );
+                    */
                   }
                   else {
                     print("ELSE");
@@ -815,41 +837,7 @@ class _AppState extends State<MapaState> {
               children: [
                 Flexible(
                   //child:
-                  child: TimelineDelivery( listaraking)
-                  /*Card(
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                    // Con esta propiedad agregamos margen a nuestro Card
-                    // El margen es la separación entre widgets o entre los bordes del widget padre e hijo
-                    margin: EdgeInsets.all(15),
-
-                    // Con esta propiedad agregamos elevación a nuestro card
-                    // La sombra que tiene el Card aumentará
-                    elevation: 10,
-                    // La propiedad child anida un widget en su interior
-                    // Usamos columna para ordenar un ListTile y una fila con botones
-                    child: Column(
-                      children: <Widget>[
-                        // Usamos ListTile para ordenar la información del card como titulo, subtitulo e icono
-                        ListTile(
-                          //contentPadding: EdgeInsets.fromLTRB(15, 10, 25, 0),
-                          title: Text(""),
-                          subtitle: Text(
-                              ''),
-                          leading: Icon(Icons.home),
-                        ),
-
-                        // Usamos una fila para ordenar los botones del card
-                        /*Row(
-                                          mainAxisAlignment: MainAxisAlignment.end,
-                                          children: <Widget>[
-                                          FlatButton(onPressed: () => {}, child: Text('Aceptar')),
-                                          FlatButton(onPressed: () => {}, child: Text('Cancelar'))
-                                          ],
-                                          )*/
-                      ],
-                    ),
-                  ),*/
-
+                  child: TimelineDelivery( listaraking, pedidosRutaTracking, estadoRuta)
                 ),
               ],
             )
@@ -867,7 +855,7 @@ class _AppState extends State<MapaState> {
 
 
 
-  Widget _trackingPedido( List<Pedido> pedidosAsignados, estadoRuta) {
+  Widget _trackingPedido( idRuta, pedidosRutaTracking, estadoRuta, pedidosAsignados) {
     return DraggableScrollableSheet(
       initialChildSize: 0.087,
       minChildSize: 0.05,
@@ -890,7 +878,8 @@ class _AppState extends State<MapaState> {
                 borderRadius: BorderRadius.circular(24),
               ),
               child:
-              BlocBuilder<TrackingBloc, TrackingState>(
+              widgetPedidosEntregar(estaDomi, pedidosRutaTracking, estadoRuta, idRuta,  pedidosAsignados),
+              /*BlocBuilder<TrackingBloc, TrackingState>(
                   builder: (BuildContext context, TrackingState state) {
 
                     if (state is TrackingLoaded) {
@@ -898,12 +887,13 @@ class _AppState extends State<MapaState> {
                       print(state.estaDomi.length);
                       print(state.estaDomi[0].descripcion);
                       estaDomi = state.estaDomi;
-                      return widgetPedidosEntregar(estaDomi, pedidosAsignados, estadoRuta);
+                      return widgetPedidosEntregar(estaDomi, pedidosRutaTracking, estadoRuta, idRuta,  pedidosAsignados);
 
                     }
                     return Loading();
                     //return Text("fdf");
-                  }),
+                  }),*/
+
              /* BlocListener<TrackingBloc, TrackingState>(
                 listener: (context, state) {
                   print("listener");
@@ -1022,9 +1012,10 @@ class CustomDraggingHandle extends StatelessWidget {
 
 class _Header extends StatelessWidget {
 
+  int idR;
   String estadoRuta;
 
-  _Header(this.estadoRuta);
+  _Header(this.idR, this.estadoRuta);
   @override
   Widget build(BuildContext context) {
     String mensText = "";
@@ -1036,8 +1027,8 @@ class _Header extends StatelessWidget {
     if(estadoRuta == "RESTAURANTE"){
       mensText = "EN RESTAURANTE";
     }
-    if(estadoRuta == ""){
-      mensText = "VACIO";
+    if(estadoRuta == "RETORNO"){
+      mensText = "RETORNO";
     }
 
     return Container(
@@ -1056,8 +1047,8 @@ class _Header extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
             //Icon(Icons.reorder),
-            Text('RUTA ' , style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700,) ),
-            Text( mensText, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700,) ),
+            Text('RUTA '+ idR.toString() , style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700,) ),
+            Text( "ESTADO: " + mensText, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Colors.red) ),
             /*ElevatedButton(
               onPressed: (){
                 showDialog(

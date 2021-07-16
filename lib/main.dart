@@ -6,21 +6,36 @@ import 'package:domiciliarios_app/Paginas/Domicilios.dart';
 import 'package:domiciliarios_app/Paginas/HistorialMapa.dart';
 import 'package:domiciliarios_app/Paginas/PerfilUsuario.dart';
 import 'package:domiciliarios_app/Paginas/ReasignarEntregas.dart';
+import 'package:domiciliarios_app/Paginas/ScanDatawedge.dart';
 import 'package:domiciliarios_app/Paginas/Splash.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:path_provider/path_provider.dart';
 import 'Modelo/UsuarioModel.dart';
 import 'Paginas/EscanerFactura.dart';
 import 'Paginas/Login.dart';
 import 'Paginas/Mapa.dart';
-import 'Paginas/Home.dart';
+//import 'Paginas/Home.dart';
 import 'Paginas/prueba.dart';
 import 'Servicios/SharedPreferencesServicio.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  HydratedBloc.storage = await HydratedStorage.build();
+  //HydratedBloc.storage = await HydratedStorage.build();
+
+  HydratedBloc.storage = await HydratedStorage.build(
+    storageDirectory: kIsWeb
+        ? HydratedStorage.webStorageDirectory
+        : await getTemporaryDirectory(),
+  );
+
+  /*HydratedBloc.storage = await HydratedStorage.build(
+    storageDirectory: await getTemporaryDirectory(),
+  );*/
+
+
 
   //se agrego para evitar error http
   HttpOverrides.global = new MyHttpOverrides();
@@ -56,7 +71,7 @@ class _MyAppState extends State<App> {
   List<Widget> paginas = [
     //Login(),
     LoginPage(),
-    PaginaHome(),
+    //PaginaHome(),
     //Restaurante(),
   ];
 
@@ -151,7 +166,7 @@ class _MyAppState extends State<App> {
         // "/restaurante" : ( context) => Restaurante(opcion: 1),
         // Restaurante.route: ( context) =>  Restaurante(opcion: 2),
         Mapa.route: (context) => Mapa(),
-        HistorialMapa.route: (context) => HistorialMapa(),
+        HistorialMapa.route: (context) => HistorialMapa( ModalRoute.of(context).settings.arguments ),
         Configuraciones.route: (context) => Configuraciones(),
         Domicilios.route: (context) => Domicilios(),
         "/contacto": (context) => PluginScaleBar(),
@@ -159,6 +174,7 @@ class _MyAppState extends State<App> {
         '/login': (context) => LoginScreen(),
         EscanearFactura.route: (context) =>  EscanearFactura(ModalRoute.of(context).settings.arguments),
         Reasignacion.route: (context) => Reasignacion(),
+        ScanOrden.route: (context) => ScanOrden(),
       },
     );
 

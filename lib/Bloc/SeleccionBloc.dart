@@ -22,7 +22,7 @@ class SeleccionBloc extends Bloc<SeleccionEvent, SeleccionState> {
     try {
 
       if (event is SeleccionarEvent){
-        print("Pedido selected");
+        print("Pedido selected "+ event.pedido.numero.toString());
         yield (Selected(event.pedido));
       }
     } on UserNotFoundException {

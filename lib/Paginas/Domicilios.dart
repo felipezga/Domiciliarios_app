@@ -2,6 +2,7 @@ import 'package:domiciliarios_app/Bloc/PedidoBloc.dart';
 import 'package:domiciliarios_app/Bloc/ThemeBloc.dart';
 import 'package:domiciliarios_app/Modelo/Pedido.dart';
 import 'package:domiciliarios_app/Modelo/RutaModel.dart';
+import 'package:domiciliarios_app/Modelo/RutaPedidoEstado.dart';
 import 'package:domiciliarios_app/Servicios/PedidoDomicilioServicio.dart';
 import 'package:domiciliarios_app/widgets/ErrorText.dart';
 import 'package:domiciliarios_app/widgets/Loading.dart';
@@ -48,7 +49,7 @@ class _DomicilioState extends State<DomiciliosScreen> {
   _loadDomicilios() async {
     print("load");
     //context.read<DomicilioBloc>().add(DomicilioEvents.fetchDomicilios);
-    context.read<PedidoBloc>().add(GetPedidoUser());
+    context.read<PedidoBloc>().add(HistorialRutaOrdeUser());
     print("loadeee");
   }
 
@@ -109,10 +110,10 @@ class _DomicilioState extends State<DomiciliosScreen> {
                   onTap: _loadDomicilios(),
                 );
               }
-              if (state is PedidoLoaded) {
-                List<Pedido> historialPedidos = state.rutaPedido.pedidos;
+              if (state is RutasLoaded) {
+                List<RutaPedido> historialDomiciliosRutas = state.rutaPedidos;
                 //List<Domicilio> albums = state.domicilios;
-                return _list(historialPedidos, rutas);
+                return _list(historialDomiciliosRutas );
               }
               return Loading();
             }),
@@ -120,15 +121,14 @@ class _DomicilioState extends State<DomiciliosScreen> {
     );
   }
 
-  Widget _list(List<Pedido> pedidos, rutas) {
+  Widget _list(List<RutaPedido> rutas ) {
     return Expanded(
       child: ListView.builder(
         itemCount: rutas.length,
         itemBuilder: (_, index) {
-          //Pedido p = pedidos[index];
-          Ruta r = rutas[index];
-          //return ListRow(pedido: p);
-          return ListRow(pedidos: pedidos, ruta: r,);
+          List<Pedido> p = rutas[index].pedidos;
+          RutaPedido r = rutas[index];
+          return ListRow(pedidos: p, ruta: r,);
         },
       ),
     );
@@ -142,7 +142,7 @@ class _DomicilioState extends State<DomiciliosScreen> {
 class ListRow extends StatelessWidget {
   //
   final List<Pedido> pedidos;
-  final Ruta ruta;
+  final RutaPedido ruta;
   ListRow({this.pedidos, this.ruta});
 
   @override
@@ -160,7 +160,7 @@ class ListRow extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                      ruta.usuaId,
+                      ruta.id.toString(),
                       style: TextStyle(
                         fontWeight: FontWeight.w500,
                         fontSize: 18,
@@ -177,7 +177,7 @@ class ListRow extends StatelessWidget {
 
               ],
             ),
-            subtitle: Text(ruta.usuaId ),
+            subtitle: Text(ruta.estado ),
             children: pedidos.map<Widget>((ped) =>
               ListTile(
                 leading: Icon(Icons.volunteer_activism, size: 50, color: Colors.red,),
@@ -196,9 +196,11 @@ class ListRow extends StatelessWidget {
                   print("No fuimos");
                   Navigator.push( context,
                     new MaterialPageRoute(
-                      builder: (context) => new HistorialMapa(),
+                      builder: (context) => new HistorialMapa( ArgumentsHistorial(ruta.id.toString(), pedidos ) ),
                     ),
                   );
+
+                  //Navigator.popAndPushNamed( context, HistorialMapa.route, arguments:  ArgumentsHistorial(ruta.id.toString(), pedidos ) );
 
                   //Navigator.popAndPushNamed(context, HistorialMapa.route);
 
