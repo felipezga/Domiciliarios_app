@@ -291,26 +291,27 @@ class _LoginPageState extends State<LoginPage> {
                 ),
 
                 child: Container(
-                  //padding: EdgeInsets.all(15),
-                  margin: EdgeInsets.all(15),
-                  height: 480,
+                  //color: Colors.green,
+                  padding: EdgeInsets.all(12),
+                  //margin: EdgeInsets.all(15),
+                  height: 420,
                   child: Column(
                     //mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       Image.asset(
                         'images/domiciliario.png',
-                        height: 220,
+                        height: 180,
                       ),
                       Center(
                           child: Text(
                             "APP DOMICILIARIOS",
                             style: TextStyle(
-                              fontSize: 28,
+                              fontSize: 25,
                               fontWeight: FontWeight.bold,
                             ),
                           )
                       ),
-                      SizedBox(height: 10.0),
+                      SizedBox(height: 5.0),
                       TextFormField(
                         decoration: InputDecoration(
                           labelText: 'Documento',
@@ -346,7 +347,7 @@ class _LoginPageState extends State<LoginPage> {
                             password: this._passwordController.text,
                           )*/
                       Padding(
-                        padding: EdgeInsets.only(top: 30.0, bottom: 20.0),
+                        padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: <Widget>[

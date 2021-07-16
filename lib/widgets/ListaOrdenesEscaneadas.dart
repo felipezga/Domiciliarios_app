@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 Widget setupAlertDialoadContainer( List<Orden> ordenes ) {
   return Container(
-    height: 300.0, // Change as per your requirement
+    height: 200.0, // Change as per your requirement
     width: 300.0, // Change as per your requirement
     child: ListView.builder(
       shrinkWrap: true,

@@ -7,6 +7,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 Widget dropdownButtonOrdenes(cont, valueDrop, pedidosAsignados) {
 
+  print("dentro del drop");
+  print(valueDrop);
+
   return DropdownButton<String>(
     value: valueDrop,
     icon: Icon(Icons.arrow_drop_down),
@@ -19,9 +22,9 @@ Widget dropdownButtonOrdenes(cont, valueDrop, pedidosAsignados) {
                                 ),*/
     onChanged: (String data) {
 
-      List<Pedido> cambioPedido = pedidosAsignados.where((i) => i.name == data ).toList();
+      List<Pedido> cambioPedido = pedidosAsignados.where((i) => i.name.trim() == data.trim() ).toList();
 
-      print("cambio dropdown");
+      print("CAMBIO Dropdown");
       print(cambioPedido[0].id);
       print(cambioPedido[0].name);
        BlocProvider.of<SeleccionBloc>(cont).add(SeleccionarEvent(  cambioPedido[0] ));
@@ -29,7 +32,7 @@ Widget dropdownButtonOrdenes(cont, valueDrop, pedidosAsignados) {
                   dropdownValue = data;
                 });*/
     },
-    items: pedidosAsignados.map<DropdownMenuItem<String>>((Pedido value) {
+    items: pedidosAsignados.map<DropdownMenuItem<String>>(( value) {
       return DropdownMenuItem<String>(
         value: value.name,
         child: Text(value.name),

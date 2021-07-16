@@ -30,7 +30,6 @@ class EventFinalizarBoton extends BotonesEvent {}
 
 class EventNovedadBoton extends BotonesEvent {}
 
-class EventTiempoRuta extends BotonesEvent{}
 
 /// States
 class BotonesState {}
@@ -57,10 +56,6 @@ class BotonStateIniciar extends BotonesState {
 class BotonStateFinalizar extends BotonesState {
   final String value;
   BotonStateFinalizar(this.value);
-}
-
-class FinStateBotones extends BotonesState {
-  FinStateBotones();
 }
 
 class BotonStateNovedad extends BotonesState {
@@ -103,11 +98,7 @@ class BotonesBloc extends Bloc<BotonesEvent,BotonesState> {
 
 
     if (event is EventFinalizarBoton) {
-      yield BotonStateFinalizar("FINALIZAR");
-    }
-
-    if (event is EventTiempoRuta) {
-      yield FinStateBotones();
+      yield BotonStateFinalizar("EN RESTAURANTE");
     }
 
     if (event is BotonStateNovedad) {

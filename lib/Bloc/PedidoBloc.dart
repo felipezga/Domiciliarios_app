@@ -16,6 +16,11 @@ class GetPedidoUser extends PedidoEvent {
   GetPedidoUser();
 }
 
+class HistorialRutaOrdeUser extends PedidoEvent {
+
+  HistorialRutaOrdeUser();
+}
+
 class EntregarPedido extends PedidoEvent {
   final Pedido pedido;
   EntregarPedido(this.pedido);
@@ -26,6 +31,13 @@ class ActualizarPedido extends PedidoEvent{
   final Pedido pedido;
   final BuildContext c;
   ActualizarPedido(this.estado, this.pedido, this.c);
+}
+
+class ActualizarRuta extends PedidoEvent{
+  final String estado;
+  final int idRuta;
+  final BuildContext c;
+  ActualizarRuta(this.estado, this.idRuta, this.c);
 }
 
 class ReasignarPedido extends PedidoEvent {
@@ -76,6 +88,18 @@ class ReasignarPedido extends PedidoEvent {
          yield (PedidoLoaded(profile));
        }
 
+       if (event is HistorialRutaOrdeUser) {
+         print("Historial");
+         yield (PedidoLoading());
+
+         final SharedPreferences prefs = await SharedPreferences.getInstance();
+         String userId = prefs.getString("userId");
+
+         final rutas = await pedidoRepo.historialRutaOrdeUser(userId);
+         yield (RutasLoaded(rutas));
+
+       }
+
        if (event is EntregarPedido) {
          print("Entregar Pedido");
          yield (PedidoLoading());
@@ -115,7 +139,7 @@ class ReasignarPedido extends PedidoEvent {
          UserLocation ubicaion = UserLocation();
          ubicaion = await funciones.ubicacionLatLong();
 
-         print(event.pedido);
+         print(event.pedido.numero.toString());
          print("usuario cambi");
          print(event.pedido.usuario);
 
@@ -135,7 +159,7 @@ class ReasignarPedido extends PedidoEvent {
            Color col;
            IconData icono;
            if(respuesta.code == 1){
-             mens = event.pedido.restaurante + event.pedido.numero.toString() + " EN " + event.estado;
+             mens = event.pedido.restaurante +'-'+ event.pedido.numero.toString() + " EN " + event.estado;
              col = Colors.green;
              icono = Icons.check_circle_outline;
 
@@ -168,6 +192,55 @@ class ReasignarPedido extends PedidoEvent {
          }
 
          //yield BotonStateEnSitio("EN SITIO");
+       }
+
+       if(event is ActualizarRuta){
+         yield (PedidoLoading());
+
+         try {
+
+           final Salida respuesta = await pedidoRepo.ActuEstaRuta( event.idRuta, event.estado );
+           print(respuesta.code);
+           print(respuesta.mens);
+
+           String mens = "";
+           Color col;
+           IconData icono;
+           if(respuesta.code == 1){
+             mens = " DOMICILIARIO EN " + event.estado;
+             col = Colors.green;
+             icono = Icons.check_circle_outline;
+
+             showSnackBarMessage( mens ,  col, icono, event.c);
+             //Navigator.popAndPushNamed(event.c, '/mapa');
+
+             // yield (EscaneoAsignado(mens: "OK"));
+
+           }else{
+             mens = respuesta.mens;
+             col = Colors.red;
+             icono = Icons.cancel_outlined;
+
+             showSnackBarMessage( mens ,  col, icono, event.c);
+             //Navigator.popAndPushNamed(event.c, '/mapa');
+
+             // yield EscaneoError( error: mens  );
+           }
+
+           final SharedPreferences prefs = await SharedPreferences.getInstance();
+           String userId = prefs.getString("userId");
+
+           final rutaPedido = await pedidoRepo.fetchPedidoUser(userId);
+           print(rutaPedido);
+           yield (PedidoLoaded(rutaPedido));
+
+
+
+         } catch (e) {
+           /*yield AlbumsListError(
+          error: UnknownException('Unknown Error'),
+        );*/
+         }
        }
 
        if (event is ReasignarPedido) {
@@ -259,6 +332,11 @@ class PedidoLoading extends PedidoState {
 class PedidoLoaded extends PedidoState {
   final RutaPedido rutaPedido;
   const PedidoLoaded(this.rutaPedido);
+}
+
+class RutasLoaded extends PedidoState {
+  final List<RutaPedido> rutaPedidos;
+  const RutasLoaded(this.rutaPedidos);
 }
 
 class PedidoRespuesta extends PedidoState {
