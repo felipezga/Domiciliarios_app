@@ -174,7 +174,7 @@ class _MyAppState extends State<App> {
         '/login': (context) => LoginScreen(),
         EscanearFactura.route: (context) =>  EscanearFactura(ModalRoute.of(context).settings.arguments),
         Reasignacion.route: (context) => Reasignacion(),
-        ScanOrden.route: (context) => ScanOrden(),
+        ScannerLaser.route: (context) => ScannerLaser( ModalRoute.of(context).settings.arguments ),
       },
     );
 

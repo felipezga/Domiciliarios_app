@@ -62,7 +62,7 @@ class _EscanearState extends State<EscanearScreen> {
           ),
           //automaticallyImplyLeading: false,
           title: Text(
-            'ESCANEAR PEDIDO',
+            'ESCANEAR ORDEN',
             style: TextStyle(
               color: theme.getTheme.hoverColor,
               fontWeight: FontWeight.bold,

@@ -95,7 +95,7 @@ class EscaneoBloc extends Bloc<EscaneoEvent, EscaneoState>{
           yield EscaneoCompletado(factura, event.ordenesEscan);
 
         }else{
-          yield EscaneoExistente(  " Ya existe: "+ factura, event.ordenesEscan );
+          yield EscaneoExistente( factura +  "  YA ESTÁ ASIGNADO " , event.ordenesEscan );
         }
 
         /*
@@ -118,7 +118,7 @@ class EscaneoBloc extends Bloc<EscaneoEvent, EscaneoState>{
         */
       } catch (e) {
         print(e);
-        yield ErrorAgregar(error: UnknownException( e ), listOrdenes: event.ordenesEscan );
+        yield ErrorAgregar(error: "PROBLEMAS AL LEER EL CODIGO", listOrdenes: event.ordenesEscan );
 
       }
     }
@@ -193,7 +193,7 @@ class EscaneoError extends EscaneoState{
 }
 
 class ErrorAgregar extends EscaneoState{
-  final error;
+  String error;
   List<Orden> listOrdenes;
   ErrorAgregar({this.error, this.listOrdenes});
 }
