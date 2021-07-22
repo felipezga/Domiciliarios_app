@@ -27,7 +27,7 @@ Drawer buildDrawer(BuildContext context, String currentRoute) {
                     _createHeader( getUserData() ),
                     ListTile(
                       leading: Icon(Icons.perm_identity),
-                      title: const Text('Perfil '),
+                      title: const Text('Perfil Usuario'),
                       //selected: currentRoute == Mapa.route,
                       onTap: () {
                         Navigator.popAndPushNamed(context, PerfilUsuario.route);
@@ -36,8 +36,8 @@ Drawer buildDrawer(BuildContext context, String currentRoute) {
                     ),
                     Divider(),
                     ListTile(
-                      leading: Icon(Icons.map),
-                      title: const Text('Mapa'),
+                      leading: Icon(Icons.location_on_outlined),
+                      title: const Text('Mapa  |  Ruta'),
                       //selected: currentRoute == Mapa.route,
                       onTap: () {
                         Navigator.popAndPushNamed(context, Mapa.route);
@@ -46,8 +46,18 @@ Drawer buildDrawer(BuildContext context, String currentRoute) {
                     ),
                     Divider(),
                     ListTile(
+                      leading: Icon(Icons.light_mode),
+                      title: const Text('Asignar Ordenes  |  Laser'),
+                      //selected: currentRoute == Mapa.route,
+                      onTap: () {
+                        Navigator.popAndPushNamed(context, ScannerLaser.route, arguments:  Arguments("asignar", [] ) );
+                        //  Navigator.pushReplacementNamed(context, Mapa.route);
+                      },
+                    ),
+                    Divider(),
+                    ListTile(
                       leading: Icon(Icons.qr_code_scanner),
-                      title: const Text('Asignar Pedido'),
+                      title: const Text('Asignar Ordenes  |  Camara'),
                       //selected: currentRoute == Restaurante.route,
                       onTap: () {
                         //Navigator.pushReplacementNamed(context, Restaurante.route);
@@ -61,18 +71,8 @@ Drawer buildDrawer(BuildContext context, String currentRoute) {
                     ),
                     Divider(),
                     ListTile(
-                      leading: Icon(Icons.map),
-                      title: const Text('Escanear Ordenes Laser'),
-                      //selected: currentRoute == Mapa.route,
-                      onTap: () {
-                        Navigator.popAndPushNamed(context, ScanOrden.route);
-                        //  Navigator.pushReplacementNamed(context, Mapa.route);
-                      },
-                    ),
-                    Divider(),
-                    ListTile(
-                      leading: Icon(Icons.assignment_return_outlined),
-                      title: const Text('Reasignar Pedido'),
+                      leading: Icon(Icons.share),
+                      title: const Text('Reasignar Ordenes'),
                       //selected: currentRoute == Restaurante.route,
                       onTap: () {
                         Navigator.pushReplacementNamed(context, Reasignacion.route);
@@ -80,7 +80,7 @@ Drawer buildDrawer(BuildContext context, String currentRoute) {
                     ),
                     Divider(),
                     ListTile(
-                      leading: Icon(Icons.motorcycle),
+                      leading: Icon(Icons.history),
                       title: const Text('Historial Domicilios '),
                       //selected: currentRoute == Mapa.route,
                       onTap: () {
