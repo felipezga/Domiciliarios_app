@@ -9,7 +9,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 import 'EscanerWidgets.dart';
-import 'ListaOrdenesEscaneadas.dart';
 import 'Loading.dart';
 
 
@@ -118,9 +117,16 @@ class _ScannerState extends State<ScannerScreen> {
                           if(state is EscaneoAsignado){
                             Timer(Duration(seconds: 3), () {
                               print("Yeah, this line is printed after 3 seconds");
-                              Navigator.popAndPushNamed(context, '/mapa');
+                              Navigator.popAndPushNamed(context, '/ruta');
                             }
                             );
+                          }
+                          if(state is EscaneoError){
+                            print('Error asignar95');
+                            Timer(Duration(seconds: 3), () {
+                              print("Yeah, this line is printed after 3 seconds");
+                              Navigator.popAndPushNamed(context, EscanearFactura.route, arguments:  Arguments("asignar", [] ) );
+                            });
                           }
                           if (state is EscaneoExistente) {
                             ordenes = state.listOrdenes;

@@ -344,7 +344,7 @@ class RutasMapa extends State<HistorialMapaState> {
                             return Loading();
                           }
 
-                          return Text("Pedido");
+                          return Text("");
                         }),
 
 

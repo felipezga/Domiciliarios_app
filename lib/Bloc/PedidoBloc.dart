@@ -65,21 +65,6 @@ class ReasignarPedido extends PedidoEvent {
          print("Obtener Pedidos");
          yield (PedidoLoading());
 
-         /*Ordenes.clear();
-         asignarOrden ao = new asignarOrden(id: 0, prefijo: "F01", numero: 8888, latitud: 3.1, longitud: 4.7, usuaId: 1);
-          print(ao);
-          print("ao");
-         Ordenes.add(ao);
-
-
-         PedidoDomiclioRepository APIpedido = new PedidoDomiclioRepository();
-         print("eres");
-         print(Ordenes[0]);
-         final int respuesta = await APIpedido.asignarPedido( Ordenes );
-         print(respuesta);
-         print("Salida");
-         */
-
          final SharedPreferences prefs = await SharedPreferences.getInstance();
          String userId = prefs.getString("userId");
 
@@ -159,7 +144,12 @@ class ReasignarPedido extends PedidoEvent {
            Color col;
            IconData icono;
            if(respuesta.code == 1){
-             mens = event.pedido.restaurante +'-'+ event.pedido.numero.toString() + " EN " + event.estado;
+
+             String aux = " EN ";
+             if( event.estado == "ENTREGADO"){
+               aux = "  ";
+             }
+             mens = event.pedido.restaurante +'-'+ event.pedido.numero.toString() + aux + event.estado;
              col = Colors.green;
              icono = Icons.check_circle_outline;
 
@@ -207,7 +197,7 @@ class ReasignarPedido extends PedidoEvent {
            Color col;
            IconData icono;
            if(respuesta.code == 1){
-             mens = " DOMICILIARIO EN " + event.estado;
+             mens = " RUTA   " + event.estado;
              col = Colors.green;
              icono = Icons.check_circle_outline;
 

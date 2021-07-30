@@ -6,6 +6,7 @@ import 'package:domiciliarios_app/Paginas/Mapa.dart';
 import 'package:domiciliarios_app/Paginas/Configuraciones.dart';
 import 'package:domiciliarios_app/Paginas/PerfilUsuario.dart';
 import 'package:domiciliarios_app/Paginas/ReasignarEntregas.dart';
+import 'package:domiciliarios_app/Paginas/RutaOrdenes.dart';
 import 'package:domiciliarios_app/Paginas/ScanDatawedge.dart';
 import 'package:domiciliarios_app/Servicios/SharedPreferencesServicio.dart';
 import 'package:flutter/material.dart';
@@ -37,10 +38,20 @@ Drawer buildDrawer(BuildContext context, String currentRoute) {
                     Divider(),
                     ListTile(
                       leading: Icon(Icons.location_on_outlined),
-                      title: const Text('Mapa  |  Ruta'),
+                      title: const Text('Mapa '),
                       //selected: currentRoute == Mapa.route,
                       onTap: () {
                         Navigator.popAndPushNamed(context, Mapa.route);
+                        //  Navigator.pushReplacementNamed(context, Mapa.route);
+                      },
+                    ),
+                    Divider(),
+                    ListTile(
+                      leading: Icon(Icons.star_border_purple500_sharp),
+                      title: const Text(' Ruta | Ordenes'),
+                      //selected: currentRoute == Mapa.route,
+                      onTap: () {
+                        Navigator.popAndPushNamed(context, RutaOrdenes.route);
                         //  Navigator.pushReplacementNamed(context, Mapa.route);
                       },
                     ),

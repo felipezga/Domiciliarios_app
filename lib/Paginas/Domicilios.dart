@@ -53,19 +53,6 @@ class _DomicilioState extends State<DomiciliosScreen> {
     print("loadeee");
   }
 
-  /*_setTheme(bool darkTheme) async {
-    AppTheme selectedTheme =
-    darkTheme ? AppTheme.lightTheme : AppTheme.darkTheme;
-    context.bloc<ThemeBloc>().add(ThemeEvent(appTheme: selectedTheme));
-    Preferences.saveTheme(selectedTheme);
-  }*/
-
-  List<Ruta> rutas = <Ruta>[
-    new Ruta(usuaId: 'Ruta1', ordenes: []),
-    new Ruta(usuaId:'Ruta2', ordenes:  []),
-    new Ruta(usuaId: 'Ruta3', ordenes: []),
-  ];
-
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ThemeBloc, ThemeState>(builder: (context, theme) {
@@ -81,7 +68,7 @@ class _DomicilioState extends State<DomiciliosScreen> {
           ),
           //automaticallyImplyLeading: false,
           title: Text(
-            'HISTORIAL ENTREGAS',
+            'HISTORIAL DOMICILIOS',
             style: TextStyle(
               color: theme.getTheme.hoverColor,
               fontWeight: FontWeight.bold,
@@ -148,10 +135,10 @@ class ListRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(20.0),
+      //padding: EdgeInsets.all(1.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
+        //crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ExpansionTile(
             //key: PageStorageKey<NameBean>(bean),
@@ -160,9 +147,9 @@ class ListRow extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                      ruta.id.toString(),
+                      "RUTA: " +ruta.id.toString(),
                       style: TextStyle(
-                        fontWeight: FontWeight.w500,
+                        fontWeight: FontWeight.w700,
                         fontSize: 18,
                       )
                   ),
@@ -180,10 +167,16 @@ class ListRow extends StatelessWidget {
             subtitle: Text(ruta.estado ),
             children: pedidos.map<Widget>((ped) =>
               ListTile(
-                leading: Icon(Icons.volunteer_activism, size: 50, color: Colors.red,),
-                title: Text(ped.name.toString()),
-                subtitle: Text(ped.id.toString()),
-                trailing: Text(ped.estado.toString()),
+                leading: Icon(Icons.volunteer_activism, size: 30, ),
+                title: Text(ped.name.toString(), style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 16,
+                )),
+                //subtitle: Text(ped.id.toString()),
+                trailing: Text(ped.estado.toString(), style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 14,
+                )),
               ),
               //Text( pedido.numero.toString()),
               //Divider(),
@@ -193,7 +186,6 @@ class ListRow extends StatelessWidget {
                 icon: new Icon(Icons.location_history, color: Colors.red, size: 45,),
                 highlightColor: Colors.pink,
                 onPressed: (){
-                  print("No fuimos");
                   Navigator.push( context,
                     new MaterialPageRoute(
                       builder: (context) => new HistorialMapa( ArgumentsHistorial(ruta.id.toString(), pedidos ) ),
@@ -201,7 +193,6 @@ class ListRow extends StatelessWidget {
                   );
 
                   //Navigator.popAndPushNamed( context, HistorialMapa.route, arguments:  ArgumentsHistorial(ruta.id.toString(), pedidos ) );
-
                   //Navigator.popAndPushNamed(context, HistorialMapa.route);
 
 

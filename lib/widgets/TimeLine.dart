@@ -1,7 +1,6 @@
 import 'package:domiciliarios_app/Modelo/EstadoPedidoDomiciliario.dart';
 import 'package:domiciliarios_app/Modelo/Pedido.dart';
 import 'package:flutter/material.dart';
-import 'package:timeline_tile/timeline_tile.dart';
 
 class TimelineDelivery extends StatelessWidget {
 
@@ -9,8 +8,6 @@ class TimelineDelivery extends StatelessWidget {
   final List<Pedido> listPedidos;
   final String estadoRuta;
   TimelineDelivery( this.estaDomiTL, this.listPedidos, this.estadoRuta );
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -23,21 +20,8 @@ class TimelineDelivery extends StatelessWidget {
     bool isFirst = false;
     bool isLast= false;
 
-
-    print("tiemlinee");
+    print("timeline");
     print(estaDomiTL.length);
-    EstadoDomiciliario a;
-    bool bandPreparado = false;
-    Color colorPreparado = Color(0xFFDADADA);
-    String horaPreparado ="";
-
-    bool bandIniciar = false;
-    Color colorIniciar = Color(0xFFDADADA);
-    String horaIniciarTL ="";
-
-    bool bandFinalizar = false;
-    Color colorFinalizar = Color(0xFFDADADA);
-    String horaFinalizarTL ="";
 
     if (listPedidos.length > 0) {
       return Column(
@@ -134,7 +118,7 @@ class TimelineDelivery extends StatelessWidget {
         Container(
           height: 100,
           child: Center(
-            child: Text("No hay ordenes por entregar"),
+            child: Text("No hay ordenes por entregar", style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700,)),
           )
         );
 
@@ -331,8 +315,6 @@ class TimelineDelivery extends StatelessWidget {
       );
     }*/
 
-
-
   }
 }
 
@@ -410,7 +392,6 @@ class _RightChild extends StatelessWidget {
 }
 
 class ListRowTL extends StatelessWidget {
-  //
   final Pedido pedido;
   final bool band;
   final Color color;
@@ -423,53 +404,38 @@ class ListRowTL extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-
-      String title = pedido.restaurante +'-'+ pedido.numero.toString() + ' | '+ pedido.estado;
-      bool disabled= !band;
-
+    String title = pedido.restaurante +'-'+ pedido.numero.toString() + ' | '+ pedido.estado;
+    bool disabled= !band;
     return
-      //Container(
-      //padding: EdgeInsets.all(20.0),
-      //child:
-
-     Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Row(
-        children: <Widget>[
-          Icon(
+      Padding(
+        padding: const EdgeInsets.all(5.0),
+        child: Row(
+          children: <Widget>[
+            Icon(
               icon,
               color: color,
               //size: 15
-          ),
-          SizedBox(width: 15),
-
-          Opacity(
-            child: Image.asset(img, height: 50),
+            ),
+            SizedBox(width: 15),
+            Opacity(
+            child: Image.asset(img, height: 60),
             opacity: disabled ? 0.5 : 1,
-          ),
-          const SizedBox(width: 15),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
+            ),
+            const SizedBox(width: 15),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
               Text(
                 title,
                 style: TextStyle(
                   color: disabled ?  const Color(0xFFBABABA)
                       :  Theme.of(context).textTheme.bodyText1.color,
                   fontWeight: FontWeight.w700,
-                  fontSize: 13,
+                  fontSize: 14,
                 ),
-                /*style: GoogleFonts.yantramanav(
-                  color: disabled
-                      ? const Color(0xFFBABABA)
-                      : const Color(0xFF636564),
-                  fontSize: 18,
-                  fontWeight: FontWeight.w500,
-                ),*/
               ),
-              const SizedBox(height: 6),
+              /*const SizedBox(height: 6),
               Row(children: [
                 !disabled?  Icon( Icons.timer_outlined) : Text(""),
                 Text(
@@ -480,44 +446,13 @@ class ListRowTL extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                     fontSize: 14,
                   ),
-                  /*style: GoogleFonts.yantramanav(
-                  color: disabled
-                      ? const Color(0xFFD5D5D5)
-                      : const Color(0xFF636564),
-                  fontSize: 16,
-                ),*/
                 ),
-              ],)
+              ],)*/
 
             ],
           ),
         ],
       ),
     );
-
-
-
-      /*TimelineTile(
-        alignment: TimelineAlign.manual,
-        lineXY: 0.1,
-        isFirst: isFirst,
-        isLast: isLast,
-        indicatorStyle:  IndicatorStyle(
-          width: 20,
-          iconStyle: IconStyle( color: Colors.white, iconData: band == true? Icons.check : Icons.lock_outline_rounded , fontSize: 15 ),
-          color: color,
-          padding: EdgeInsets.all(6),
-        ),
-        endChild:  _RightChild(
-          asset: img,
-          title: pedido.restaurante +'-'+ pedido.numero.toString() + ' | '+ pedido.estado,
-          message: hora,
-          disabled: !band,
-        ),
-        beforeLineStyle:  LineStyle(
-          color: color,
-        ),
-        //),
-      );*/
   }
 }

@@ -18,6 +18,7 @@ import 'Paginas/EscanerFactura.dart';
 import 'Paginas/Login.dart';
 import 'Paginas/Mapa.dart';
 //import 'Paginas/Home.dart';
+import 'Paginas/RutaOrdenes.dart';
 import 'Paginas/prueba.dart';
 import 'Servicios/SharedPreferencesServicio.dart';
 
@@ -158,7 +159,8 @@ class _MyAppState extends State<App> {
                 else if (snapshot.data.token == null || snapshot.data.token == "")
                   return LoginScreen();
                 else
-                  return Mapa();
+                  return RutaOrdenes();
+                  //return Mapa();
                   //UserPreferences().removeUser();
             }
           }),
@@ -166,6 +168,7 @@ class _MyAppState extends State<App> {
         // "/restaurante" : ( context) => Restaurante(opcion: 1),
         // Restaurante.route: ( context) =>  Restaurante(opcion: 2),
         Mapa.route: (context) => Mapa(),
+        RutaOrdenes.route: (context) => RutaOrdenes(),
         HistorialMapa.route: (context) => HistorialMapa( ModalRoute.of(context).settings.arguments ),
         Configuraciones.route: (context) => Configuraciones(),
         Domicilios.route: (context) => Domicilios(),

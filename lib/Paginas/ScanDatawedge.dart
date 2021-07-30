@@ -219,7 +219,7 @@ class _MyHomePageState extends State<ScanOrden> {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             fontSize: 20,
-                            //color: Theme.of(context).backgroundColor,
+                            color: Theme.of(context).backgroundColor,
                             fontWeight: FontWeight.w700
                         ),
                       ),
@@ -243,7 +243,14 @@ class _MyHomePageState extends State<ScanOrden> {
                     if(state is EscaneoAsignado){
                       Timer(Duration(seconds: 3), () {
                         print("Yeah, this line is printed after 3 seconds");
-                        Navigator.popAndPushNamed(context, '/mapa');
+                        Navigator.popAndPushNamed(context, '/ruta');
+                      });
+                    }
+                    if(state is EscaneoError){
+                      print('Error asignar93');
+                      Timer(Duration(seconds: 3), () {
+                        print("Yeah, this line is printed after 3 seconds");
+                        Navigator.popAndPushNamed(context, ScannerLaser.route, arguments:  Arguments("asignar", [] ) );
                       });
                     }
                     if (state is EscaneoExistente) {
