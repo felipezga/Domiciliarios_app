@@ -38,6 +38,8 @@ dependencies:
   path_provider: ^2.0.2
   timeline_tile: ^2.0.0
   qr_code_scanner: ^0.4.0
+  background_location: ^0.6.1
+  permission_handler: ^8.1.4+1
 
 
   # The following adds the Cupertino Icons font to your application.

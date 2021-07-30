@@ -1,19 +1,11 @@
-import 'dart:async';
-//import 'dart:ffi';
-
 import 'package:domiciliarios_app/Bloc/BotonesTrackingBloc.dart';
 import 'package:domiciliarios_app/Bloc/PedidoBloc.dart';
 import 'package:domiciliarios_app/Bloc/SeleccionBloc.dart';
 import 'package:domiciliarios_app/Bloc/ThemeBloc.dart';
-import 'package:domiciliarios_app/Bloc/TrackingBloc.dart';
 import 'package:domiciliarios_app/Bloc/UserLocationBloc.dart';
 import 'package:domiciliarios_app/Modelo/EstadoPedidoDomiciliario.dart';
 import 'package:domiciliarios_app/Modelo/Pedido.dart';
-import 'package:domiciliarios_app/Paginas/EscanerFactura.dart';
-import 'package:domiciliarios_app/Servicios/NotificacionPushFirebase.dart';
 import 'package:domiciliarios_app/Servicios/PedidoDomicilioServicio.dart';
-import 'package:domiciliarios_app/widgets/AlertConfirmacion.dart';
-import 'package:domiciliarios_app/widgets/DialogNovedad.dart';
 import 'package:domiciliarios_app/widgets/DropdownButtonOrdenes.dart';
 import 'package:domiciliarios_app/widgets/Loading.dart';
 import 'package:domiciliarios_app/widgets/TimeLine.dart';
@@ -22,9 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong/latlong.dart';
-import 'package:intl/intl.dart';
-import 'package:timeline_tile/timeline_tile.dart';
-//import 'package:restaurantes_tipoventas_app/widgets/drawer.dart';
+
 
 class Mapa extends StatelessWidget{
   static const String route = '/mapa';
@@ -41,15 +31,10 @@ class Mapa extends StatelessWidget{
           BlocProvider<LocationBloc>(
             create: (BuildContext context) => LocationBloc()..add(LocationStarted()),
           ),
-          /*BlocProvider<TrackingBloc>(
-              create: (context) {
-            return TrackingBloc();
-          }),*/
           BlocProvider<BotonesBloc>(
               create: (context) {
                 return BotonesBloc();
-              })
-          ,
+              }),
           BlocProvider<SeleccionBloc>(
               create: (context) {
                 return SeleccionBloc();
@@ -87,10 +72,7 @@ class _AppState extends State<MapaState> {
 //class _AppState extends State<mapaState> with TickerProviderStateMixin {
 
   BotonesBloc _botonesWidgetBloc;
-  //String _locationMessage = "";
-  //String _currentAddress;
 
-  // Default Drop Down Item.
   String dropdownValue = '-';
   List<Pedido> pedidosAsignados = [];
   List<Pedido> pedidosTracking = [];
@@ -98,15 +80,10 @@ class _AppState extends State<MapaState> {
   int idRuta;
 
 
-  void getDropDownItem( pedido){
-    context.read<PedidoBloc>().add(EntregarPedido( pedido));
-  }
-
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   //double _latitude;
   //double _longitude;
-  bool _isGettingLocation;
   String mensBoton = "Iniciar";
   int contador;
 
@@ -144,11 +121,6 @@ class _AppState extends State<MapaState> {
   void initState() {
     super.initState();
 
-    //LatLng _new = LatLng(33.738045, 73.084488);
-    //points.add(_new);
-
-    _isGettingLocation = true;
-    //_obtenerLocationEstado(mens_boton, "", "Finalizar");
     contador = 0;
 
     /*/_timer = Timer.periodic(Duration(seconds: 5), (_) {
@@ -156,8 +128,6 @@ class _AppState extends State<MapaState> {
         _getCurrentLocation();
       });
     });*/
-
-
 
     /*_controller = AnimationController(
         vsync: this,
@@ -171,7 +141,6 @@ class _AppState extends State<MapaState> {
 
     _loadPedidoUsuario();
 
-
   }
 
   @override
@@ -183,13 +152,11 @@ class _AppState extends State<MapaState> {
         builder: (context, theme) {
           var isDarkMode = theme.getThemeState;
 
-          print(_isGettingLocation);
-          print("bebeb");
           return
             BlocBuilder<LocationBloc, LocationState>(
               builder: (context, state) {
                 if (state is LocationInitial) {
-                  return Center(child: Text('Cargando Localizacion'));
+                  return Center(child: Text('Cargando...'));
                 }
                 if (state is LocationLoadSuccess) {
                   final lat = state.position.latitude;
@@ -261,7 +228,8 @@ class _AppState extends State<MapaState> {
                                 ],
                               )
                           ),
-                          BlocBuilder<PedidoBloc, PedidoState>(
+
+                          /*BlocBuilder<PedidoBloc, PedidoState>(
                               builder: (BuildContext context, PedidoState state) {
                                 if (state is PedidoError) {
                                   final error = state.error;
@@ -274,8 +242,6 @@ class _AppState extends State<MapaState> {
                                   //List<Pedido> pedidosAsignados = state.rutaPedido.pedidos.where((element) => element.numero == estadoRuta );
 
                                   print("empezamos");
-
-                                  //BlocProvider.of<TrackingBloc>(context).add(AddEstadoDomiciliario(  estadoTracking:  "PREPARADO", descripcionTracking: "PRODUCTO PREPARADO", listaTracking: estaDomi));
 
                                   if(state.rutaPedido.pedidos.length > 0){
                                     if(estadoRuta == "RESTAURANTE"){
@@ -315,7 +281,6 @@ class _AppState extends State<MapaState> {
                                           context.read<SeleccionBloc>().add(SeleccionarEvent( pedidosAsignados[0]));
                                           return _trackingPedido( idRuta, pedidosTracking , estadoRuta, pedidosAsignados );
                                         }
-
                                       }
 
                                     }
@@ -329,15 +294,8 @@ class _AppState extends State<MapaState> {
                                     return _trackingPedido( idRuta, pedidosAsignados , estadoRuta, [] );
                                   }
 
-                                  //BlocProvider.of<TrackingBloc>(context).add(AddEstadoDomiciliario(  estadoTracking:  "PREPARADO", descripcionTracking: "PRODUCTO PREPARADO", listaTracking: estaDomi));
-
-
-
                                   /*if(pedidosAsignados.length > 0){
                                     context.read<SeleccionBloc>().add(SeleccionarEvent( state.rutaPedido.pedidos[0]));
-
-                                    BlocProvider.of<TrackingBloc>(context).add(AddEstadoDomiciliario(  estadoTracking:  "PREPARADO", descripcionTracking: "PRODUCTO PREPARADO", listaTracking: estaDomi));
-
                                     return _trackingPedido( pedidosAsignados , estadoRuta );
                                   }*/
 
@@ -347,80 +305,15 @@ class _AppState extends State<MapaState> {
                                 }
 
                                 return Text(" ");
-                              }),
-
-
+                              }),*/
                         ]
-                    )
-                  ;
+                    );
                 }
                 return Center(child: CircularProgressIndicator());
               },
             );
-
-          /*Padding(
-                padding: EdgeInsets.all(1.0),
-                child: Stack(
-                    children: [
-                      _isGettingLocation ?
-                      Center(
-                          child : CircularProgressIndicator()
-                      ) :
-
-
-                      BlocBuilder<PedidoBloc, PedidoState>(
-                          builder: (BuildContext context, PedidoState state) {
-                            if (state is PedidoError) {
-                              final error = state.error;
-                              //String message = '${error.message}\nTap to Retry.';
-                              return Text("fff"
-                              );
-                            }
-                            if (state is PedidoLoaded) {
-                              Pedido pedido = state.pedido;
-                              //_obtenerLocationEstado( "Iniciar" , "PEDIDO PREPARADO", "Finalizar");
-                              //_obtenerLocationEstado(mens_boton, "", "Finalizar");
-                              return _trackingPedido(pedido);
-                            }
-                            return Loading();
-                            //return Text("fdf");
-                          }),
-
-                      //contador == 2?
-                     /* DraggableScrollableSheet(
-                        //initialChildSize: 0.10,
-                        minChildSize: 0.07,
-                        //maxChildSize: 0.6,
-                        builder: (BuildContext context, ScrollController scrollController) {
-                          return SingleChildScrollView(
-                            controller: scrollController,
-                            child: Card(
-                              elevation: 12.0,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(18.0),
-                                    topRight: Radius.circular(18.0)
-                                ),
-                              ),
-                              margin: const EdgeInsets.all(20),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(24),
-                                ),
-                                child: CustomInnerContent(),
-                              ),
-                            ),
-                          );
-                        },
-                      )*/
-                          //:
-                         // Text("")
-                    ]
-                )
-            );*/
         }
     );
-
 
   }
 
@@ -433,65 +326,6 @@ class _AppState extends State<MapaState> {
     print("Pedido Cargado");
   }
 
-  //LatLng(4.8087, -75.6906),
-
-
-
-  /*_getCurrentLocation() async {
-
-    final _currentPosition = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-    print(_currentPosition);
-
-    setState(() {
-      _locationMessage = "${_currentPosition.latitude}, ${_currentPosition.longitude}";
-
-      _latitude = _currentPosition.latitude;
-      _longitude = _currentPosition.longitude;
-      _isGettingLocation = false;
-
-      points.add(LatLng(_latitude, _longitude));
-
-    });
-
-  }*/
-
-
-
-
-  /*_obtenerLocationEstado(String estado, String descripcion, String next_estado) async {
-
-    final _currentPosition = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-    //print(_currentPosition);
-
-    setState(() {
-      _locationMessage = "${_currentPosition.latitude}, ${_currentPosition.longitude}";
-      _latitude = _currentPosition.latitude;
-      _longitude = _currentPosition.longitude;
-      _isGettingLocation = false;
-
-      DateTime now = DateTime.now();
-      String formattedDate = DateFormat('kk:mm').format(now);
-
-        if(contador > 0){
-          _esta_domi.add( EstadoDomiciliario( _latitude, _longitude, descripcion, estado ,  formattedDate ) );
-          if(estado== "Finalizar" && next_estado ==  "Finalizar" ){
-            mensBoton = "Iniciar";
-
-            //_controller.stop();
-
-          }else{
-            mensBoton = next_estado;
-
-            points.add(LatLng(_latitude, _longitude));
-
-            //_controller.forward();
-
-          }
-        }
-        print("ffffffsss");
-        contador++;
-    });
-  }*/
 
   /*_getAddressFromLatLng() async {
     try {
@@ -501,7 +335,6 @@ class _AppState extends State<MapaState> {
           casa.latitude,
         casa.longitude
       );
-
       Placemark placeMark  = placemarks[0];
       String name = placeMark.name;
       String subLocality = placeMark.subLocality;
@@ -510,19 +343,14 @@ class _AppState extends State<MapaState> {
       String postalCode = placeMark.postalCode;
       String country = placeMark.country;
       String address = "${name}, ${subLocality}, ${locality}, ${administrativeArea} ${postalCode}, ${country}";
-
       print(address);
-
       setState(() {
         _currentAddress = address; // update _address
       });
-
     } catch (e) {
       print(e);
     }
   }*/
-
-
 
 
   Widget botones(estado, colorBoton, iconBoton, nextEstado, Pedido pedidoSeleccionado, idRuta ){
@@ -531,71 +359,39 @@ class _AppState extends State<MapaState> {
       //color: color_boton,
       //shape: new RoundedRectangleBorder(
           //borderRadius: BorderRadius.circular(5.0)),
-
       style: ElevatedButton.styleFrom(
           primary: Colors.red, // background
           onPrimary: Colors.white,
           elevation: 5// foreground
       ),
-
       onPressed: () {
         if(estado == "INICIAR"){
-          //_obtenerLocationEstado( estado , "", next_estado);
-          print("Hola iniciar: " + pedidoSeleccionado.numero.toString());
+          BlocProvider.of<PedidoBloc>(context).add(ActualizarPedido("CURSO", pedidoSeleccionado, context ));
 
-         // BlocProvider.of<TrackingBloc>(context).add(AddEstadoDomiciliario( estadoTracking: EstadoDomiciliario( 9.9, 9.6, "Iniciar entrega", "Hoover", ''  ), listaTracking: _esta_domi));
-          /*setState(() {
-            mens_boton = next_estado;
-          });*/
-
-          DateTime now = DateTime.now();
+          /*DateTime now = DateTime.now();
           String formattedDate = DateFormat('kk:mm').format(now);
-
           print(now);
           print(formattedDate);
           var ruta = now.year.toString() + now.month.toString() + now.day.toString() + now.hour.toString() + now.minute.toString() + now.second.toString();
           print(ruta);
-
           DateTime date = new DateTime(now.year, now.month, now.day);
-
-
-
-          //BlocProvider.of<LocationBloc>(context).add(LocationStarted());
-          //BlocProvider.of<TrackingBloc>(context).add(AddEstadoDomiciliario(  estadoTracking:  estado, descripcionTracking: "INICIAR ENTREGA", listaTracking: estaDomi));
-
-          BlocProvider.of<PedidoBloc>(context).add(ActualizarPedido("CURSO", pedidoSeleccionado, context ));
-
-          //var accion = MarcarPedido( pedidoSeleccionado );
-          //alertConfirmacion( context, accion, "PedidoBloc", "Marcar Orden" );
-
+           */
         }
         if(estado == "EN SITIO"){
-
           BlocProvider.of<PedidoBloc>(context).add(ActualizarPedido("SITIO", pedidoSeleccionado, context ));
 
         }
 
         if(estado == "ENTREGAR"){
-
           BlocProvider.of<PedidoBloc>(context).add(ActualizarPedido("ENTREGADO", pedidoSeleccionado, context ));
 
         }
         else if(estado == "EN RESTAURANTE"){
-          //_obtenerLocationEstado( estado , "", next_estado);
-          print("Hola");
-
-
-
           BlocProvider.of<PedidoBloc>(context).add(ActualizarRuta("TERMINADA", idRuta, context ));
 
-
           BlocProvider.of<LocationBloc>(context).add(LocationStarted());
-          //BlocProvider.of<TrackingBloc>(context).add(AddEstadoDomiciliario( estadoTracking: EstadoDomiciliario( 9.9, 9.6, "Iniciar entrega", "Hoover", ''  ), listaTracking: _esta_domi));
-          //BlocProvider.of<TrackingBloc>(context).add(AddEstadoDomiciliario(  estadoTracking:  estado, descripcionTracking: "INICIAR ENTREGA", listaTracking: estaDomi));
           _botonesWidgetBloc.add(EventFinalizarBoton());
         }
-
-
 
         else{
           //mensajeNovedad();
@@ -608,7 +404,6 @@ class _AppState extends State<MapaState> {
           child: Row( // Replace with a Row for horizontal icon + text
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
-
               Text(estado + "  ",
                 textAlign: TextAlign.center,
                 style: TextStyle(
@@ -620,7 +415,6 @@ class _AppState extends State<MapaState> {
             ],
           ),
         ),
-
     );
 
   }
@@ -629,21 +423,17 @@ class _AppState extends State<MapaState> {
   Widget widgetPedidosEntregar( listaraking, pedidosRutaTracking, estadoRuta, idRuta, pedidosAsignados ) {
     return
       Column(
-      children: <Widget>[
+        children: <Widget>[
             SizedBox(height: 12),
             CustomDraggingHandle(),
             SizedBox(height: 5),
-            _Header(idRuta, estadoRuta),
+            Header(idRuta, estadoRuta),
         //ScreenProgress(ticks: 3,),
-
-            //SizedBox(height: 16),
-            //CustomExplore(),
             //SizedBox(height: 24),
             widgetOperacionPedidos( listaraking, pedidosRutaTracking, estadoRuta, idRuta, pedidosAsignados),
             //SizedBox(height: 16),
       ],
-
-    );
+      );
   }
 
 
@@ -659,9 +449,7 @@ class _AppState extends State<MapaState> {
                   print("estado boton");
                   print(state);
                   if (state is BotonStateIniciar) {
-
                     String valueBoton = state.value;
-                    print("88889");
                     print(state.value);
 
                     return
@@ -709,18 +497,17 @@ class _AppState extends State<MapaState> {
                           return Loading();
                         }
                     );
-
-
                   }
                   else if (state is BotonStateEnSitio){
                     pedidoSeleccionado = state.pedido;
-
-                    print("2222");
                     return
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text("Orden: "+ state.pedido.restaurante + '-' + state.pedido.numero.toString() ),
+                          Text(
+                            "ORDEN: "+ state.pedido.restaurante + '-' + state.pedido.numero.toString(),
+                            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700,) ,
+                          ),
                           botones(state.value, Colors.green, Icons.place_outlined, "Finalizar", pedidoSeleccionado, 0),
                         ],
                       );
@@ -735,7 +522,10 @@ class _AppState extends State<MapaState> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text("Orden: " + state.pedido.restaurante + state.pedido.numero.toString() ),
+                              Text(
+                                "ORDEN: " + state.pedido.restaurante + '-' + state.pedido.numero.toString(),
+                                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700,) ,
+                              ),
                               botones(state.value, Colors.green, Icons.volunteer_activism, "Finalizar", pedidoSeleccionado, 0),
                               /*ElevatedButton(
                                 //onPressed: () => { getDropDownItem(pedidoSeleccionado) },
@@ -764,9 +554,7 @@ class _AppState extends State<MapaState> {
                                     arguments:  "entregar"
                                     //'Extract Arguments Screen',
                                     //'This message is extracted in the build method.',
-                                    ,
                                   );
-
                                 },
                                 child: Icon(Icons.qr_code_scanner_sharp, color: Colors.white),
                                 style: ElevatedButton.styleFrom(
@@ -785,54 +573,23 @@ class _AppState extends State<MapaState> {
                     print("FIN DE TRACKING");
 
                     return
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          Text("Tiempo: 45:22 "),
+                          SizedBox(height: 10,),
+                          Text("Tiempo: 45:22 ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700,)),
+                          SizedBox(height: 20,),
                           botones(state.value, Colors.green, Icons.place_outlined, "Finalizar", pedidoSeleccionado, idRuta ),
                         ],
                       );
-
-                    /*DateTime  horaIniciar;
-                    DateTime  horaFinalizar;
-                    String tiempoDomicilio = "";
-
-                    String fin;
-
-                    if(listaraking.length > 0) {
-                      EstadoDomiciliario a;
-                      for (a in listaraking) {
-                        print("aaaaa");
-                        print(a.estado);
-
-                        if (a.estado == "INICIAR") {
-                          horaIniciar = DateFormat("HH:mm:ss").parse(a.hora+":00");
-                         // ini = a.hora;
-                         // var newDateTimeObj2 = DateFormat("HH:mm:ss").parse("10/02/2000 15:13:09")
-                        }
-                        if (a.estado == "FINALIZAR") {
-                          horaFinalizar = DateFormat("HH:mm:ss").parse(a.hora+":00");
-
-                          //fin = a.hora;
-                        }
-                      }
-                    }
-
-                    Duration _tiempo = horaFinalizar.difference(horaIniciar);
-                    fin = _tiempo.toString();
-
-                    var parts = fin.split('.');
-                    tiempoDomicilio = parts[0].trim();
-                    print(tiempoDomicilio);
-
-                    */
                   }
                   else {
                     print("ELSE");
-                    return  Text("Else fuera");
+                    return  Text("Else");
                   }
                 }
                 ),
+            Divider( ),
             Row(
               children: [
                 Flexible(
@@ -841,18 +598,10 @@ class _AppState extends State<MapaState> {
                 ),
               ],
             )
-
-
-
-            //Text( 'Direccion de desino : $_currentAddress  $latlng'),
-
-
-          ])
-
-          );
+          ]
+          )
+        );
   }
-
-
 
 
   Widget _trackingPedido( idRuta, pedidosRutaTracking, estadoRuta, pedidosAsignados) {
@@ -879,51 +628,15 @@ class _AppState extends State<MapaState> {
               ),
               child:
               widgetPedidosEntregar(estaDomi, pedidosRutaTracking, estadoRuta, idRuta,  pedidosAsignados),
-              /*BlocBuilder<TrackingBloc, TrackingState>(
-                  builder: (BuildContext context, TrackingState state) {
-
-                    if (state is TrackingLoaded) {
-                      print("Entro tracking");
-                      print(state.estaDomi.length);
-                      print(state.estaDomi[0].descripcion);
-                      estaDomi = state.estaDomi;
-                      return widgetPedidosEntregar(estaDomi, pedidosRutaTracking, estadoRuta, idRuta,  pedidosAsignados);
-
-                    }
-                    return Loading();
-                    //return Text("fdf");
-                  }),*/
-
-             /* BlocListener<TrackingBloc, TrackingState>(
-                listener: (context, state) {
-                  print("listener");
-                  if (state is TrackingLoaded) {
-                    print("Entro tracking");
-                    print(state.esta_domi.length);
-                    print(state.esta_domi[0].descripcion);
-                    _esta_domi = state.esta_domi;
-                    return CustomInnerContent(_esta_domi);
-
-                  }else{
-                    return Center(child: CircularProgressIndicator());
-                  }
-                },
-                child:  CustomInnerContent(_esta_domi),
-                //CustomInnerContent(),
-              ),*/
             ),
-
-
-             // CustomInnerContent(),
-            ),
-          );
-      },
+          ),
+        );
+        },
     );
   }
 
 
   /*void _handleTap(LatLng latlng) {
-
     setState(() {
       //tappedPoints.add(latlng);
       casa = latlng;
@@ -935,7 +648,6 @@ class _AppState extends State<MapaState> {
   }*/
 
 }
-
 
 
 class Countdown extends AnimatedWidget {
@@ -972,12 +684,8 @@ class Countdown extends AnimatedWidget {
           )
         ],
       );
-
-
-   /* ;*/
   }
 }
-
 
 
 class CustomDraggingHandle extends StatelessWidget {
@@ -991,31 +699,12 @@ class CustomDraggingHandle extends StatelessWidget {
   }
 }
 
-/*class CustomExplore extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        Text("Seguimiento", style: TextStyle(fontSize: 22, color: Colors.black45)),
-        SizedBox(width: 8),
-        Container(
-          height: 24,
-          width: 24,
-          child: Icon(Icons.arrow_forward_ios, size: 12, color: Colors.green),
-          decoration: BoxDecoration(color: Colors.grey[200], borderRadius: BorderRadius.circular(16)),
-        ),
-      ],
-    );
-  }
-}*/
-
-class _Header extends StatelessWidget {
+class Header extends StatelessWidget {
 
   int idR;
   String estadoRuta;
 
-  _Header(this.idR, this.estadoRuta);
+  Header(this.idR, this.estadoRuta);
   @override
   Widget build(BuildContext context) {
     String mensText = "";
@@ -1047,8 +736,8 @@ class _Header extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
             //Icon(Icons.reorder),
-            Text('RUTA '+ idR.toString() , style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700,) ),
-            Text( "ESTADO: " + mensText, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Colors.red) ),
+            Text('RUTA: '+ idR.toString() , style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700,) ),
+            Text( "ESTADO: " + mensText, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Colors.black) ),
             /*ElevatedButton(
               onPressed: (){
                 showDialog(
@@ -1064,26 +753,8 @@ class _Header extends StatelessWidget {
                 onPrimary: Colors.red, // <-- Splash color
               ),
             )*/
-
-
           ],
         ),
-        /*child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: <Widget>[
-            Icon(Icons.shopping_cart_outlined),
-            Text('PEDIDOS A ENTREGAR ', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700,) ),
-            Text(
-              '#2482011',
-                style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800,)
-              /*style: GoogleFonts.yantramanav(
-                      color: const Color(0xFF636564),
-                      fontSize: 16,
-                    ),*/
-            ),
-
-          ],
-        ),*/
       ),
     );
   }
@@ -1095,7 +766,6 @@ class ScreenProgress extends StatelessWidget {
   final int ticks;
 
   ScreenProgress({@required this.ticks});
-
 
   @override
   Widget build(BuildContext context) {
@@ -1151,16 +821,5 @@ class ScreenProgress extends StatelessWidget {
     );
   }
 }
-
-
-
-
-
-
-
-
-
-
-
 
 

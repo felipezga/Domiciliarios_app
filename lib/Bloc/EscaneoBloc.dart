@@ -82,13 +82,17 @@ class EscaneoBloc extends Bloc<EscaneoEvent, EscaneoState>{
           estadoOrden = "ENTREGAR";
         }
 
-        Funciones funciones = Funciones();
+        /*Funciones funciones = Funciones();
         UserLocation ubicaion = UserLocation();
         ubicaion = await funciones.ubicacionLatLong();
-
         Orden nuevaOrden = Orden(id: id, estado: estadoOrden, prefijo: fact[0], numero: int.parse(fact[1]), latitud: ubicaion.latitude, longitud: ubicaion.longitude, usuaId: userId);
+        */
+
+        Orden nuevaOrden = Orden(id: id, estado: estadoOrden, prefijo: fact[0], numero: int.parse(fact[1]), latitud: 0, longitud: 0, usuaId: userId);
 
         int existe = event.ordenesEscan.indexWhere((element) => element.numero == nuevaOrden.numero);
+
+        print("exite");
 
         if( existe == -1 ){
           event.ordenesEscan.add( nuevaOrden );
@@ -135,6 +139,15 @@ class EscaneoBloc extends Bloc<EscaneoEvent, EscaneoState>{
         String userId = prefs.getString("userId");
 
         PedidoDomiclioRepository apiPedido = new PedidoDomiclioRepository();
+
+        Funciones funciones = Funciones();
+        UserLocation ubicaion = UserLocation();
+        ubicaion = await funciones.ubicacionLatLong();
+
+        for(var i = 0 ; i < event.ordenes.length; i++   ){
+          event.ordenes[i].latitud = ubicaion.latitude;
+          event.ordenes[i].longitud = ubicaion.longitude;
+        }
 
         Ruta ruta =  Ruta( usuaId: userId, ordenes: event.ordenes);
 
