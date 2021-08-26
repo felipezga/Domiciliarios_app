@@ -298,6 +298,52 @@ class PedidoDomiclioRepository {
     }
   }
 
+  Future<Salida> reasignarRutaOrdenes(List<Orden> requestModel, rutaId, usuaId, band ) async {
+
+    String url = url_api_domiciliario+reasignar_ruta;
+    String jsonString;
+
+    Map param = { "RutaId": rutaId , "UsuaId": usuaId, "Bandera":band, "ordenes": requestModel } ;
+    jsonString = json.encode(param);
+
+    Salida salida;
+
+
+    print(url);
+    print('responsa');
+
+    //String jsonString = json.encode(requestModel);
+    //String jsonString ='[{"id":2,"prefijo":"G471","numero":598240,"usuaId":1}]' ;
+
+    print(jsonString);
+
+    //print(requestModel[0].prefijo);
+    final response = await http.post(url,  headers: {
+      "Accept": "text/plain",
+      "Content-Type": "application/json"
+    }, body: jsonString);
+    print('Responde respuesta');
+    print(response.statusCode);
+    print(response.body);
+    if (response.statusCode == 200 || response.statusCode == 400) {
+
+      print(response.body);
+      print("bbb");
+
+      final responseData = json.decode(response.body);
+
+      salida = Salida(responseData['codi'], responseData['mens']);
+      return salida;
+
+    } else {
+
+      print('problem');
+      print(response.body);
+      //return resul;
+      throw Exception('Failed to load data!');
+    }
+  }
+
 }
 
 class UserNotFoundException implements Exception {}
