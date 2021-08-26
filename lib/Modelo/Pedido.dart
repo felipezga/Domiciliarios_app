@@ -50,8 +50,8 @@ class Pedido {
           fecha: "" != null ? "" : "",
           checked: false,
           estado: responseData['estado'] != null ? responseData['estado'] : "",
-          latitud: responseData['latitud'] != null ? responseData['latitud'] : 0,
-          longitud: responseData['longitud'] != null ? responseData['longitud'] : 0
+          latitud: responseData['latitud'] != null ? responseData['latitud'] : 0.0,
+          longitud: responseData['longitud'] != null ? responseData['longitud'] : 0.0
 
       );
 

@@ -44,6 +44,8 @@ class _ReasignacionState extends State<ReasignacionScreen> {
   String  _chosenValue;
   List<Pedido> pedidos = [];
   String opc;
+  int idRuta;
+  String estadoRuta;
 
   @override
   void initState() {
@@ -79,7 +81,7 @@ class _ReasignacionState extends State<ReasignacionScreen> {
               ),
           //automaticallyImplyLeading: false,
           title: Text(
-            'REASIGNAR PEDIDO',
+            'REASIGNAR RUTA  - ORDENES',
             style: TextStyle(
               color: theme.getTheme.hoverColor,
               fontWeight: FontWeight.bold,
@@ -127,15 +129,15 @@ class _ReasignacionState extends State<ReasignacionScreen> {
                         },
                     ),
                     SizedBox(
-                      height: 30,
+                      height: 20,
                     ),
-                    Text(
+                    /*Text(
                       "PEDIDOS / ENTREGAS",
                       style: TextStyle(
                         //color: Colors.red,
                         fontSize: 18,
                         fontWeight: FontWeight.bold),
-                    ),
+                    ),*/
                     SizedBox(
                       height: 220,
                       child: BlocBuilder<PedidoBloc, PedidoState>(
@@ -147,36 +149,70 @@ class _ReasignacionState extends State<ReasignacionScreen> {
                             if (state is PedidoLoaded) {
                               print("Hay pedidos");
                               pedidos = state.rutaPedido.pedidos;
+                              idRuta = state.rutaPedido.id;
+                              estadoRuta = state.rutaPedido.estado;
                               if(pedidos.length > 0 ){
-                                return  ListView(
-                                  shrinkWrap: true,
-                                  children: pedidos.map((ped) => Card(
-                                      //color:  Colors.yellow[600],
-                                      elevation: 5,
-                                      margin: new EdgeInsets.only( left: 10.0, right: 10.0, top: 8),
-                                      child: new Container(
-                                        //padding: new EdgeInsets.all(5.0),
-                                        child: CheckboxListTile(
-                                          value: ped.checked,
-                                          title: Text(
-                                              ped.restaurante + ped.numero.toString(),
-                                              style: TextStyle(
-                                                color: theme.getTheme.hoverColor,
-                                                fontWeight: FontWeight.w500,
-                                                fontSize: 15,
-                                              )
-                                          ),
-                                          controlAffinity: ListTileControlAffinity.leading,
-                                          onChanged: (val) {
-                                            print(ped.numero);
-                                            setState(() {
-                                              ped.checked = val;
-                                            });
-                                            },
-                                        ),
+                                return Column(
+                                  children: [
+                                    Text('RUTA: ' + state.rutaPedido.id.toString(),
+                                        style: TextStyle(
+                                          //color: Colors.red,
+                                            fontSize: 23,
+                                            fontWeight: FontWeight.bold)
+                                    ),
+                                    //(estadoRuta == "RESTAURANTE") ?
+                                    ListView(
+                                      shrinkWrap: true,
+                                      children: pedidos.map((ped) => Card(
+                                          color:  ped.estado == "ASIGNADO"? Colors.yellow : ped.estado == "ENTREGADO"? Colors.green : Colors.orange,
+                                          elevation: 5,
+                                          margin: new EdgeInsets.only( left: 10.0, right: 10.0, top: 8),
+                                          child: new Container(
+                                            padding: new EdgeInsets.all(10.0),
+                                            child: Text(ped.restaurante + '-' + ped.numero.toString() + "   |   "+ ped.estado,
+                                                style: TextStyle(
+                                                  color: Colors.black,
+                                                  fontWeight: FontWeight.w500,
+                                                  fontSize: 16,
+                                                )
+                                            ),
+                                          )
                                       )
-                                  )
-                                  ).toList(),
+                                      ).toList(),
+                                    )
+                                        //:
+                                    /*ListView(
+                                      shrinkWrap: true,
+                                      children: pedidos.map((ped) => Card(
+                                        //color:  Colors.yellow[600],
+                                          elevation: 5,
+                                          margin: new EdgeInsets.only( left: 10.0, right: 10.0, top: 8),
+                                          child: new Container(
+                                            //padding: new EdgeInsets.all(5.0),
+                                            child: CheckboxListTile(
+                                              value: ped.checked,
+                                              title: Text(
+                                                  ped.restaurante + ped.numero.toString(),
+                                                  style: TextStyle(
+                                                    color: theme.getTheme.hoverColor,
+                                                    fontWeight: FontWeight.w500,
+                                                    fontSize: 15,
+                                                  )
+                                              ),
+                                              controlAffinity: ListTileControlAffinity.leading,
+                                              onChanged: (val) {
+                                                print(ped.numero);
+                                                setState(() {
+                                                  ped.checked = val;
+                                                });
+                                              },
+                                            ),
+                                          )
+                                      )
+                                      ).toList(),
+                                    ),*/
+
+                                  ],
                                 );
                               }
                               else{
@@ -215,7 +251,7 @@ class _ReasignacionState extends State<ReasignacionScreen> {
                               }else{
                                 print(pedidos[0].numero);
                                 print("Reasignar");
-                                var accion = ReasignarPedido( pedidos, _chosenValue, context );
+                                var accion = ReasignarPedido( pedidos, _chosenValue, idRuta, estadoRuta,  context );
                                 alertConfirmacion( context, accion, "PedidoBloc", "Reasignar pedido" );
                                 //BlocProvider.of<PedidoBloc>(context).add(ReasignarPedido( pedidos, _chosenValue, context ));
                               }

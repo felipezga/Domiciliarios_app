@@ -42,9 +42,11 @@ class ActualizarRuta extends PedidoEvent{
 
 class ReasignarPedido extends PedidoEvent {
   final List<Pedido> pedidos;
+  final int idRuta;
   final String userId;
+  final String estaRuta;
   final BuildContext c;
-  ReasignarPedido(this.pedidos, this.userId, this.c);
+  ReasignarPedido(this.pedidos, this.userId, this.idRuta, this.estaRuta, this.c);
 }
 
 
@@ -246,24 +248,31 @@ class ReasignarPedido extends PedidoEvent {
 
          ubicaion = await funciones.ubicacionLatLong();
 
+         int band = 0;
+         String estadoRuta = "";
+
 
          print("BLOC");
          print(event.pedidos[0].numero);
 
          print(event.pedidos[0].name);
-
-          int cantPedidos = event.pedidos.length;
+         int cantPedidos = event.pedidos.length;
 
 
          //var item in list
          for (var i = 0; i < cantPedidos; i++) {
-           if (event.pedidos[i].checked == true){
-
+           if( event.pedidos[i].estado != "ENTREGADO"){
              Orden ao = new Orden(id: event.pedidos[i].id, prefijo: event.pedidos[i].restaurante, numero: event.pedidos[i].numero, latitud: ubicaion.latitude, longitud: ubicaion.longitude, usuaId: event.userId);
              print(ao);
              print("ao");
              ordenes.add(ao);
+           }else{
+             band = 1;
            }
+
+           //VALIDACION PARA RECORRER LOS PEDIDOS SELECCIONADOS, <<Se quita porque se van a enviar todos los pedidos y no se necesita la validacion>>
+           // if (event.pedidos[i].checked == true){
+           //}
          }
 
          if( ordenes.length == 0){
@@ -271,7 +280,9 @@ class ReasignarPedido extends PedidoEvent {
          }else{
            PedidoDomiclioRepository apiPedido = new PedidoDomiclioRepository();
 
-           final Salida respuesta = await apiPedido.reasignarPedido( ordenes );
+           final Salida respuesta = await apiPedido.reasignarRutaOrdenes( ordenes,  event.idRuta, event.userId, band );
+           //final Salida respuesta = await apiPedido.reasignarPedido( ordenes );
+
            print(respuesta.code);
            print(respuesta.mens);
            print("Reasignacion ");

@@ -83,7 +83,7 @@ Drawer buildDrawer(BuildContext context, String currentRoute) {
                     Divider(),
                     ListTile(
                       leading: Icon(Icons.share),
-                      title: const Text('Reasignar Ordenes'),
+                      title: const Text('Reasignar Ruta | Ordenes'),
                       //selected: currentRoute == Restaurante.route,
                       onTap: () {
                         Navigator.pushReplacementNamed(context, Reasignacion.route);
